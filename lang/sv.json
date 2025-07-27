@@ -1,8 +1,5 @@
 {
   "DRAGONBANE_ACTION_RULES": {
-    "notifications": {
-      "validationBypassed": "Validering hoppades över för {weapon} (Shift+klick)"
-    },
     "console": {
       "initializing": "Initialiserar",
       "wrongSystem": "Denna modul är designad för Drakar och Demoner-systemet",
@@ -14,7 +11,6 @@
       "moduleEnabled": "Modul aktiverad",
       "controlledTokens": "Kontrollerade spelfigurer",
       "targetedTokens": "Riktade spelfigurer",
-      "manualOverride": "Manuell åsidosättning: Håll Shift+klicka vapen för att kringgå all validering",
       "rangeRules": "Avståndsregler: Standard närstrid=2m, Lång närstrid=4m, Avstånd=vapnets räckvidd",
       "footer": "=== Slut Debug Info ==="
     },
@@ -76,6 +72,8 @@
       "success": "Lyckas = ingen skada. Om skada > brytvärde, skadas vapnet tills det repareras",
       "piercing": "Stickattacker kan inte skada pareringsvapen/sköldar",
       "monster": "Monsterattacker kan inte pareras (om inte annat anges)",
+      "movement": "Lyckas = flytta dig själv och fienden 2m (räknas inte som förflyttning, inga gratisattacker)",
+      "dragon": "Drake = motattack (kan inte duckas/pareras). Om angriparen slog Drake, behöver Drake för att parera (ingen motattack)",
       "noWeaponFound": "⚠️ Kunde inte bestämma pareringsvapen"
     },
     "topple": {
