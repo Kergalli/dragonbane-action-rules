@@ -60,16 +60,16 @@
       "longMelee": "long melee weapon"
     },
     "range": {
-      "adjacentOnly": "adjacent only",
-      "adjacentOrOneSquare": "adjacent or 1 square away (4m)"
+      "adjacentOnly": "adjacent to",
+      "adjacentOrOneSquare": "adjacent or 1 square away (4m) from"
     },
     "validation": {
       "selectToken": "Please select your token before attacking with {weapon}.",
       "noWeapon": "You do not have the weapon {weapon}!",
       "noTarget": "Please target a token before attacking with {weapon}.",
       "tooManyTargets": "Please target only one token for {weapon}.",
-      "meleeOutOfRange": "Target is too far away! {weapon} is a {weaponType} with {maxRange}m range, but target is {distance}m away. Move closer to attack.",
-      "rangedOutOfRange": "Target is too far away! {weapon} has a maximum range of {maxRange}m (2x base range of {baseRange}m), but target is {distance}m away."
+      "meleeOutOfRange": "Target is too far away! {weapon} is a {weaponType} and must be {maxRange} the target, but target is {distance}m away.",
+      "rangedOutOfRange": "Target is too far away! {weapon} has a maximum range of {maxRange}m, but target is {distance}m away."
     },
     "parry": {
       "reaction": "Parrying uses your action for the turn (reaction)",
