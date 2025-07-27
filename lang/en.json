@@ -1,8 +1,5 @@
 {
   "DRAGONBANE_ACTION_RULES": {
-    "notifications": {
-      "validationBypassed": "Validation bypassed for {weapon} (Shift+click)"
-    },
     "console": {
       "initializing": "Initializing",
       "wrongSystem": "This module is designed for the Dragonbane system",
@@ -14,7 +11,6 @@
       "moduleEnabled": "Module enabled",
       "controlledTokens": "Controlled tokens",
       "targetedTokens": "Targeted tokens",
-      "manualOverride": "Manual override: Hold Shift+click weapon to bypass all validation",
       "rangeRules": "Range rules: Standard melee=2m, Long melee=4m, Ranged=weapon range",
       "footer": "=== End Debug Info ==="
     },
@@ -76,6 +72,8 @@
       "success": "Success = no damage. If damage > durability, weapon damaged until repaired",
       "piercing": "Piercing attacks cannot damage parrying weapons/shields", 
       "monster": "Monster attacks cannot be parried (unless specified)",
+      "movement": "Success = move yourself and enemy 2m (doesn't count as movement, no free attacks)",
+      "dragon": "Dragon = counterattack (cannot be dodged/parried). If attacker rolled Dragon, need Dragon to parry (no counterattack)",
       "noWeaponFound": "⚠️ Could not determine parrying weapon"
     },
     "topple": {
