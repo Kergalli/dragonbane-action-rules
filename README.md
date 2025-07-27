@@ -90,10 +90,4 @@ Access via **Configure Settings → Module Settings → Dragonbane Combat Assist
 
 ## Validation Too Strict?
 - Hold Shift while clicking weapons to bypass validation
-- Disable specific validation types in settings
-
-## Bypass Options
-
-**Shift+Click Override:** Hold Shift while attacking to bypass all validation - useful for special circumstances or testing.
-
-**Granular Control:** Turn off Target Selection or Range Checking individually if they don't fit your playstyle.
+- Disable specific validation types in settings if they don't fit your playstyle
