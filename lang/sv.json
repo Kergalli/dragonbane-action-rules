@@ -60,16 +60,16 @@
       "longMelee": "långt närstridsvapen"
     },
     "range": {
-      "adjacentOnly": "endast intill",
-      "adjacentOrOneSquare": "intill eller 1 ruta bort (4m)"
+      "adjacentOnly": "intill",
+      "adjacentOrOneSquare": "intill eller 1 ruta bort (4m) från"
     },
     "validation": {
       "selectToken": "Välj din spelfigur innan du attackerar med {weapon}.",
       "noWeapon": "Du har inte vapnet {weapon}!",
       "noTarget": "Välj ett mål innan du attackerar med {weapon}.",
       "tooManyTargets": "Välj endast ett mål för {weapon}.",
-      "meleeOutOfRange": "Målet är för långt bort! {weapon} är ett {weaponType} med {maxRange}m räckvidd, men målet är {distance}m bort. Rör dig närmare för att attackera.",
-      "rangedOutOfRange": "Målet är för långt bort! {weapon} har en maximal räckvidd på {maxRange}m (2x grundräckvidd på {baseRange}m), men målet är {distance}m bort."
+      "meleeOutOfRange": "Målet är för långt bort! {weapon} är ett {weaponType} och måste vara {maxRange} målet, men målet är {distance}m bort.",
+      "rangedOutOfRange": "Målet är för långt bort! {weapon} har en maximal räckvidd på {maxRange}m, men målet är {distance}m bort."
     },
     "parry": {
       "reaction": "Parering använder din handling för rundan (reaktion)",
