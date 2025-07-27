@@ -77,6 +77,7 @@ Access via **Configure Settings → Module Settings → Dragonbane Combat Assist
 - Foundry VTT v12 and v13
 - Dragonbane system only
 - Token Action HUD
+- Argon - Combat HUD (DRAGONBANE)
 - Character sheets
 - All standard Dragonbane workflows
 
