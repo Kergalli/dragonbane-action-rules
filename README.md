@@ -12,7 +12,7 @@
 - **Enforces target selection** - No more accidental attacks into empty space
 - **Validates weapon range** - Prevents impossible attacks before they happen
 - **Smart distance calculation** - Handles multi-grid tokens and diagonal movement correctly
-- **Manual override** - Hold Shift to bypass validation when needed
+- **Melee range enforcement** - Standard melee weapons require adjacency, long weapons can reach 1 square away
 
 ### 📖 **Automatic Rule Display** 
 - **Shows combat rules when you need them** - Only on successful special attacks
@@ -66,6 +66,10 @@ Access via **Configure Settings → Module Settings → Dragonbane Combat Assist
 | **Display Delay** | 3 seconds | How long to wait before showing rules |
 | **Debug Mode** | ❌ Off | Enable for troubleshooting |
 
+## Special Cases
+
+**Parrying Long Weapons:** If you're using a standard melee weapon to parry an attack from someone with a long weapon (who is 1 square away), simply target yourself when parrying. The range validation will understand you're defending at your position.
+
 ## Technical Details
 
 **Compatible With:**
@@ -86,6 +90,10 @@ Access via **Configure Settings → Module Settings → Dragonbane Combat Assist
 - **Ranged weapons**: Up to 2× weapon base range
 - **Multi-grid tokens**: Properly calculated edge-to-edge distance
 
-## Validation Too Strict?
-- Hold Shift while clicking weapons to bypass validation
-- Disable specific validation types in settings if they don't fit your playstyle
+## Troubleshooting
+
+**Still getting blocked when you shouldn't be?**
+- Check if target selection and range checking are both enabled in settings
+- Try enabling debug mode to see what's happening in the console
+- Make sure you have a token selected and a valid target
+- For parrying attacks at range, target yourself instead of the attacker
