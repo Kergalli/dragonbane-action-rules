@@ -29,7 +29,6 @@
 
 **Get These Benefits:**
 - ✅ **Faster combat** - Less rule lookups and invalid attempts
-- ✅ **Better tactics** - Make informed parrying decisions with durability info
 - ✅ **Fewer mistakes** - Validation prevents common errors
 - ✅ **More immersion** - Rules appear automatically when needed
 
