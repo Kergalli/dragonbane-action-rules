@@ -9,10 +9,9 @@ Tactical enhancement module for Dragonbane combat.
 
 ### Features
 - **Attack Validation System**
-  - Target selection enforcement for all melle and ranged attacks
+  - Target selection enforcement for all melee and ranged attacks
   - Weapon range validation (melee: adjacent, long melee: adjacent + 1 grid square, ranged: up to 2x base range)
   - Smart distance calculation handling multi-grid tokens and diagonal movement
-  - Manual override with Shift+click bypass
   
 - **Automatic Combat Rule Display**
   - Detects successful special attacks: Parry, Topple, Disarm, Find Weak Spot
@@ -29,7 +28,6 @@ Tactical enhancement module for Dragonbane combat.
   - Configurable display timing
   - Optional weapon durability display
   - Debug mode for troubleshooting
-  - Granular control over validation enforcement
 
 - **User Experience**
   - Seamless Dragonbane system styling integration
