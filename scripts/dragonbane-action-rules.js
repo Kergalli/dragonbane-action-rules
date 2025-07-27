@@ -1,9 +1,9 @@
 /**
- * Dragonbane Combat Assistant - Initial Release
+ * Dragonbane Combat Assistant - Streamlined Version
  * Complete tactical enhancement for Dragonbane combat: Attack validation + automatic rule display
  * 
  * Author: Matthias Weeks
- * Version: 1.0.0 - Initial Release
+ * Version: 1.0.0 - Removed bypass feature for cleaner implementation
  */
 
 class DragonbaneActionRules {
@@ -134,7 +134,6 @@ class DragonbaneActionRules {
                     console.log(`${game.i18n.localize("DRAGONBANE_ACTION_RULES.debug.moduleEnabled")}: ${!!DragonbaneActionRules.hooks.chat}`);
                     console.log(`${game.i18n.localize("DRAGONBANE_ACTION_RULES.debug.controlledTokens")}: ${canvas.tokens.controlled.length}`);
                     console.log(`${game.i18n.localize("DRAGONBANE_ACTION_RULES.debug.targetedTokens")}: ${game.user.targets.size}`);
-                    console.log(game.i18n.localize("DRAGONBANE_ACTION_RULES.debug.manualOverride"));
                     console.log(game.i18n.localize("DRAGONBANE_ACTION_RULES.debug.rangeRules"));
                     console.log(game.i18n.localize("DRAGONBANE_ACTION_RULES.debug.footer"));
                 }
@@ -387,12 +386,6 @@ class DragonbaneActionRules {
      */
     static async performWeaponAttack(weaponName, actor = null) {
         try {
-            // Manual bypass with Shift key
-            if (game.keyboard?.isModifierActive(KeyboardManager.MODIFIER_KEYS.SHIFT)) {
-                ui.notifications.info(game.i18n.format("DRAGONBANE_ACTION_RULES.notifications.validationBypassed", { weapon: weaponName }));
-                return { success: true };
-            }
-
             // Get actor from parameter or selected token
             let selectedActor = actor;
             let selectedToken = null;
@@ -695,7 +688,9 @@ class DragonbaneActionRules {
         content += `<li>${game.i18n.localize("DRAGONBANE_ACTION_RULES.parry.reaction")}</li>
                    <li>${game.i18n.localize("DRAGONBANE_ACTION_RULES.parry.success")}</li>
                    <li>${game.i18n.localize("DRAGONBANE_ACTION_RULES.parry.piercing")}</li>
-                   <li>${game.i18n.localize("DRAGONBANE_ACTION_RULES.parry.monster")}</li>`;
+                   <li>${game.i18n.localize("DRAGONBANE_ACTION_RULES.parry.monster")}</li>
+                   <li>${game.i18n.localize("DRAGONBANE_ACTION_RULES.parry.movement")}</li>
+                   <li>${game.i18n.localize("DRAGONBANE_ACTION_RULES.parry.dragon")}</li>`;
         
         return content;
     }
