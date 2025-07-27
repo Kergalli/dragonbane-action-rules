@@ -43,10 +43,7 @@
 5. Click **Install**
 
 ### Manual Installation
-Use this manifest URL in Foundry's Install Module dialog:
-```
-https://github.com/kergalli/dragonbane-action-rules/releases/latest/download/module.json
-```
+Use this manifest URL in Foundry's Install Module dialog: `https://github.com/kergalli/dragonbane-action-rules/releases/latest/download/module.json`
 
 ## Quick Start
 
