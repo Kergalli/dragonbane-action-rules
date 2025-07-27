@@ -69,6 +69,7 @@ Access via **Configure Settings → Module Settings → Dragonbane Combat Assist
 ## Special Cases
 
 **Parrying Long Weapons:** If you're using a standard melee weapon to parry an attack from someone with a long weapon (who is 1 square away), simply target yourself when parrying. The range validation will understand you're defending at your position.
+**Parrying Ranged Attacks with a Shield:** When using a shield to parry a ranged attack, simply target yourself when parrying. The range validation will understand you're defending at your position.
 
 ## Technical Details
 
