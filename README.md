@@ -8,7 +8,7 @@
 
 **Dragonbane Combat Assistant** enhances tactical combat in two powerful ways:
 
-### 🎯 **Attack Validation**
+### 🎯 **Attack Validation (Before Roll)**
 - **Enforces target selection** - No more accidental attacks into empty space
 - **Validates weapon range** - Prevents impossible attacks before they happen
 - **Smart distance calculation** - Handles multi-grid tokens and diagonal movement correctly
