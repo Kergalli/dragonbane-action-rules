@@ -1,0 +1,72 @@
+/**
+ * Dragonbane Action Rules Monitor - Optimized Styles
+ * Matches the system's visual design for seamless integration
+ */
+
+/* Main rules container - matches your original styling */
+.dragonbane-action-rules {
+    border: 2px solid #00604d;
+    padding: 10px;
+    background: #f0e9de;
+    margin: 5px 0;
+    border-radius: 3px;
+    font-family: var(--dod-font-primary, "QTFrizQuad", sans-serif);
+}
+
+/* List styling */
+.dragonbane-action-rules ul {
+    margin: 0;
+    padding-left: 1.2em;
+    list-style-type: disc;
+}
+
+.dragonbane-action-rules li {
+    margin: 0.3em 0;
+    color: #2b2b2b;
+    line-height: 1.0;
+}
+
+/* Weapon durability styling */
+.dragonbane-action-rules li strong {
+    color: #00604d;
+    font-weight: bold;
+}
+
+/* Weapon not found warning */
+.dragonbane-action-rules .weapon-warning {
+    color: #d4690a;
+    font-style: italic;
+}
+
+/* Dark theme support */
+.system-dragonbane.theme-dark .dragonbane-action-rules {
+    background: #2b2b2b;
+    border-color: #3e7d63;
+}
+
+.system-dragonbane.theme-dark .dragonbane-action-rules li {
+    color: #e0e0e0;
+}
+
+.system-dragonbane.theme-dark .dragonbane-action-rules li strong {
+    color: #4db6a0;
+}
+
+/* Responsive design for smaller screens */
+@media (max-width: 600px) {
+    .dragonbane-action-rules {
+        margin: 3px 0;
+        padding: 8px;
+        font-size: 0.9em;
+    }
+    
+    .dragonbane-action-rules ul {
+        padding-left: 1em;
+    }
+}
+
+/* Integration with chat cards */
+.chat-message .dragonbane-action-rules {
+    margin-top: 5px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}

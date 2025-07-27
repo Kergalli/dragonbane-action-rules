@@ -1,0 +1,57 @@
+{
+  "id": "dragonbane-action-rules",
+  "title": "Dragonbane Combat Assistant",
+  "description": "Tactical enhancement for Dragonbane combat: Enforces target selection and weapon range for all attacks, then automatically displays combat action rules when special attacks succeed. Shows weapon durability when parrying.",
+  "version": "1.0.0",
+  "compatibility": {
+    "minimum": "12",
+    "verified": "13",
+    "maximum": "13"
+  },
+  "authors": [
+    {
+      "name": "Matthias Weeks"
+    }
+  ],
+  "license": "MIT",
+  "bugs": "https://github.com/Kergalli/dragonbane-action-rules/issues",
+  "systems": ["dragonbane"],
+  "esmodules": ["scripts/dragonbane-action-rules.js"],
+  "styles": ["styles/dragonbane-action-rules.css"],
+  "languages": [
+    {
+      "lang": "en",
+      "name": "English",
+      "path": "lang/en.json"
+    },
+    {
+      "lang": "sv",
+      "name": "Svenska",
+      "path": "lang/sv.json"
+    }
+  ],
+  "flags": {
+    "hotReload": {
+      "extensions": ["css", "js", "json"],
+      "paths": ["scripts", "styles", "lang"]
+    }
+  },
+  "relationships": {
+    "systems": [
+      {
+        "id": "dragonbane",
+        "type": "system",
+        "compatibility": {}
+      }
+    ]
+  },
+  "socket": false,
+  "url": "https://github.com/kergalli/dragonbane-action-rules",
+  "manifest": "https://github.com/kergalli/dragonbane-action-rules/releases/latest/download/module.json",
+  "download": "https://github.com/kergalli/dragonbane-action-rules/releases/latest/download/module.zip",
+  "readme": "https://github.com/kergalli/dragonbane-action-rules/blob/main/README.md",
+  "changelog": "https://github.com/kergalli/dragonbane-action-rules/blob/main/CHANGELOG.md",
+  "protected": false,
+  "coreTranslation": false,
+  "library": false
+}

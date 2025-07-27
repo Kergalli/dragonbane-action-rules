@@ -1,0 +1,101 @@
+{
+  "DRAGONBANE_ACTION_RULES": {
+    "notifications": {
+      "validationBypassed": "Validering hoppades över för {weapon} (Shift+klick)"
+    },
+    "console": {
+      "initializing": "Initialiserar",
+      "wrongSystem": "Denna modul är designad för Drakar och Demoner-systemet",
+      "moduleEnabled": "Modul aktiverad",
+      "moduleDisabled": "Modul inaktiverad"
+    },
+    "debug": {
+      "header": "=== Drakar och Demoner Stridassistent Debug Info ===",
+      "moduleEnabled": "Modul aktiverad",
+      "controlledTokens": "Kontrollerade spelfigurer",
+      "targetedTokens": "Riktade spelfigurer",
+      "manualOverride": "Manuell åsidosättning: Håll Shift+klicka vapen för att kringgå all validering",
+      "rangeRules": "Avståndsregler: Standard närstrid=2m, Lång närstrid=4m, Avstånd=vapnets räckvidd",
+      "footer": "=== Slut Debug Info ==="
+    },
+    "settings": {
+      "enabled": {
+        "name": "Aktivera Stridassistent",
+        "hint": "Visa automatiskt regler när stridshandlingar används i chatten"
+      },
+      "delay": {
+        "name": "Visningsfördröjning (millisekunder)",
+        "hint": "Hur länge man ska vänta innan regler visas efter att en handling upptäcks"
+      },
+      "showParryDurability": {
+        "name": "Visa Vapens Brytvärde för Parering",
+        "hint": "Visa vapnets brytvärde när pareringsregler visas (visar skadegränsen som skulle förstöra vapnet)"
+      },
+      "enforceTargetSelection": {
+        "name": "Tvinga Målval",
+        "hint": "Kräv att spelare väljer ett mål innan de gör någon attack"
+      },
+      "enforceRangeChecking": {
+        "name": "Tvinga Avståndskontroll",
+        "hint": "Validera att attacker är inom vapnets räckvidd (närstrid: intill, avstånd: upp till 2x grundräckvidd)"
+      },
+      "debugMode": {
+        "name": "Felsökningsläge",
+        "hint": "Aktivera felsökningsloggning till konsolen (för felsökning)"
+      }
+    },
+    "actions": {
+      "parry": "Parera",
+      "topple": "Fäll",
+      "disarm": "Avväpna",
+      "weakspot": "Hitta glipa"
+    },
+    "speakers": {
+      "generic": "{action} Regler"
+    },
+    "durability": "Brytvärde",
+    "unknownWeapon": "Okänt Vapen",
+    "weaponTypes": {
+      "melee": "närstridsvapen",
+      "longMelee": "långt närstridsvapen"
+    },
+    "range": {
+      "adjacentOnly": "endast intill",
+      "adjacentOrOneSquare": "intill eller 1 ruta bort (4m)"
+    },
+    "validation": {
+      "selectToken": "Välj din spelfigur innan du attackerar med {weapon}.",
+      "noWeapon": "Du har inte vapnet {weapon}!",
+      "noTarget": "Välj ett mål innan du attackerar med {weapon}.",
+      "tooManyTargets": "Välj endast ett mål för {weapon}.",
+      "meleeOutOfRange": "Målet är för långt bort! {weapon} är ett {weaponType} med {maxRange}m räckvidd, men målet är {distance}m bort. Rör dig närmare för att attackera.",
+      "rangedOutOfRange": "Målet är för långt bort! {weapon} har en maximal räckvidd på {maxRange}m (2x grundräckvidd på {baseRange}m), men målet är {distance}m bort."
+    },
+    "parry": {
+      "reaction": "Parering använder din handling för rundan (reaktion)",
+      "success": "Lyckas = ingen skada. Om skada > brytvärde, skadas vapnet tills det repareras",
+      "piercing": "Stickattacker kan inte skada pareringsvapen/sköldar",
+      "monster": "Monsterattacker kan inte pareras (om inte annat anges)",
+      "noWeaponFound": "⚠️ Kunde inte bestämma pareringsvapen"
+    },
+    "topple": {
+      "noDamage": "Ingen skada tillfogad",
+      "evadeRoll": "Motståndaren gör ett motsatt SMYGA-slag",
+      "cannotDefend": "Kan inte duckas eller pareras",
+      "success": "Lyckas = motståndaren blir liggande"
+    },
+    "disarm": {
+      "noDamage": "Ingen skada tillfogad",
+      "skillRoll": "Motståndaren gör ett motsatt vapenfärdighetsslag",
+      "cannotDefend": "Kan inte duckas eller pareras",
+      "twoHanded": "Tvåhandsvapen = du får nackdel",
+      "success": "Lyckas = vapnet hamnar T6 meter bort (du väljer riktning)",
+      "limitations": "Kan inte avväpna sköldar eller naturliga vapen"
+    },
+    "weakspot": {
+      "piercing": "Endast stickande vapen: Sikta på glipor i rustningen",
+      "bane": "Du får nackdel på attacken",
+      "success": "Lyckas = fienden räknas som rustningslös"
+    }
+  }
+}

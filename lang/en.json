@@ -1,0 +1,101 @@
+{
+  "DRAGONBANE_ACTION_RULES": {
+    "notifications": {
+      "validationBypassed": "Validation bypassed for {weapon} (Shift+click)"
+    },
+    "console": {
+      "initializing": "Initializing",
+      "wrongSystem": "This module is designed for the Dragonbane system",
+      "moduleEnabled": "Module enabled",
+      "moduleDisabled": "Module disabled"
+    },
+    "debug": {
+      "header": "=== Dragonbane Combat Assistant Debug Info ===",
+      "moduleEnabled": "Module enabled",
+      "controlledTokens": "Controlled tokens",
+      "targetedTokens": "Targeted tokens",
+      "manualOverride": "Manual override: Hold Shift+click weapon to bypass all validation",
+      "rangeRules": "Range rules: Standard melee=2m, Long melee=4m, Ranged=weapon range",
+      "footer": "=== End Debug Info ==="
+    },
+    "settings": {
+      "enabled": {
+        "name": "Enable Combat Assistant",
+        "hint": "Automatically show rules when combat actions are used in chat"
+      },
+      "delay": {
+        "name": "Display Delay (milliseconds)",
+        "hint": "How long to wait before showing rules after an action is detected"
+      },
+      "showParryDurability": {
+        "name": "Show Weapon Durability for Parry",
+        "hint": "Display weapon durability when showing parry rules (shows the damage threshold that would break the weapon)"
+      },
+      "enforceTargetSelection": {
+        "name": "Enforce Target Selection",
+        "hint": "Require players to select a target before making any attack"
+      },
+      "enforceRangeChecking": {
+        "name": "Enforce Range Checking", 
+        "hint": "Validate that attacks are within weapon range (melee: adjacent, ranged: up to 2x base range)"
+      },
+      "debugMode": {
+        "name": "Debug Mode",
+        "hint": "Enable debug logging to console (for troubleshooting)"
+      }
+    },
+    "actions": {
+      "parry": "Parry",
+      "topple": "Topple", 
+      "disarm": "Disarm",
+      "weakspot": "Find Weak Spot"
+    },
+    "speakers": {
+      "generic": "{action} Rules"
+    },
+    "durability": "Durability",
+    "unknownWeapon": "Unknown Weapon",
+    "weaponTypes": {
+      "melee": "melee weapon",
+      "longMelee": "long melee weapon"
+    },
+    "range": {
+      "adjacentOnly": "adjacent only",
+      "adjacentOrOneSquare": "adjacent or 1 square away (4m)"
+    },
+    "validation": {
+      "selectToken": "Please select your token before attacking with {weapon}.",
+      "noWeapon": "You do not have the weapon {weapon}!",
+      "noTarget": "Please target a token before attacking with {weapon}.",
+      "tooManyTargets": "Please target only one token for {weapon}.",
+      "meleeOutOfRange": "Target is too far away! {weapon} is a {weaponType} with {maxRange}m range, but target is {distance}m away. Move closer to attack.",
+      "rangedOutOfRange": "Target is too far away! {weapon} has a maximum range of {maxRange}m (2x base range of {baseRange}m), but target is {distance}m away."
+    },
+    "parry": {
+      "reaction": "Parrying uses your action for the turn (reaction)",
+      "success": "Success = no damage. If damage > durability, weapon damaged until repaired",
+      "piercing": "Piercing attacks cannot damage parrying weapons/shields", 
+      "monster": "Monster attacks cannot be parried (unless specified)",
+      "noWeaponFound": "⚠️ Could not determine parrying weapon"
+    },
+    "topple": {
+      "noDamage": "No damage dealt",
+      "evadeRoll": "Opponent makes opposed EVADE roll",
+      "cannotDefend": "Cannot be dodged or parried",
+      "success": "Success = opponent becomes prone"
+    },
+    "disarm": {
+      "noDamage": "No damage dealt",
+      "skillRoll": "Opponent makes opposed weapon skill roll", 
+      "cannotDefend": "Cannot be dodged or parried",
+      "twoHanded": "Two-handed weapon = you get bane",
+      "success": "Success = weapon lands D6 meters away (your choice of direction)",
+      "limitations": "Cannot disarm shields or natural weapons"
+    },
+    "weakspot": {
+      "piercing": "Piercing weapons only: Target gaps in armor",
+      "bane": "You get bane on attack",
+      "success": "Success = enemy counts as armorless"
+    }
+  }
+}
