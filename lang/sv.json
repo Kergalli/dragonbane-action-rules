@@ -80,7 +80,9 @@
       "noDamage": "Ingen skada tillfogad",
       "evadeRoll": "Motståndaren gör ett motsatt SMYGA-slag",
       "cannotDefend": "Kan inte duckas eller pareras",
-      "success": "Lyckas = motståndaren blir liggande"
+      "success": "Lyckas = motståndaren blir liggande",
+      "weaponFeature": "Fäll-funktion",
+      "boonBonus": "+1 Fördel"
     },
     "disarm": {
       "noDamage": "Ingen skada tillfogad",
@@ -94,6 +96,23 @@
       "piercing": "Endast stickande vapen: Sikta på glipor i rustningen",
       "bane": "Du får nackdel på attacken",
       "success": "Lyckas = fienden räknas som rustningslös"
+    },
+    "weaponBroken": {
+      "buttonText": "Markera Vapen Trasigt",
+      "buttonTextCompleted": "Vapen Markerat Trasigt",
+      "dialogTitle": "Markera Vapen Trasigt",
+      "dialogContent": "Markera <strong>{weaponName}</strong> som trasigt?",
+      "dialogExplanation": "Detta förhindrar att det används tills det repareras.",
+      "confirmButton": "Markera Trasigt",
+      "cancelButton": "Avbryt",
+      "errors": {
+        "actorNotFound": "Aktör hittades inte",
+        "weaponNotFound": "Vapen hittades inte",
+        "noPermission": "Du har inte behörighet att ändra detta vapen",
+        "alreadyBroken": "{weaponName} är redan trasigt",
+        "updateFailed": "Misslyckades med att markera vapen som trasigt"
+      },
+      "success": "{weaponName} har markerats som trasigt"
     }
   }
 }
