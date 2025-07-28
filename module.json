@@ -1,8 +1,8 @@
 {
   "id": "dragonbane-action-rules",
   "title": "Dragonbane Combat Assistant",
-  "description": "Streamlined tactical enhancement for Dragonbane combat: Enforces target selection and weapon range for all attacks, then automatically displays combat action rules when special attacks succeed. Clean and focused implementation.",
-  "version": "1.0.0",
+  "description": "Streamlined tactical enhancement for Dragonbane combat: Enforces target selection and weapon range for all attacks, then automatically displays combat action rules when special attacks succeed. Now includes interactive weapon management and enhanced weapon feature display.",
+  "version": "1.1.0",
   "compatibility": {
     "minimum": "12",
     "verified": "13",
@@ -19,7 +19,7 @@
     "dragonbane"
   ],
   "esmodules": [
-    "scripts/dragonbane-action-rules.js"
+    "scripts/main.js"
   ],
   "styles": [
     "styles/dragonbane-action-rules.css"
