@@ -85,7 +85,8 @@ export class DragonbaneRulesDisplay {
 
         if (normalizedAction === 'parry') {
             weapon = this.extractWeaponFromMessage(message);
-            const parryResult = this.getParryRules(weapon);
+            const dragonRolled = this.detectDragonRoll(message);
+            const parryResult = this.getParryRules(weapon, dragonRolled);
             ruleContent = parryResult.content;
             weapon = parryResult.weapon;
         } else if (normalizedAction === 'topple') {
@@ -132,7 +133,7 @@ export class DragonbaneRulesDisplay {
     /**
      * Get parry rules with weapon durability
      */
-    getParryRules(weapon) {
+    getParryRules(weapon, dragonRolled = false) {
         const showDurability = this.getSetting('showParryDurability', true);
         let content = "";
         
@@ -144,20 +145,43 @@ export class DragonbaneRulesDisplay {
             content += `<li class="weapon-warning">${game.i18n.localize("DRAGONBANE_ACTION_RULES.parry.noWeaponFound")}</li>`;
         }
         
-        content += this.getParryRulesList();
+        content += this.getParryRulesList(dragonRolled);
         return { content, weapon };
     }
 
     /**
-     * Get parry rules list
+     * Get parry rules list with conditional dragon highlighting
      */
-    getParryRulesList() {
+    getParryRulesList(dragonRolled = false) {
+        const dragonRule = dragonRolled ? 
+            `<li><strong class="dragon-highlight">${game.i18n.localize("DRAGONBANE_ACTION_RULES.parry.dragon")}</strong></li>` :
+            `<li>${game.i18n.localize("DRAGONBANE_ACTION_RULES.parry.dragon")}</li>`;
+            
         return `<li>${game.i18n.localize("DRAGONBANE_ACTION_RULES.parry.reaction")}</li>
                 <li>${game.i18n.localize("DRAGONBANE_ACTION_RULES.parry.success")}</li>
                 <li>${game.i18n.localize("DRAGONBANE_ACTION_RULES.parry.piercing")}</li>
                 <li>${game.i18n.localize("DRAGONBANE_ACTION_RULES.parry.monster")}</li>
                 <li>${game.i18n.localize("DRAGONBANE_ACTION_RULES.parry.movement")}</li>
-                <li>${game.i18n.localize("DRAGONBANE_ACTION_RULES.parry.dragon")}</li>`;
+                ${dragonRule}`;
+    }
+
+    /**
+     * Detect if a Dragon (natural 1) was rolled in the message
+     */
+    detectDragonRoll(message) {
+        if (!message || !message.content) return false;
+        
+        // Look for Dragon indicators in the chat message
+        // Common patterns: "Dragon", "rolled 1", "natural 1", etc.
+        const dragonPatterns = [
+            /\bdragon\b/i,
+            /\brolled\s+1\b/i,
+            /\bnatural\s+1\b/i,
+            /\b1\s*\(dragon\)/i,
+            /result[^>]*>\s*1\s*</i  // HTML result containing 1
+        ];
+        
+        return dragonPatterns.some(pattern => pattern.test(message.content));
     }
 
     /**
