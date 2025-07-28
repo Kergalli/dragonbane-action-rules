@@ -38,6 +38,14 @@
     font-style: italic;
 }
 
+/* Weapon actions container */
+.dragonbane-action-rules .weapon-actions {
+    margin-top: 8px;
+    text-align: center;
+    padding-top: 6px;
+    border-top: 1px solid #00604d;
+}
+
 /* Dark theme support */
 .system-dragonbane.theme-dark .dragonbane-action-rules {
     background: #2b2b2b;
@@ -50,6 +58,10 @@
 
 .system-dragonbane.theme-dark .dragonbane-action-rules li strong {
     color: #4db6a0;
+}
+
+.system-dragonbane.theme-dark .dragonbane-action-rules .weapon-actions {
+    border-top-color: #3e7d63;
 }
 
 /* Responsive design for smaller screens */
