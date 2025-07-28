@@ -80,7 +80,9 @@
       "noDamage": "No damage dealt",
       "evadeRoll": "Opponent makes opposed EVADE roll",
       "cannotDefend": "Cannot be dodged or parried",
-      "success": "Success = opponent becomes prone"
+      "success": "Success = opponent becomes prone",
+      "weaponFeature": "Topple Feature",
+      "boonBonus": "+1 Boon"
     },
     "disarm": {
       "noDamage": "No damage dealt",
@@ -94,6 +96,23 @@
       "piercing": "Piercing weapons only: Target gaps in armor",
       "bane": "You get bane on attack",
       "success": "Success = enemy counts as armorless"
+    },
+    "weaponBroken": {
+      "buttonText": "Mark Weapon Broken",
+      "buttonTextCompleted": "Weapon Marked Broken",
+      "dialogTitle": "Mark Weapon Broken",
+      "dialogContent": "Mark <strong>{weaponName}</strong> as broken?",
+      "dialogExplanation": "This will prevent its use until repaired.",
+      "confirmButton": "Mark Broken",
+      "cancelButton": "Cancel",
+      "errors": {
+        "actorNotFound": "Actor not found",
+        "weaponNotFound": "Weapon not found",
+        "noPermission": "You don't have permission to modify this weapon",
+        "alreadyBroken": "{weaponName} is already broken",
+        "updateFailed": "Failed to mark weapon as broken"
+      },
+      "success": "{weaponName} has been marked as broken"
     }
   }
 }
