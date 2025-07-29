@@ -63,7 +63,7 @@ Use this manifest URL in Foundry's Install Module dialog:
 
 ## Quick Start
 
-1. **Install and enable** the module
+1. **Install and enable** module
 2. **No additional setup required** - it works immediately
 3. **Try attacking without a target** - you'll see the validation in action
 4. **Use a special attack that succeeds** - rules will appear automatically
