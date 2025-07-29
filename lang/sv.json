@@ -38,6 +38,22 @@
       "debugMode": {
         "name": "Felsökningsläge",
         "hint": "Aktivera felsökningsloggning till konsolen (för felsökning)"
+      },
+      "enableEncumbranceMonitoring": {
+        "name": "Aktivera Bärförmågeövervakning",
+        "hint": "Övervaka automatiskt karaktärers bärförmåga och tillämpa statuseffekter när överbelastad"
+      },
+      "encumbranceMonitorFolder": {
+        "name": "Bärförmågeövervaknings-mapp",
+        "hint": "Namn på aktörmappen att övervaka för bärförmåga (lämna tom för att övervaka alla karaktärer)"
+      },
+      "encumbranceStatusEffect": {
+        "name": "Bärförmåge-statuseffekt",
+        "hint": "Namn på statuseffekten att tillämpa när överbelastad (t.ex. 'Överbelastad', 'Tyngd')"
+      },
+      "encumbranceChatNotifications": {
+        "name": "Bärförmåge-chattnotifieringar",
+        "hint": "Skapa även chattmeddelanden för bärförmågeförändringar (utöver UI-notifieringar)"
       }
     },
     "actions": {
@@ -113,6 +129,15 @@
         "updateFailed": "Misslyckades med att markera vapen som trasigt"
       },
       "success": "{weaponName} har markerats som trasigt"
+    },
+    "encumbrance": {
+      "nowOverEncumbered": "{actorName} är nu överbelastad ({currentEnc}/{maxEnc} föremål)",
+      "noLongerOverEncumbered": "{actorName} är inte längre överbelastad ({currentEnc}/{maxEnc} föremål)",
+      "chatOverEncumbered": "{actorName} är nu överbelastad!",
+      "chatNoLongerOverEncumbered": "{actorName} är inte längre överbelastad.",
+      "carryingItems": "Bär {currentEnc}/{maxEnc} föremål",
+      "strRollReminder": "Måste göra STY-slag för att röra sig i strid eller under reseskift när överbelastad.",
+      "systemMessage": "Bärförmågeövervakare"
     }
   }
 }
