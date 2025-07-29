@@ -4,13 +4,85 @@
  */
 
 export class DragonbaneRulesDisplay {
-    // Pre-compiled patterns for efficiency
-    static UUID_PATTERN = /@UUID\[Actor\.[^\.]+\.Item\.([^\]]+)\]/;
-    static ACTION_PATTERN = /(parry|topple|disarm|weakpoint|weak\s+spot)/i;
-
     constructor(moduleId) {
         this.moduleId = moduleId;
         this.flagsKey = 'dragonbaneRulesMessage';
+        
+        // Dynamic patterns - will be set during initialization
+        this.actionPattern = null;
+        this.successPattern = null;
+        this.failurePattern = null;
+        
+        // Initialize patterns when ready
+        Hooks.once('ready', () => this.initializeLocalizedPatterns());
+    }
+
+    /**
+     * Initialize localized patterns based on current language
+     */
+    initializeLocalizedPatterns() {
+        try {
+            // Get localized action terms from Dragonbane system
+            const parry = this.getLocalizedTerm("DoD.attackTypes.parry", "parry");
+            const topple = this.getLocalizedTerm("DoD.attackTypes.topple", "topple");
+            const disarm = this.getLocalizedTerm("DoD.attackTypes.disarm", "disarm");
+            const weakpoint = this.getLocalizedTerm("DoD.attackTypes.weakpoint", "weakpoint");
+            
+            // Build action pattern (including English fallback for "weak spot")
+            const actions = [parry, topple, disarm, weakpoint, "weak\\s+spot"]
+                .map(term => this.escapeRegex(term))
+                .join('|');
+            
+            this.actionPattern = new RegExp(`(${actions})`, 'i');
+            
+            // Get success/failure terms
+            const success = this.getLocalizedTerm("DoD.roll.success", "succeeded").replace(/[.!]$/, '');
+            const failure = this.getLocalizedTerm("DoD.roll.failure", "failed").replace(/[.!]$/, '');
+            const dragon = this.getLocalizedTerm("DoD.roll.dragon", "succedeed with a Dragon!");
+            
+            // Extract success word from dragon message (e.g., "lyckades" from "lyckades med ett Drakslag!")
+            const dragonWord = dragon.split(' ')[0] || 'dragon';
+            
+            // Build success/failure patterns
+            this.successPattern = new RegExp(`(${this.escapeRegex(success)}|${this.escapeRegex(dragonWord)})`, 'i');
+            this.failurePattern = new RegExp(`(${this.escapeRegex(failure)})`, 'i');
+            
+            this.debugLog(`Localized patterns initialized for language: ${game.i18n.lang}`);
+            
+        } catch (error) {
+            console.warn(`${this.moduleId} | Error building localized patterns, falling back to English:`, error);
+            this.initializeFallbackPatterns();
+        }
+    }
+
+    /**
+     * Get localized term with English fallback
+     */
+    getLocalizedTerm(key, fallback) {
+        try {
+            const localized = game.i18n.localize(key);
+            // If localization failed, it returns the key itself
+            return localized === key ? fallback : localized;
+        } catch (error) {
+            return fallback;
+        }
+    }
+
+    /**
+     * Escape special regex characters
+     */
+    escapeRegex(string) {
+        return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    }
+
+    /**
+     * Initialize fallback English patterns
+     */
+    initializeFallbackPatterns() {
+        this.actionPattern = /(parry|topple|disarm|weakpoint|weak\s+spot)/i;
+        this.successPattern = /(succeeded|succeded|dragon)/i;
+        this.failurePattern = /failed/i;
+        this.debugLog("Using fallback English patterns");
     }
 
     /**
@@ -18,6 +90,9 @@ export class DragonbaneRulesDisplay {
      */
     onChatMessage(message) {
         try {
+            // Skip if patterns aren't initialized yet
+            if (!this.actionPattern) return;
+            
             // Skip if already a rules message
             if (message.getFlag(this.moduleId, this.flagsKey)) return;
 
@@ -25,7 +100,7 @@ export class DragonbaneRulesDisplay {
             if (!content) return;
 
             // Check for action pattern
-            const actionMatch = content.match(DragonbaneRulesDisplay.ACTION_PATTERN);
+            const actionMatch = content.match(this.actionPattern);
             if (!actionMatch) return;
 
             // Only show rules for successful attacks
@@ -45,8 +120,10 @@ export class DragonbaneRulesDisplay {
      * Check if action was successful
      */
     isSuccessfulAction(content) {
-        const successMatch = content.match(/(succeeded|succeded|dragon)/i);
-        const failureMatch = content.match(/failed/i);
+        if (!this.successPattern || !this.failurePattern) return false;
+        
+        const successMatch = content.match(this.successPattern);
+        const failureMatch = content.match(this.failurePattern);
         return successMatch && !failureMatch;
     }
 
@@ -76,7 +153,10 @@ export class DragonbaneRulesDisplay {
      */
     async processAction(message, actionMatch) {
         const action = actionMatch[1].toLowerCase();
-        const normalizedAction = action.includes('weak') ? 'weakspot' : action;
+        const normalizedAction = action.includes('weak') || action.includes('glipa') ? 'weakspot' : 
+                                action.includes('parera') ? 'parry' :
+                                action.includes('fäll') ? 'topple' :
+                                action.includes('avväpna') ? 'disarm' : action;
         let ruleContent;
         let weapon = null;
 
@@ -104,8 +184,11 @@ export class DragonbaneRulesDisplay {
      */
     extractWeaponFromMessage(message) {
         try {
+            // UUID pattern remains static as it's not localized
+            const UUID_PATTERN = /@UUID\[Actor\.[^\.]+\.Item\.([^\]]+)\]/;
+            
             // Try to extract from UUID pattern first
-            const uuidMatch = message.content.match(DragonbaneRulesDisplay.UUID_PATTERN);
+            const uuidMatch = message.content.match(UUID_PATTERN);
             if (uuidMatch && message.speaker?.actor) {
                 const actor = game.actors.get(message.speaker.actor);
                 const weapon = actor?.items.get(uuidMatch[1]);
@@ -247,16 +330,21 @@ export class DragonbaneRulesDisplay {
     hasToppleFeature(weapon) {
         if (!weapon || !weapon.system) return false;
         
+        // Get both English and localized terms for toppling
+        const englishTerm = "toppling";
+        const localizedTerm = this.getLocalizedTerm("DoD.weaponFeatureTypes.toppling", "toppling").toLowerCase();
+        
         // Check in features array (same location as "Long" feature)
         if (weapon.system.features && Array.isArray(weapon.system.features)) {
-            return weapon.system.features.some(feature => 
-                feature.toLowerCase() === 'toppling'
-            );
+            return weapon.system.features.some(feature => {
+                const featureLower = feature.toLowerCase();
+                return featureLower === englishTerm || featureLower === localizedTerm;
+            });
         }
         
         // Check if weapon has toppling feature method (alternative system approach)
         if (typeof weapon.hasWeaponFeature === 'function') {
-            return weapon.hasWeaponFeature('toppling');
+            return weapon.hasWeaponFeature(englishTerm) || weapon.hasWeaponFeature(localizedTerm);
         }
         
         return false;
