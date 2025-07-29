@@ -63,6 +63,35 @@
     border-top: 1px solid #00604d;
 }
 
+/* Encumbrance notice styling */
+.dragonbane-encumbrance-notice {
+    border: 2px solid #00604d;
+    padding: 10px;
+    background: #f0e9de;
+    margin: 5px 0;
+    font-family: var(--dod-font-primary, "QTFrizQuad", sans-serif);
+}
+
+.dragonbane-encumbrance-notice strong {
+    color: #00604d;
+    font-weight: bold;
+}
+
+.dragonbane-encumbrance-notice .encumbrance-details {
+    margin: 4px 0;
+    font-size: 0.9em;
+    color: #5a5a5a;
+}
+
+.dragonbane-encumbrance-notice .encumbrance-rule {
+    margin: 6px 0;
+    padding: 4px;
+    background: rgba(0, 96, 77, 0.1);
+    border-left: 3px solid #00604d;
+    font-size: 0.85em;
+    font-style: italic;
+}
+
 /* Dark theme support */
 .system-dragonbane.theme-dark .dragonbane-action-rules {
     background: #2b2b2b;
@@ -98,9 +127,30 @@
     border-top-color: #3e7d63;
 }
 
+/* Dark theme support for encumbrance notices - matches main rules container exactly */
+.system-dragonbane.theme-dark .dragonbane-encumbrance-notice {
+    background: #2b2b2b;
+    border-color: #3e7d63;
+}
+
+.system-dragonbane.theme-dark .dragonbane-encumbrance-notice strong {
+    color: #4db6a0;
+}
+
+.system-dragonbane.theme-dark .dragonbane-encumbrance-notice .encumbrance-details {
+    color: #e0e0e0;
+}
+
+.system-dragonbane.theme-dark .dragonbane-encumbrance-notice .encumbrance-rule {
+    background: rgba(77, 182, 160, 0.15);
+    border-left-color: #4db6a0;
+    color: #e0e0e0;
+}
+
 /* Responsive design for smaller screens */
 @media (max-width: 600px) {
-    .dragonbane-action-rules {
+    .dragonbane-action-rules,
+    .dragonbane-encumbrance-notice {
         margin: 3px 0;
         padding: 8px;
         font-size: 0.9em;
@@ -112,7 +162,8 @@
 }
 
 /* Integration with chat cards */
-.chat-message .dragonbane-action-rules {
+.chat-message .dragonbane-action-rules,
+.chat-message .dragonbane-encumbrance-notice {
     margin-top: 5px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
