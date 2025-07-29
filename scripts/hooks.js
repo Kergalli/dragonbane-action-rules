@@ -1,9 +1,6 @@
 /**
  * Dragonbane Combat Assistant - Hook Management
  * Consolidated hook registration and management for all attack interception points
- * 
- * Author: Matthias Weeks
- * Version: 1.0.0
  */
 
 export class DragonbaneHooks {
