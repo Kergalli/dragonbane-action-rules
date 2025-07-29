@@ -1,9 +1,6 @@
 /**
  * Dragonbane Combat Assistant - Settings Management
  * Handles all module settings registration and access
- * 
- * Author: Matthias Weeks
- * Version: 1.0.0
  */
 
 export class DragonbaneSettings {
