@@ -1,6 +1,6 @@
 /**
  * Dragonbane Combat Assistant - Attack Validation
- * Handles target selection and weapon range validation
+ * Handles target selection and weapon range
  */
 
 export class DragonbaneValidator {
