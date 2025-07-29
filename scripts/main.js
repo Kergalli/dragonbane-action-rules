@@ -1,5 +1,5 @@
 /**
- * Dragonbane Combat Assistant - Main Module Class
+ * Dragonbane Combat Assistant - Main Module
  * Core initialization and module management
  */
 
