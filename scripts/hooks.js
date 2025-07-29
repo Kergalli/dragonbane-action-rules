@@ -1,7 +1,3 @@
-/**
- * Dragonbane Combat Assistant - Hook Management
- */
-
 export class DragonbaneHooks {
     constructor(moduleId) {
         this.moduleId = moduleId;
