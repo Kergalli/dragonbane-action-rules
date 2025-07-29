@@ -38,6 +38,22 @@
       "debugMode": {
         "name": "Debug Mode",
         "hint": "Enable debug logging to console (for troubleshooting)"
+      },
+      "enableEncumbranceMonitoring": {
+        "name": "Enable Encumbrance Monitoring",
+        "hint": "Automatically monitor character encumbrance and apply status effects when over-encumbered"
+      },
+      "encumbranceMonitorFolder": {
+        "name": "Encumbrance Monitor Folder",
+        "hint": "Name of the actor folder to monitor for encumbrance (leave blank to monitor all characters)"
+      },
+      "encumbranceStatusEffect": {
+        "name": "Encumbrance Status Effect",
+        "hint": "Name of the status effect to apply when over-encumbered (e.g., 'Encumbered', 'Over-encumbered')"
+      },
+      "encumbranceChatNotifications": {
+        "name": "Encumbrance Chat Notifications",
+        "hint": "Also create chat messages for encumbrance changes (in addition to UI notifications)"
       }
     },
     "actions": {
@@ -113,6 +129,15 @@
         "updateFailed": "Failed to mark weapon as broken"
       },
       "success": "{weaponName} has been marked as broken"
+    },
+    "encumbrance": {
+      "nowOverEncumbered": "{actorName} is now over-encumbered ({currentEnc}/{maxEnc} items)",
+      "noLongerOverEncumbered": "{actorName} is no longer over-encumbered ({currentEnc}/{maxEnc} items)",
+      "chatOverEncumbered": "{actorName} is now over-encumbered!",
+      "chatNoLongerOverEncumbered": "{actorName} is no longer over-encumbered.",
+      "carryingItems": "Carrying {currentEnc}/{maxEnc} items",
+      "strRollReminder": "Must make STR rolls to move in combat or during travel shifts while over-encumbered.",
+      "systemMessage": "Encumbrance Monitor"
     }
   }
 }
