@@ -1,12 +1,12 @@
 # Dragonbane Combat Assistant
 
-![Version](https://img.shields.io/badge/version-1.1.0-blue)
+![Version](https://img.shields.io/badge/version-1.2.0-blue)
 ![Foundry Version](https://img.shields.io/badge/foundry-v12%20%7C%20v13-green)
 ![System](https://img.shields.io/badge/system-dragonbane-orange)
 
 ## What This Module Does
 
-**Dragonbane Combat Assistant** enhances melee/ranged combat in two powerful ways:
+**Dragonbane Combat Assistant** enhances melee/ranged combat and character management in three powerful ways:
 
 ### 🎯 **Attack Validation (Before Roll)**
 - **Enforces target selection** - No more accidental attacks into empty space
@@ -22,32 +22,31 @@
 - **Weapon feature bonuses** - Displays topple weapon bonuses (+1 Boon) automatically
 - **Mark Weapon Broken button** - Appears on parry rules for easy weapon damage tracking, updates character sheet directly from chat
 
-## Why You Need This
+### ⚖️ **Encumbrance Monitoring**
+- **Event-driven monitoring** - Instantly detects when characters become over-encumbered
+- **Automatic status effects** - Applies configurable status effects when carrying too many items
+- **Folder-based filtering** - Monitor specific actor folders (default: "Party") or all characters
+- **Smart notifications** - UI notifications with optional chat reminders about STR roll requirements
 
-**Stop These Common Problems:**
-- ❌ Forgetting to select a target before attacking
-- ❌ Trying to attack enemies too far away
-- ❌ Having to look up special attack rules while combat waits
-- ❌ Forgetting weapon durability when parrying
-- ❌ Manually tracking broken weapons on character sheets
+## New in Version 1.2.0
 
-**Get These Benefits:**
-- ✅ **Faster combat** - Less rule lookups and invalid attempts
-- ✅ **Fewer mistakes** - Validation prevents common errors
-- ✅ **More immersion** - Rules and bonuses appear automatically when needed
-- ✅ **Better weapon tracking** - Interactive buttons for weapon management
+### ⚖️ **Encumbrance Monitoring System**
+- **Instant Response** - Detects over-encumbrance immediately when items are added/removed or actor strength changes
+- **Smart Status Effects** - Automatically applies configurable status effects when characters exceed carrying capacity
+- **Configurable Monitoring** - Choose which actor folder to monitor or monitor all characters
+- **Rule Integration** - Optional chat notifications that remind players about STR roll requirements for over-encumbered movement
 
-## New in Version 1.1.0
+### 🎛️ **Enhanced Configuration Options**
+- **Enable Encumbrance Monitoring** - Master on/off switch for the encumbrance system
+- **Monitor Folder Setting** - Specify which actor folder to monitor (leave blank for all characters)
+- **Custom Status Effect** - Configure the status effect name applied when over-encumbered
+- **Chat Notifications** - Optional chat messages with rule reminders (disabled by default for minimal disruption)
 
-### 🆕 **Interactive Weapon Management**
-When you successfully parry, a "Mark Weapon Broken" button appears below the rules if your weapon could be damaged. Click it to:
-- Mark the weapon as broken on your character sheet
-- Get confirmation dialog to prevent accidents
-
-### 🆕 **Enhanced Weapon Feature Display**
-Topple attacks now show weapon bonuses at the top of the rules:
-- **Staff Topple Feature: +1 Boon** - Know your tactical advantages
-- Automatically detects weapons with "Toppling" feature
+### 🌍 **Full Internationalization Support**
+- **Dynamic Language Detection** - Automatically adapts to your Dragonbane system language setting
+- **Localized Combat Actions** - Recognizes combat actions in English, Swedish, and other supported languages
+- **Smart Pattern Matching** - Uses official Dragonbane translation keys for accurate detection
+- **English Fallback** - Ensures functionality even with unsupported languages or missing translations
 
 ## Installation
 
@@ -70,6 +69,7 @@ Use this manifest URL in Foundry's Install Module dialog:
 4. **Use a special attack that succeeds** - rules will appear automatically
 5. **Parry with a weapon** - see durability and the new "Mark Weapon Broken" button
 6. **Use topple with a staff** - see the "+1 Boon" bonus displayed
+7. **Add items to a character** - watch for automatic over-encumbrance detection
 
 ## Settings
 
@@ -82,6 +82,10 @@ Access via **Configure Settings → Module Settings → Dragonbane Combat Assist
 | **Enforce Range Checking** | ✅ On | Validate weapon range |
 | **Show Weapon Durability** | ✅ On | Display durability for parry decisions |
 | **Display Delay** | 3 seconds | How long to wait before showing rules |
+| **Enable Encumbrance Monitoring** | ✅ On | Automatically monitor character encumbrance |
+| **Encumbrance Monitor Folder** | "Party" | Which actor folder to monitor (blank = all characters) |
+| **Encumbrance Status Effect** | "Encumbered" | Name of status effect to apply when over-encumbered |
+| **Encumbrance Chat Notifications** | ❌ Off | Also create chat messages with rule reminders |
 | **Debug Mode** | ❌ Off | Enable for troubleshooting |
 
 ## Special Cases
@@ -104,9 +108,3 @@ Access via **Configure Settings → Module Settings → Dragonbane Combat Assist
 - Argon - Combat HUD (DRAGONBANE)
 - Character sheets
 - All standard Dragonbane workflows
-
-**Range Calculation:**
-- **Melee weapons**: Adjacent squares only (0-2m)
-- **Long melee weapons**: Adjacent + 1 square away (0-4m) 
-- **Ranged weapons**: Up to 2× weapon base range
-- **Multi-grid tokens**: Properly calculated edge-to-edge distance
