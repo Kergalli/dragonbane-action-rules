@@ -1,9 +1,6 @@
 /**
  * Dragonbane Combat Assistant - Attack Validation
  * Handles target selection and weapon range validation
- * 
- * Author: Matthias Weeks
- * Version: 1.0.0
  */
 
 export class DragonbaneValidator {
