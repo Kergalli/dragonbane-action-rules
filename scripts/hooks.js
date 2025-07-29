@@ -21,6 +21,7 @@ export class DragonbaneHooks {
         this.enableTokenActionHUD();
         this.enableCharacterSheets();
         this.enableGlobalWeaponTest();
+        this.enableEncumbranceHooks();
         
         this.debugLog("All hooks enabled");
     }
@@ -34,6 +35,7 @@ export class DragonbaneHooks {
         this.disableTokenActionHUD();
         this.disableCharacterSheets();
         this.disableGlobalWeaponTest();
+        this.disableEncumbranceHooks();
         
         this.debugLog("All hooks disabled");
     }
@@ -319,6 +321,42 @@ export class DragonbaneHooks {
         
         this.debugLog("Successfully hooked WeaponTestClass.prototype.roll");
         return true;
+    }
+
+    /**
+     * Enable encumbrance monitoring hooks
+     */
+    enableEncumbranceHooks() {
+        if (this.activeHooks.has('encumbranceUpdate') || !this.callbacks.onActorUpdate) return;
+
+        // Hook for actor updates (main encumbrance changes)
+        const actorUpdateHookId = Hooks.on('updateActor', this.callbacks.onActorUpdate);
+        this.activeHooks.set('encumbranceUpdate', actorUpdateHookId);
+
+        // Hook for item updates (inventory changes)
+        const itemUpdateHookId = Hooks.on('updateItem', this.callbacks.onItemUpdate);
+        this.activeHooks.set('encumbranceItemUpdate', itemUpdateHookId);
+
+        // Hook for item creation/deletion (needed for when items are added/removed)
+        const itemCreateHookId = Hooks.on('createItem', this.callbacks.onItemChange);
+        this.activeHooks.set('encumbranceItemCreate', itemCreateHookId);
+
+        const itemDeleteHookId = Hooks.on('deleteItem', this.callbacks.onItemChange);
+        this.activeHooks.set('encumbranceItemDelete', itemDeleteHookId);
+
+        this.debugLog("Encumbrance hooks enabled");
+    }
+
+    /**
+     * Disable encumbrance monitoring hooks
+     */
+    disableEncumbranceHooks() {
+        this.removeHook('encumbranceUpdate', 'updateActor');
+        this.removeHook('encumbranceItemUpdate', 'updateItem');
+        this.removeHook('encumbranceItemCreate', 'createItem');
+        this.removeHook('encumbranceItemDelete', 'deleteItem');
+        
+        this.debugLog("Encumbrance hooks disabled");
     }
 
     /**
