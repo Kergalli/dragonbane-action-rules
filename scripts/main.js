@@ -7,10 +7,11 @@ import { DragonbaneSettings } from './settings.js';
 import { DragonbaneHooks } from './hooks.js';
 import { DragonbaneValidator } from './validation.js';
 import { DragonbaneRulesDisplay } from './rules-display.js';
+import { DragonbaneEncumbranceMonitor } from './encumbrance-monitor.js';
 
 class DragonbaneActionRules {
     static ID = 'dragonbane-action-rules';
-    static VERSION = '1.1.0';
+    static VERSION = '1.2.0';
     
     static FLAGS = {
         RULES_MESSAGE: 'dragonbaneRulesMessage'
@@ -21,6 +22,7 @@ class DragonbaneActionRules {
     static hooks = null;
     static validator = null;
     static rulesDisplay = null;
+    static encumbranceMonitor = null;
 
     /**
      * Initialize the module
@@ -38,6 +40,7 @@ class DragonbaneActionRules {
         DragonbaneActionRules.hooks = new DragonbaneHooks(DragonbaneActionRules.ID);
         DragonbaneActionRules.validator = new DragonbaneValidator(DragonbaneActionRules.ID);
         DragonbaneActionRules.rulesDisplay = new DragonbaneRulesDisplay(DragonbaneActionRules.ID);
+        DragonbaneActionRules.encumbranceMonitor = new DragonbaneEncumbranceMonitor(DragonbaneActionRules.ID);
 
         // Register settings and hooks
         DragonbaneActionRules.settings.register();
@@ -55,6 +58,11 @@ class DragonbaneActionRules {
             if (DragonbaneActionRules.settings.isEnabled()) {
                 DragonbaneActionRules.enableModule();
             }
+            
+            // Initialize encumbrance monitoring if enabled
+            if (DragonbaneActionRules.settings.isEncumbranceMonitoringEnabled()) {
+                DragonbaneActionRules.encumbranceMonitor.initialize();
+            }
         });
     }
 
@@ -64,10 +72,14 @@ class DragonbaneActionRules {
     static enableModule() {
         if (DragonbaneActionRules.hooks.isEnabled()) return;
 
-        // Enable all hook systems
+        // Enable all hook systems with callbacks
         DragonbaneActionRules.hooks.enableAll({
             onChatMessage: DragonbaneActionRules.rulesDisplay.onChatMessage.bind(DragonbaneActionRules.rulesDisplay),
-            performWeaponAttack: DragonbaneActionRules.validator.performWeaponAttack.bind(DragonbaneActionRules.validator)
+            performWeaponAttack: DragonbaneActionRules.validator.performWeaponAttack.bind(DragonbaneActionRules.validator),
+            // Encumbrance callbacks
+            onActorUpdate: DragonbaneActionRules.encumbranceMonitor.onActorUpdate.bind(DragonbaneActionRules.encumbranceMonitor),
+            onItemUpdate: DragonbaneActionRules.encumbranceMonitor.onItemUpdate.bind(DragonbaneActionRules.encumbranceMonitor),
+            onItemChange: DragonbaneActionRules.encumbranceMonitor.onItemChange.bind(DragonbaneActionRules.encumbranceMonitor)
         });
         
         DragonbaneActionRules.debugLog(game.i18n.localize("DRAGONBANE_ACTION_RULES.console.moduleEnabled"));
