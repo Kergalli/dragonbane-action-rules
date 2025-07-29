@@ -1,5 +1,5 @@
 /**
- * Dragonbane Combat Assistant - Rules Display System
+ * Dragonbane Combat Assistant - Rules Display
  * Handles chat message processing and automatic rule display
  */
 
