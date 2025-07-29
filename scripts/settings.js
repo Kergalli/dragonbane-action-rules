@@ -10,7 +10,12 @@ export class DragonbaneSettings {
         SHOW_PARRY_DURABILITY: 'showParryDurability',
         ENFORCE_TARGET_SELECTION: 'enforceTargetSelection',
         ENFORCE_RANGE_CHECKING: 'enforceRangeChecking',
-        DEBUG_MODE: 'debugMode'
+        DEBUG_MODE: 'debugMode',
+        // Encumbrance settings
+        ENABLE_ENCUMBRANCE_MONITORING: 'enableEncumbranceMonitoring',
+        ENCUMBRANCE_MONITOR_FOLDER: 'encumbranceMonitorFolder',
+        ENCUMBRANCE_STATUS_EFFECT: 'encumbranceStatusEffect',
+        ENCUMBRANCE_CHAT_NOTIFICATIONS: 'encumbranceChatNotifications'
     };
 
     constructor(moduleId) {
@@ -24,6 +29,7 @@ export class DragonbaneSettings {
         this.registerMainSettings();
         this.registerValidationSettings();
         this.registerDisplaySettings();
+        this.registerEncumbranceSettings();
         this.registerDebugSettings();
     }
 
@@ -95,6 +101,61 @@ export class DragonbaneSettings {
     }
 
     /**
+     * Register encumbrance monitoring settings
+     */
+    registerEncumbranceSettings() {
+        game.settings.register(this.moduleId, DragonbaneSettings.SETTINGS.ENABLE_ENCUMBRANCE_MONITORING, {
+            name: game.i18n.localize("DRAGONBANE_ACTION_RULES.settings.enableEncumbranceMonitoring.name"),
+            hint: game.i18n.localize("DRAGONBANE_ACTION_RULES.settings.enableEncumbranceMonitoring.hint"),
+            scope: 'world',
+            config: true,
+            type: Boolean,
+            default: true,
+            onChange: (value) => {
+                // Import main class dynamically to avoid circular imports
+                import('./main.js').then(({ DragonbaneActionRules }) => {
+                    if (value) {
+                        DragonbaneActionRules.encumbranceMonitor?.initialize();
+                    }
+                });
+            }
+        });
+
+        game.settings.register(this.moduleId, DragonbaneSettings.SETTINGS.ENCUMBRANCE_MONITOR_FOLDER, {
+            name: game.i18n.localize("DRAGONBANE_ACTION_RULES.settings.encumbranceMonitorFolder.name"),
+            hint: game.i18n.localize("DRAGONBANE_ACTION_RULES.settings.encumbranceMonitorFolder.hint"),
+            scope: 'world',
+            config: true,
+            type: String,
+            default: 'Party',
+            onChange: () => {
+                // Refresh monitored actors when folder changes
+                import('./main.js').then(({ DragonbaneActionRules }) => {
+                    DragonbaneActionRules.encumbranceMonitor?.initializePreviousStates();
+                });
+            }
+        });
+
+        game.settings.register(this.moduleId, DragonbaneSettings.SETTINGS.ENCUMBRANCE_STATUS_EFFECT, {
+            name: game.i18n.localize("DRAGONBANE_ACTION_RULES.settings.encumbranceStatusEffect.name"),
+            hint: game.i18n.localize("DRAGONBANE_ACTION_RULES.settings.encumbranceStatusEffect.hint"),
+            scope: 'world',
+            config: true,
+            type: String,
+            default: 'Encumbered'
+        });
+
+        game.settings.register(this.moduleId, DragonbaneSettings.SETTINGS.ENCUMBRANCE_CHAT_NOTIFICATIONS, {
+            name: game.i18n.localize("DRAGONBANE_ACTION_RULES.settings.encumbranceChatNotifications.name"),
+            hint: game.i18n.localize("DRAGONBANE_ACTION_RULES.settings.encumbranceChatNotifications.hint"),
+            scope: 'world',
+            config: true,
+            type: Boolean,
+            default: false
+        });
+    }
+
+    /**
      * Register debug settings
      */
     registerDebugSettings() {
@@ -145,5 +206,22 @@ export class DragonbaneSettings {
 
     shouldEnforceRangeChecking() {
         return this.get(DragonbaneSettings.SETTINGS.ENFORCE_RANGE_CHECKING, true);
+    }
+
+    // Encumbrance convenience methods
+    isEncumbranceMonitoringEnabled() {
+        return this.get(DragonbaneSettings.SETTINGS.ENABLE_ENCUMBRANCE_MONITORING, true);
+    }
+
+    getEncumbranceMonitorFolder() {
+        return this.get(DragonbaneSettings.SETTINGS.ENCUMBRANCE_MONITOR_FOLDER, 'Party');
+    }
+
+    getEncumbranceStatusEffect() {
+        return this.get(DragonbaneSettings.SETTINGS.ENCUMBRANCE_STATUS_EFFECT, 'Encumbered');
+    }
+
+    shouldShowEncumbranceChatNotifications() {
+        return this.get(DragonbaneSettings.SETTINGS.ENCUMBRANCE_CHAT_NOTIFICATIONS, false);
     }
 }
