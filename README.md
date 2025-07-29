@@ -43,13 +43,11 @@
 When you successfully parry, a "Mark Weapon Broken" button appears below the rules if your weapon could be damaged. Click it to:
 - Mark the weapon as broken on your character sheet
 - Get confirmation dialog to prevent accidents
-- Update happens instantly with visual feedback
 
 ### 🆕 **Enhanced Weapon Feature Display**
 Topple attacks now show weapon bonuses at the top of the rules:
 - **Staff Topple Feature: +1 Boon** - Know your tactical advantages
 - Automatically detects weapons with "Toppling" feature
-- Fully localized for Swedish players
 
 ## Installation
 
@@ -106,12 +104,6 @@ Access via **Configure Settings → Module Settings → Dragonbane Combat Assist
 - Argon - Combat HUD (DRAGONBANE)
 - Character sheets
 - All standard Dragonbane workflows
-
-**Performance:**
-- Minimal resource usage
-- Modular file structure for better maintainability
-- Only processes combat-related chat messages
-- No persistent data stored
 
 **Range Calculation:**
 - **Melee weapons**: Adjacent squares only (0-2m)
