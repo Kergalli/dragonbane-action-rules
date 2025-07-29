@@ -1,5 +1,5 @@
 /**
- * Dragonbane Combat Assistant - Settings Management
+ * Dragonbane Combat Assistant - Settings
  * Handles all module settings registration and access
  */
 
