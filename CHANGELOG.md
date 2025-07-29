@@ -2,6 +2,23 @@
 
 All notable changes to the Dragonbane Combat Assistant module will be documented in this file.
 
+## [1.2.0] - 2025-07-29
+
+### Major New Features
+- **Encumbrance Monitoring System**
+  - Automatic status effect application when characters become over-encumbered
+  - Configurable actor folder monitoring (default: "Party" folder)
+  - Instant response to inventory changes, item additions/removals, and strength modifications
+  - Optional chat notifications with STR roll rule reminders for over-encumbered movement
+
+- **Full Internationalization Support**
+  - Dynamic pattern generation based on current Dragonbane system language
+  - Automatic detection of combat actions in any supported language (English, Swedish)
+  - Localized success/failure detection using official Dragonbane translation keys
+  - English fallback for unsupported languages or missing translations
+
+---
+
 ## [1.1.0] - 2025-07-28
 
 ### Major New Features
@@ -16,32 +33,6 @@ All notable changes to the Dragonbane Combat Assistant module will be documented
   - Topple attacks now show weapon feature bonuses automatically
   - Displays "Staff Topple Feature: +1 Boon" for weapons with toppling ability
   - Automatically detects weapons with "Toppling" feature
-
-### Technical Improvements
-- **Modular Architecture**
-  - Split single large file into 5 focused modules for better maintainability
-  - `main.js` - Core module initialization and coordination
-  - `settings.js` - All settings registration and management
-  - `validation.js` - Attack validation logic (target selection & range checking)
-  - `rules-display.js` - Chat message processing and rule display
-  - `hooks.js` - Consolidated Foundry VTT hook management
-  
-- **Consolidated Hook Management**
-  - Centralized all hook registration and cleanup
-  - Improved method restoration on module disable
-  - Better error handling and debugging capabilities
-  - Eliminated code duplication in hook lifecycle management
-
-### Localization
-- **Complete Swedish Translation** for all new features
-  - "Markera Vapen Trasigt" button text
-  - "Fäll-funktion: (+1 FÖRDEL)" for topple bonuses
-  - All dialog text and error messages translated
-  - Consistent localization patterns throughout module
-
-### Bug Fixes
-- Improved weapon feature detection accuracy
-- Enhanced error handling in all interactive components
 
 ---
 
@@ -63,7 +54,7 @@ Tactical enhancement module for Dragonbane combat.
   - Smart success detection - only shows rules on successful attacks
   
 - **Multi-Platform Integration**
-  - Works with Token Action HUD
+  - Works with Token Action HUD and Argon - Combat HUD (DRAGONBANE)
   - Character sheet compatibility
 
 - **Configuration Options**
@@ -71,10 +62,6 @@ Tactical enhancement module for Dragonbane combat.
   - Configurable display timing
   - Optional weapon durability display
   - Debug mode for troubleshooting
-
-- **User Experience**
-  - Seamless Dragonbane system styling integration
-  - Localization support (English and Swedish included)
 
 ### Technical
 - **Compatibility**: Foundry VTT v12 and v13
