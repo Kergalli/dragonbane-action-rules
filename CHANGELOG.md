@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to the Dragonbane Combat Assistant module will be documented in this file.
+All notable changes to the Dragonbane Combat Assistant module will be documented here.
 
 ## [1.2.0] - 2025-07-29
 
