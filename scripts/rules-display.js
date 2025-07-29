@@ -1,9 +1,6 @@
 /**
  * Dragonbane Combat Assistant - Rules Display System
  * Handles chat message processing and automatic rule display
- * 
- * Author: Matthias Weeks
- * Version: 1.0.0
  */
 
 export class DragonbaneRulesDisplay {
@@ -86,7 +83,8 @@ export class DragonbaneRulesDisplay {
         if (normalizedAction === 'parry') {
             weapon = this.extractWeaponFromMessage(message);
             const dragonRolled = this.detectDragonRoll(message);
-            const parryResult = this.getParryRules(weapon, dragonRolled);
+            const actor = message.speaker?.actor ? game.actors.get(message.speaker.actor) : null;
+            const parryResult = this.getParryRules(weapon, dragonRolled, actor);
             ruleContent = parryResult.content;
             weapon = parryResult.weapon;
         } else if (normalizedAction === 'topple') {
@@ -131,22 +129,47 @@ export class DragonbaneRulesDisplay {
     }
 
     /**
-     * Get parry rules with weapon durability
+     * Get parry rules with weapon durability (hidden for monsters)
      */
-    getParryRules(weapon, dragonRolled = false) {
+    getParryRules(weapon, dragonRolled = false, actor = null) {
         const showDurability = this.getSetting('showParryDurability', true);
+        const isMonster = this.isMonsterActor(actor);
         let content = "";
         
-        if (showDurability && weapon) {
-            const durability = weapon.system?.durability || 0;
-            const weaponName = weapon.name || game.i18n.localize("DRAGONBANE_ACTION_RULES.unknownWeapon");
-            content += `<li><strong>${weaponName} ${game.i18n.localize("DRAGONBANE_ACTION_RULES.durability")}:</strong> ${durability}</li>`;
-        } else if (showDurability && !weapon) {
-            content += `<li class="weapon-warning">${game.i18n.localize("DRAGONBANE_ACTION_RULES.parry.noWeaponFound")}</li>`;
+        // Only show weapon durability for non-monsters
+        if (showDurability && !isMonster) {
+            if (weapon) {
+                const durability = weapon.system?.durability || 0;
+                const weaponName = weapon.name || game.i18n.localize("DRAGONBANE_ACTION_RULES.unknownWeapon");
+                content += `<li><strong>${weaponName} ${game.i18n.localize("DRAGONBANE_ACTION_RULES.durability")}:</strong> ${durability}</li>`;
+            } else {
+                content += `<li class="weapon-warning">${game.i18n.localize("DRAGONBANE_ACTION_RULES.parry.noWeaponFound")}</li>`;
+            }
         }
         
         content += this.getParryRulesList(dragonRolled);
-        return { content, weapon };
+        return { content, weapon: isMonster ? null : weapon }; // Don't return weapon for monsters (prevents broken button)
+    }
+
+    /**
+     * Check if the actor is a monster type
+     */
+    isMonsterActor(actor) {
+        if (!actor) return false;
+        
+        this.debugLog(`Checking actor type: ${actor.name} (type: ${actor.type})`);
+        
+        // Check actor type - monsters typically have type "monster" in Dragonbane
+        if (actor.type === 'monster') {
+            this.debugLog(`Detected monster: ${actor.name} - hiding weapon durability`);
+            return true;
+        }
+        
+        // Additional check: monsters might be identified by other properties
+        // Could also check for actor.system.monsterType or similar if needed
+        
+        this.debugLog(`Not a monster: ${actor.name} - showing weapon durability`);
+        return false;
     }
 
     /**
