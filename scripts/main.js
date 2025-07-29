@@ -1,9 +1,6 @@
 /**
  * Dragonbane Combat Assistant - Main Module Class
  * Core initialization and module management
- * 
- * Author: Matthias Weeks
- * Version: 1.0.0
  */
 
 import { DragonbaneSettings } from './settings.js';
