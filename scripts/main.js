@@ -11,7 +11,7 @@ import { DragonbaneEncumbranceMonitor } from './encumbrance-monitor.js';
 
 class DragonbaneActionRules {
     static ID = 'dragonbane-action-rules';
-    static VERSION = '1.2.0';
+    static VERSION = '1.2.2';
     
     static FLAGS = {
         RULES_MESSAGE: 'dragonbaneRulesMessage'
