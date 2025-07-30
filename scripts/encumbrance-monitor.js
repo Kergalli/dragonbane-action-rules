@@ -14,6 +14,7 @@ export class DragonbaneEncumbranceMonitor {
      */
     initialize() {
         if (this.getSetting('enableEncumbranceMonitoring', true)) {
+            this.ensureStatusEffectExists();
             this.initializePreviousStates();
             this.debugLog("Encumbrance monitoring initialized");
         }
@@ -139,6 +140,49 @@ export class DragonbaneEncumbranceMonitor {
     }
 
     /**
+     * Ensure the configured status effect exists in the game
+     */
+    ensureStatusEffectExists() {
+        try {
+            const statusEffectName = this.getSetting('encumbranceStatusEffect', 'Encumbered');
+            
+            // Check if status effect already exists
+            const existingEffect = CONFIG.statusEffects?.find(effect => 
+                effect.name === statusEffectName || 
+                effect.label === statusEffectName || 
+                effect.id === statusEffectName ||
+                effect.id === statusEffectName.toLowerCase().replace(/\s+/g, '-')
+            );
+            
+            if (existingEffect) {
+                this.debugLog(`Status effect "${statusEffectName}" already exists`);
+                return;
+            }
+            
+            // Create new status effect
+            const newStatusEffect = {
+                id: statusEffectName.toLowerCase().replace(/\s+/g, '-'),
+                name: statusEffectName,
+                label: statusEffectName,
+                icon: "icons/svg/anchor.svg"
+            };
+            
+            // Add to CONFIG.statusEffects if it exists
+            if (CONFIG.statusEffects && Array.isArray(CONFIG.statusEffects)) {
+                CONFIG.statusEffects.push(newStatusEffect);
+                this.debugLog(`Created new status effect: "${statusEffectName}" with anchor icon`);
+            } else {
+                // Initialize CONFIG.statusEffects if it doesn't exist
+                CONFIG.statusEffects = [newStatusEffect];
+                this.debugLog(`Initialized CONFIG.statusEffects with new status effect: "${statusEffectName}"`);
+            }
+            
+        } catch (error) {
+            console.warn(`${this.moduleId} | Error ensuring status effect exists:`, error);
+        }
+    }
+
+    /**
      * Handle encumbrance state change
      */
     async handleEncumbranceStateChange(actor, isOverEncumbered, currentEnc, maxEnc) {
@@ -160,24 +204,26 @@ export class DragonbaneEncumbranceMonitor {
     async toggleEncumbranceStatusEffect(actor, isOverEncumbered) {
         try {
             const statusEffectName = this.getSetting('encumbranceStatusEffect', 'Encumbered');
+            const statusEffectId = statusEffectName.toLowerCase().replace(/\s+/g, '-');
             
-            // Find the status effect - simplified approach
-            let statusEffect = CONFIG.statusEffects?.find(effect => 
-                effect.name === statusEffectName || effect.label === statusEffectName || effect.id === statusEffectName
+            // Find the status effect (should exist due to ensureStatusEffectExists)
+            const statusEffect = CONFIG.statusEffects?.find(effect => 
+                effect.name === statusEffectName || 
+                effect.label === statusEffectName || 
+                effect.id === statusEffectName ||
+                effect.id === statusEffectId
             );
 
-            // Simple fallback if not found
             if (!statusEffect) {
-                statusEffect = {
-                    id: statusEffectName.toLowerCase().replace(/\s+/g, '-'),
-                    name: statusEffectName,
-                    label: statusEffectName
-                };
+                console.warn(`${this.moduleId} | Status effect "${statusEffectName}" not found despite initialization`);
+                return;
             }
 
             // Check current state
             const hasEffect = actor.effects.some(effect => 
-                effect.statuses?.has(statusEffect.id) || effect.name === statusEffectName
+                effect.statuses?.has(statusEffect.id) || 
+                effect.statuses?.has(statusEffectId) ||
+                effect.name === statusEffectName
             );
 
             // Toggle if needed
