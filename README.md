@@ -1,6 +1,6 @@
 # Dragonbane Combat Assistant
 
-![Version](https://img.shields.io/badge/version-1.2.0-blue)
+![Version](https://img.shields.io/badge/version-1.2.2-blue)
 ![Foundry Version](https://img.shields.io/badge/foundry-v12%20%7C%20v13-green)
 ![System](https://img.shields.io/badge/system-dragonbane-orange)
 
@@ -25,6 +25,7 @@
 ### ⚖️ **Encumbrance Monitoring**
 - **Event-driven monitoring** - Instantly detects when characters become over-encumbered
 - **Automatic status effects** - Applies configurable status effects when carrying too many items
+- **Smart status effect creation** - Automatically creates custom status effects if they don't exist in the game
 - **Folder-based filtering** - Monitor specific actor folders (default: "Party") or all characters
 - **Smart notifications** - UI notifications with optional chat reminders about STR roll requirements
 
