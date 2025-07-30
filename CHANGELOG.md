@@ -2,6 +2,16 @@
 
 All notable changes to the Dragonbane Combat Assistant module will be documented here.
 
+## [1.2.2] - 2025-07-30
+- **Encumbrance Monitoring System**
+
+- Smart status effect creation - automatically creates custom status effects with anchor icon if they don't exist
+
+## [1.2.1] - 2025-07-29
+- **Special Attack Detection and Language Localization**
+
+- Fixed detection methods for chat messages when detecting special attack action in different languages
+
 ## [1.2.0] - 2025-07-29
 
 ### Major New Features
