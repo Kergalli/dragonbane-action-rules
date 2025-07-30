@@ -1,5 +1,5 @@
 /**
- * Dragonbane Combat Assistant - Settings
+ * Dragonbane Combat Assistant - Settings Management
  * Handles all module settings registration and access
  */
 
@@ -142,7 +142,13 @@ export class DragonbaneSettings {
             scope: 'world',
             config: true,
             type: String,
-            default: 'Encumbered'
+            default: 'Encumbered',
+            onChange: () => {
+                // Ensure the new status effect exists when setting changes
+                import('./main.js').then(({ DragonbaneActionRules }) => {
+                    DragonbaneActionRules.encumbranceMonitor?.ensureStatusEffectExists();
+                });
+            }
         });
 
         game.settings.register(this.moduleId, DragonbaneSettings.SETTINGS.ENCUMBRANCE_CHAT_NOTIFICATIONS, {
