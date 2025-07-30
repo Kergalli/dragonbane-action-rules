@@ -49,7 +49,7 @@
       },
       "encumbranceStatusEffect": {
         "name": "Bärförmåge-statuseffekt",
-        "hint": "Namn på statuseffekten att tillämpa när överbelastad (t.ex. 'Överbelastad', 'Tyngd')"
+        "hint": "Namn på statuseffekten att tillämpa när överbelastad (skapas automatiskt med ankarikon om den inte finns)"
       },
       "encumbranceChatNotifications": {
         "name": "Bärförmåge-chattnotifieringar",
