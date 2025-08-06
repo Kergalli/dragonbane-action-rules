@@ -27,6 +27,10 @@
         "name": "Show Weapon Durability for Parry",
         "hint": "Display weapon durability when showing parry rules (shows the damage threshold that would break the weapon)"
       },
+      "enableParryMovementReminders": {
+        "name": "OPTIONAL RULE: Enable Parry Movement Reminders",
+        "hint": "Show the optional parry movement rule (move yourself and enemy 2m on successful parry)"
+      },
       "enforceTargetSelection": {
         "name": "Enforce Target Selection",
         "hint": "Require players to select a target before making any attack"
@@ -34,6 +38,14 @@
       "enforceRangeChecking": {
         "name": "Enforce Range Checking", 
         "hint": "Validate that attacks are within weapon range (melee: adjacent, ranged: up to 2x base range)"
+      },
+      "enableShoveReminders": {
+        "name": "OPTIONAL RULE: Enable Shove Rule Reminders",
+        "hint": "Show shove rule reminders for melee special attacks when STR damage bonus allows it"
+      },
+      "enableDodgeMovementReminders": {
+        "name": "Enable Dodge Movement Reminders",
+        "hint": "Show movement reminders for successful EVADE rolls"
       },
       "debugMode": {
         "name": "Debug Mode",
@@ -63,7 +75,9 @@
       "weakspot": "Find Weak Spot"
     },
     "speakers": {
-      "generic": "{action} Rules"
+      "generic": "{action} Rules",
+      "shove": "Shove Available",
+      "evade": "Evade Movement"
     },
     "durability": "Durability",
     "unknownWeapon": "Unknown Weapon",
@@ -112,6 +126,13 @@
       "piercing": "Piercing weapons only: Target gaps in armor",
       "bane": "You get bane on attack",
       "success": "Success = enemy counts as armorless"
+    },
+    "shove": {
+      "available": "<strong>Bonus:</strong> STR advantage allows shoving {targetName} 2m in any direction",
+      "defaultTarget": "target"
+    },
+    "evade": {
+      "movementAvailable": "<strong>If Dodging:</strong> You may move up to 2m in any direction (no free attacks triggered)"
     },
     "weaponBroken": {
       "buttonText": "Mark Weapon Broken",
