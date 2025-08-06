@@ -27,6 +27,10 @@
         "name": "Visa Vapens Brytvärde för Parering",
         "hint": "Visa vapnets brytvärde när pareringsregler visas (visar skadegränsen som skulle förstöra vapnet)"
       },
+      "enableParryMovementReminders": {
+        "name": "VALFRI REGEL: Aktivera Parering-rörelsepåminnelser",
+        "hint": "Visa den valfria parerings-rörelseregeln (flytta dig själv och fienden 2m vid lyckad parering)"
+      },
       "enforceTargetSelection": {
         "name": "Tvinga Målval",
         "hint": "Kräv att spelare väljer ett mål innan de gör någon attack"
@@ -34,6 +38,14 @@
       "enforceRangeChecking": {
         "name": "Tvinga Avståndskontroll",
         "hint": "Validera att attacker är inom vapnets räckvidd (närstrid: intill, avstånd: upp till 2x grundräckvidd)"
+      },
+      "enableShoveReminders": {
+        "name": "VALFRI REGEL: Aktivera Knuff-regelpåminnelser",
+        "hint": "Visa knuff-regelpåminnelser för närstrids specialattacker när STY-skadebonus tillåter det"
+      },
+      "enableDodgeMovementReminders": {
+        "name": "Aktivera Undvikande-rörelsepåminnelser",
+        "hint": "Visa rörelsepåminnelser för lyckade SMYGA-slag"
       },
       "debugMode": {
         "name": "Felsökningsläge",
@@ -63,7 +75,9 @@
       "weakspot": "Hitta glipa"
     },
     "speakers": {
-      "generic": "{action} Regler"
+      "generic": "{action} Regler",
+      "shove": "Knuff Tillgänglig",
+      "evade": "SMYGA Rörelse"
     },
     "durability": "Brytvärde",
     "unknownWeapon": "Okänt Vapen",
@@ -112,6 +126,13 @@
       "piercing": "Endast stickande vapen: Sikta på glipor i rustningen",
       "bane": "Du får nackdel på attacken",
       "success": "Lyckas = fienden räknas som rustningslös"
+    },
+    "shove": {
+      "available": "<strong>Bonus:</strong> STY-fördel tillåter att knuffa {targetName} 2m i valfri riktning",
+      "defaultTarget": "målet"
+    },
+    "evade": {
+      "movementAvailable": "<strong>Om Undvikande:</strong> Du kan förflyttas upp till 2m i valfri riktning (inga gratisattacker utlöses)"
     },
     "weaponBroken": {
       "buttonText": "Markera Vapen Trasigt",
