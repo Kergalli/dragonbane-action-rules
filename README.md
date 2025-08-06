@@ -1,12 +1,12 @@
 # Dragonbane Combat Assistant
 
-![Version](https://img.shields.io/badge/version-1.2.2-blue)
+![Version](https://img.shields.io/badge/version-1.2.3-blue)
 ![Foundry Version](https://img.shields.io/badge/foundry-v12%20%7C%20v13-green)
 ![System](https://img.shields.io/badge/system-dragonbane-orange)
 
 ## What This Module Does
 
-**Dragonbane Combat Assistant** enhances melee/ranged combat and character management in three powerful ways:
+**Dragonbane Combat Assistant** enhances melee/ranged combat and character management in four powerful ways:
 
 ### 🎯 **Attack Validation (Before Roll)**
 - **Enforces target selection** - No more accidental attacks into empty space
@@ -29,25 +29,23 @@
 - **Folder-based filtering** - Monitor specific actor folders (default: "Party") or all characters
 - **Smart notifications** - UI notifications with optional chat reminders about STR roll requirements
 
-## New in Version 1.2.0
+### 🏃 **Optional Rule Reminders**
+- **Shove mechanics** - Contextual reminders when STR damage bonus allows shoving targets 2m during damage-dealing attacks
+- **Parry movement** - Optional reminders about the 2m movement option on successful parries
+- **Dodge movement** - Helpful reminders about dodge movement options on successful EVADE rolls
+- **Intelligent conditions** - Only shows when rules actually apply (right weapon types, STR advantages, etc.)
 
-### ⚖️ **Encumbrance Monitoring System**
-- **Instant Response** - Detects over-encumbrance immediately when items are added/removed or actor strength changes
-- **Smart Status Effects** - Automatically applies configurable status effects when characters exceed carrying capacity
-- **Configurable Monitoring** - Choose which actor folder to monitor or monitor all characters
-- **Rule Integration** - Optional chat notifications that remind players about STR roll requirements for over-encumbered movement
+## New in Version 1.2.3
 
-### 🎛️ **Enhanced Configuration Options**
-- **Enable Encumbrance Monitoring** - Master on/off switch for the encumbrance system
-- **Monitor Folder Setting** - Specify which actor folder to monitor (leave blank for all characters)
-- **Custom Status Effect** - Configure the status effect name applied when over-encumbered
-- **Chat Notifications** - Optional chat messages with rule reminders (disabled by default for minimal disruption)
+### 🥊 **Advanced Optional Rule System**
+- **Optional Shove Rule Integration** - Automatic reminders for the optional shove rule when your STR damage bonus ≥ opponent's
+- **Smart Conditions** - Only appears for damage-dealing attacks (excludes Topple/Disarm that don't deal damage)
+- **Dodge Movement Reminders** - Shows "If Dodging: You may move up to 2m in any direction (no free attacks triggered)" on successful EVADE rolls
+- **Optional Parry Movement Integration** - Configurable reminder for the optional parry movement rule
 
-### 🌍 **Full Internationalization Support**
-- **Dynamic Language Detection** - Automatically adapts to your Dragonbane system language setting
-- **Localized Combat Actions** - Recognizes combat actions in English, Swedish, and other supported languages
-- **Smart Pattern Matching** - Uses official Dragonbane translation keys for accurate detection
-- **English Fallback** - Ensures functionality even with unsupported languages or missing translations
+### ⚙️ **Enhanced Configuration**
+- **Organized Settings** - Clear "OPTIONAL RULE:" prefixes for optional rule settings
+- **Granular Control** - Enable/disable each optional rule reminder independently
 
 ## Installation
 
@@ -71,6 +69,8 @@ Use this manifest URL in Foundry's Install Module dialog:
 5. **Parry with a weapon** - see durability and the new "Mark Weapon Broken" button
 6. **Use topple with a staff** - see the "+1 Boon" bonus displayed
 7. **Add items to a character** - watch for automatic over-encumbrance detection
+8. **Try a successful EVADE roll** - see the movement reminder
+9. **Use Weakspot with STR advantage** - see the shove option appear
 
 ## Settings
 
@@ -81,8 +81,11 @@ Access via **Configure Settings → Module Settings → Dragonbane Combat Assist
 | **Enable Combat Assistant** | ✅ On | Master on/off switch |
 | **Enforce Target Selection** | ✅ On | Require target before attacking |
 | **Enforce Range Checking** | ✅ On | Validate weapon range |
-| **Show Weapon Durability** | ✅ On | Display durability for parry decisions |
 | **Display Delay** | 3 seconds | How long to wait before showing rules |
+| **Show Weapon Durability** | ✅ On | Display durability for parry decisions |
+| **OPTIONAL RULE: Enable Shove Rule Reminders** | ✅ On | Show shove reminders when STR advantage allows it |
+| **OPTIONAL RULE: Enable Parry Movement Reminders** | ✅ On | Show optional parry movement rule |
+| **Enable Dodge Movement Reminders** | ✅ On | Show EVADE movement reminders |
 | **Enable Encumbrance Monitoring** | ✅ On | Automatically monitor character encumbrance |
 | **Encumbrance Monitor Folder** | "Party" | Which actor folder to monitor (blank = all characters) |
 | **Encumbrance Status Effect** | "Encumbered" | Name of status effect to apply when over-encumbered |
@@ -100,6 +103,13 @@ Access via **Configure Settings → Module Settings → Dragonbane Combat Assist
 - The weapon is not already broken
 - You have permission to modify the weapon
 
+**Shove Conditions:** Shove reminders only appear when:
+- Using a melee weapon (not ranged)
+- Attack deals damage (excludes Topple/Disarm)
+- Attacker is not a monster
+- Target is not a monster  
+- Attacker's STR damage bonus ≥ target's STR damage bonus
+
 ## Technical Details
 
 **Compatible With:**
@@ -107,5 +117,4 @@ Access via **Configure Settings → Module Settings → Dragonbane Combat Assist
 - Dragonbane system only
 - Token Action HUD
 - Argon - Combat HUD (DRAGONBANE)
-- Character sheets
-- All standard Dragonbane workflows
+- Dragonbane Character Sheet
