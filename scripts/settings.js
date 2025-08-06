@@ -10,12 +10,18 @@ export class DragonbaneSettings {
         SHOW_PARRY_DURABILITY: 'showParryDurability',
         ENFORCE_TARGET_SELECTION: 'enforceTargetSelection',
         ENFORCE_RANGE_CHECKING: 'enforceRangeChecking',
+        // Parry movement settings
+        ENABLE_PARRY_MOVEMENT_REMINDERS: 'enableParryMovementReminders',
         DEBUG_MODE: 'debugMode',
         // Encumbrance settings
         ENABLE_ENCUMBRANCE_MONITORING: 'enableEncumbranceMonitoring',
         ENCUMBRANCE_MONITOR_FOLDER: 'encumbranceMonitorFolder',
         ENCUMBRANCE_STATUS_EFFECT: 'encumbranceStatusEffect',
-        ENCUMBRANCE_CHAT_NOTIFICATIONS: 'encumbranceChatNotifications'
+        ENCUMBRANCE_CHAT_NOTIFICATIONS: 'encumbranceChatNotifications',
+        // Shove settings
+        ENABLE_SHOVE_REMINDERS: 'enableShoveReminders',
+        // Dodge movement settings
+        ENABLE_DODGE_MOVEMENT_REMINDERS: 'enableDodgeMovementReminders'
     };
 
     constructor(moduleId) {
@@ -29,6 +35,7 @@ export class DragonbaneSettings {
         this.registerMainSettings();
         this.registerValidationSettings();
         this.registerDisplaySettings();
+        this.registerOptionalRulesSettings();
         this.registerEncumbranceSettings();
         this.registerDebugSettings();
     }
@@ -93,6 +100,79 @@ export class DragonbaneSettings {
         game.settings.register(this.moduleId, DragonbaneSettings.SETTINGS.SHOW_PARRY_DURABILITY, {
             name: game.i18n.localize("DRAGONBANE_ACTION_RULES.settings.showParryDurability.name"),
             hint: game.i18n.localize("DRAGONBANE_ACTION_RULES.settings.showParryDurability.hint"),
+            scope: 'world',
+            config: true,
+            type: Boolean,
+            default: true
+        });
+
+        game.settings.register(this.moduleId, DragonbaneSettings.SETTINGS.ENABLE_PARRY_MOVEMENT_REMINDERS, {
+            name: game.i18n.localize("DRAGONBANE_ACTION_RULES.settings.enableParryMovementReminders.name"),
+            hint: game.i18n.localize("DRAGONBANE_ACTION_RULES.settings.enableParryMovementReminders.hint"),
+            scope: 'world',
+            config: true,
+            type: Boolean,
+            default: true
+        });
+    }
+
+    /**
+     * Register optional rules header
+     */
+    registerOptionalRulesHeader() {
+        game.settings.register(this.moduleId, 'optionalRulesHeader', {
+            name: '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━',
+            hint: game.i18n.localize("DRAGONBANE_ACTION_RULES.settings.headers.optionalRulesSection"),
+            scope: 'world',
+            config: true,
+            type: String,
+            default: '',
+            choices: {
+                '': ''
+            },
+            onChange: () => {} // No-op
+        });
+    }
+
+    /**
+     * Register encumbrance header  
+     */
+    registerEncumbranceHeader() {
+        game.settings.register(this.moduleId, 'encumbranceHeader', {
+            name: '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━',
+            hint: game.i18n.localize("DRAGONBANE_ACTION_RULES.settings.headers.encumbranceSection"),
+            scope: 'world',
+            config: true,
+            type: String,
+            default: '',
+            choices: {
+                '': ''
+            },
+            onChange: () => {} // No-op
+        });
+    }
+    registerOptionalRulesSettings() {
+        game.settings.register(this.moduleId, DragonbaneSettings.SETTINGS.ENABLE_SHOVE_REMINDERS, {
+            name: game.i18n.localize("DRAGONBANE_ACTION_RULES.settings.enableShoveReminders.name"),
+            hint: game.i18n.localize("DRAGONBANE_ACTION_RULES.settings.enableShoveReminders.hint"),
+            scope: 'world',
+            config: true,
+            type: Boolean,
+            default: true
+        });
+
+        game.settings.register(this.moduleId, DragonbaneSettings.SETTINGS.ENABLE_PARRY_MOVEMENT_REMINDERS, {
+            name: game.i18n.localize("DRAGONBANE_ACTION_RULES.settings.enableParryMovementReminders.name"),
+            hint: game.i18n.localize("DRAGONBANE_ACTION_RULES.settings.enableParryMovementReminders.hint"),
+            scope: 'world',
+            config: true,
+            type: Boolean,
+            default: true
+        });
+
+        game.settings.register(this.moduleId, DragonbaneSettings.SETTINGS.ENABLE_DODGE_MOVEMENT_REMINDERS, {
+            name: game.i18n.localize("DRAGONBANE_ACTION_RULES.settings.enableDodgeMovementReminders.name"),
+            hint: game.i18n.localize("DRAGONBANE_ACTION_RULES.settings.enableDodgeMovementReminders.hint"),
             scope: 'world',
             config: true,
             type: Boolean,
@@ -206,12 +286,26 @@ export class DragonbaneSettings {
         return this.get(DragonbaneSettings.SETTINGS.SHOW_PARRY_DURABILITY, true);
     }
 
+    shouldShowParryMovementReminders() {
+        return this.get(DragonbaneSettings.SETTINGS.ENABLE_PARRY_MOVEMENT_REMINDERS, true);
+    }
+
     shouldEnforceTargetSelection() {
         return this.get(DragonbaneSettings.SETTINGS.ENFORCE_TARGET_SELECTION, true);
     }
 
     shouldEnforceRangeChecking() {
         return this.get(DragonbaneSettings.SETTINGS.ENFORCE_RANGE_CHECKING, true);
+    }
+
+    // Shove convenience methods
+    shouldShowShoveReminders() {
+        return this.get(DragonbaneSettings.SETTINGS.ENABLE_SHOVE_REMINDERS, true);
+    }
+
+    // Dodge movement convenience methods
+    shouldShowDodgeMovementReminders() {
+        return this.get(DragonbaneSettings.SETTINGS.ENABLE_DODGE_MOVEMENT_REMINDERS, true);
     }
 
     // Encumbrance convenience methods
