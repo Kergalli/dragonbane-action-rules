@@ -2,6 +2,28 @@
 
 All notable changes to the Dragonbane Combat Assistant module will be documented here.
 
+## [1.2.3] - 2025-08-05
+
+### Major New Features
+- **Optional Shove Rule Integration**
+  - Automatic reminders for the optional shove rule when STR damage bonus ≥ opponent's
+  - Smart conditional display - only appears for damage-dealing attacks
+  - Excludes monsters (cannot shove or be shoved per rules)
+
+- **Dodge Movement Reminders**
+  - Automatic movement reminders for successful EVADE rolls
+
+- **Enhanced Optional Rule System**
+  - Optional parry movement reminders with dedicated setting
+  - Granular control over each optional rule type
+  - Clear "OPTIONAL RULE:" prefixes in settings for better organization
+
+### Localization
+- **Swedish Translation**
+  - Complete localization for all new shove and movement features
+
+---
+
 ## [1.2.2] - 2025-07-30
 - **Encumbrance Monitoring System**
 
