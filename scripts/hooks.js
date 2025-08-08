@@ -20,7 +20,6 @@ export class DragonbaneHooks {
         this.enableChatButtonHook();
         this.enableTokenActionHUD();
         this.enableCharacterSheets();
-        this.enableGlobalWeaponTest();
         this.enableEncumbranceHooks();
         
         this.debugLog("All hooks enabled");
@@ -34,7 +33,6 @@ export class DragonbaneHooks {
         this.disableChatButtonHook();
         this.disableTokenActionHUD();
         this.disableCharacterSheets();
-        this.disableGlobalWeaponTest();
         this.disableEncumbranceHooks();
         
         this.debugLog("All hooks disabled");
@@ -83,12 +81,13 @@ export class DragonbaneHooks {
                 const button = event.currentTarget;
                 const weaponId = button.dataset.weaponId;
                 const actorId = button.dataset.actorId;
+                const sceneId = button.dataset.sceneId;
+                const tokenId = button.dataset.tokenId;
                 
                 if (weaponId && actorId) {
-                    // Get the rules display instance and call markWeaponBroken
-                    // We need to import dynamically to avoid circular imports
+                    // Get the rules display instance and call markWeaponBroken with all the data
                     import('./main.js').then(({ DragonbaneActionRules }) => {
-                        DragonbaneActionRules.rulesDisplay.markWeaponBroken(weaponId, actorId);
+                        DragonbaneActionRules.rulesDisplay.markWeaponBroken(weaponId, actorId, sceneId, tokenId);
                     });
                     
                     // Disable the button to prevent multiple clicks
@@ -226,101 +225,6 @@ export class DragonbaneHooks {
         }
         
         this.debugLog(`Successfully hooked character sheet for ${sheet.actor.name}`);
-    }
-
-    /**
-     * Enable global weapon test interception
-     */
-    enableGlobalWeaponTest() {
-        if (this.originalMethods.has('weaponTest')) return;
-
-        // Wait for system to be ready, then try global DoDWeaponTest hook
-        const readyHookId = Hooks.once('ready', () => {
-            setTimeout(() => this.hookWeaponTestGlobally(), 1000);
-        });
-        
-        this.activeHooks.set('weaponTestReady', readyHookId);
-    }
-
-    /**
-     * Disable global weapon test hook
-     */
-    disableGlobalWeaponTest() {
-        if (this.originalMethods.has('weaponTest')) {
-            const targets = [
-                window.DoDWeaponTest,
-                CONFIG.DoD?.DoDWeaponTest,
-                game.system?.constructor?.DoDWeaponTest
-            ].find(target => target?.prototype?.roll);
-            
-            if (targets) {
-                targets.prototype.roll = this.originalMethods.get('weaponTest');
-                this.originalMethods.delete('weaponTest');
-                this.debugLog("Global weapon test hook disabled");
-            }
-        }
-        
-        // Clean up ready hook if it exists
-        if (this.activeHooks.has('weaponTestReady')) {
-            this.activeHooks.delete('weaponTestReady');
-        }
-    }
-
-    /**
-     * Try to hook DoDWeaponTest globally
-     */
-    hookWeaponTestGlobally() {
-        try {
-            const targets = [
-                window.DoDWeaponTest,
-                CONFIG.DoD?.DoDWeaponTest,
-                game.system?.constructor?.DoDWeaponTest
-            ].find(target => target?.prototype?.roll);
-            
-            if (targets) {
-                this.hookWeaponTestClass(targets);
-                this.debugLog("Found and hooked DoDWeaponTest class");
-                return;
-            }
-
-            this.debugLog("Could not locate DoDWeaponTest class for global hooking");
-
-        } catch (error) {
-            this.debugLog(`Error in global weapon test hook: ${error.message}`);
-        }
-    }
-
-    /**
-     * Hook a specific weapon test class
-     */
-    hookWeaponTestClass(WeaponTestClass) {
-        if (!WeaponTestClass?.prototype?.roll) {
-            this.debugLog("WeaponTestClass has no roll method");
-            return false;
-        }
-
-        this.originalMethods.set('weaponTest', WeaponTestClass.prototype.roll);
-        
-        WeaponTestClass.prototype.roll = async function() {
-            this.debugLog(`DoDWeaponTest.roll() intercepted for weapon: ${this.weapon?.name}`);
-            
-            if (this.weapon && this.actor) {
-                const validation = await this.callbacks.performWeaponAttack(this.weapon.name, this.actor);
-                if (!validation.success) {
-                    ui.notifications.warn(validation.message);
-                    this.debugLog(`DoDWeaponTest.roll() blocked: ${validation.message}`);
-                    // Set cancelled flag and return
-                    this.options = { ...this.options, cancelled: true };
-                    return this;
-                }
-                this.debugLog(`DoDWeaponTest.roll() validation passed for ${this.weapon.name}`);
-            }
-            
-            return this.originalMethods.get('weaponTest').call(this);
-        }.bind({ callbacks: this.callbacks, originalMethods: this.originalMethods, debugLog: this.debugLog.bind(this) });
-        
-        this.debugLog("Successfully hooked WeaponTestClass.prototype.roll");
-        return true;
     }
 
     /**
