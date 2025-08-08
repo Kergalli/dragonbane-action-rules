@@ -32,6 +32,7 @@ All notable changes to the Dragonbane Combat Assistant module will be documented
 - Shove reminders now appear for thrown weapons used in melee combat
 - Range validation messages properly distinguish weapon types
 - Pattern-based detection eliminates false positives from spells and non-damage attacks
+- Now correctly targeting NPCs in scene when marking weapons broken
 
 ---
 
