@@ -37,7 +37,7 @@
       },
       "enforceRangeChecking": {
         "name": "Enforce Range Checking", 
-        "hint": "Validate that attacks are within weapon range (melee: adjacent, ranged: up to 2x base range)"
+        "hint": "Validate that attacks are within weapon range (melee: up to 2m/4m for long, ranged: up to 2x base range, thrown: contextual)"
       },
       "enableShoveReminders": {
         "name": "OPTIONAL RULE: Enable Shove Rule Reminders",
@@ -77,17 +77,21 @@
     "speakers": {
       "generic": "{action} Rules",
       "shove": "Shove Available",
-      "evade": "Evade Movement"
+      "evade": "Evade Movement",
+      "dodgeAndParry": "Dodge and Parry Rules"
     },
     "durability": "Durability",
     "unknownWeapon": "Unknown Weapon",
     "weaponTypes": {
       "melee": "melee weapon",
-      "longMelee": "long melee weapon"
+      "longMelee": "long melee weapon",
+      "thrown": "thrown weapon"
     },
     "range": {
       "adjacentOnly": "adjacent to",
-      "adjacentOrOneSquare": "adjacent or 1 square away (4m) from"
+      "adjacentOrOneSquare": "adjacent or 1 square away (4m) from",
+      "upToTwoMeters": "within 2m of",
+      "upToFourMeters": "within 4m of"
     },
     "validation": {
       "selectToken": "Please select your token before attacking with {weapon}.",
@@ -95,7 +99,9 @@
       "noTarget": "Please target a token before attacking with {weapon}.",
       "tooManyTargets": "Please target only one token for {weapon}.",
       "meleeOutOfRange": "Target is too far away! {weapon} is a {weaponType} and must be {maxRange} the target, but target is {distance}m away.",
-      "rangedOutOfRange": "Target is too far away! {weapon} has a maximum range of {maxRange}m, but target is {distance}m away."
+      "rangedOutOfRange": "Target is too far away! {weapon} has a maximum range of {maxRange}m, but target is {distance}m away.",
+      "thrownMeleeRange": "Using {weapon} in melee combat at {distance}m",
+      "thrownRangedRange": "Throwing {weapon} at range {distance}m"
     },
     "parry": {
       "reaction": "Parrying uses your action for the turn (reaction)",
@@ -104,7 +110,9 @@
       "monster": "Monster attacks cannot be parried (unless specified)",
       "movement": "Success = move yourself and enemy 2m (doesn't count as movement, no free attacks)",
       "dragon": "Dragon = counterattack (cannot be dodged/parried). If attacker rolled Dragon, need Dragon to parry (no counterattack)",
-      "noWeaponFound": "⚠️ Could not determine parrying weapon"
+      "noWeaponFound": "⚠️ Could not determine parrying weapon",
+      "dodgeMovement": "<strong>If Dodging:</strong> You may move up to 2m in any direction (no free attacks triggered)",
+      "ifParrying": "If Parrying:"
     },
     "topple": {
       "noDamage": "No damage dealt",
@@ -112,7 +120,8 @@
       "cannotDefend": "Cannot be dodged or parried",
       "success": "Success = opponent becomes prone",
       "weaponFeature": "Topple Feature",
-      "boonBonus": "+1 Boon"
+      "boonBonus": "+1 Boon",
+      "monsterRule": "<strong>Monster:</strong> 4 legs or more = bane on roll"
     },
     "disarm": {
       "noDamage": "No damage dealt",
@@ -120,7 +129,8 @@
       "cannotDefend": "Cannot be dodged or parried",
       "twoHanded": "Two-handed weapon = you get bane",
       "success": "Success = weapon lands D6 meters away (your choice of direction)",
-      "limitations": "Cannot disarm shields or natural weapons"
+      "limitations": "Cannot disarm shields or natural weapons",
+      "monstersCannotBeDisarmed": "<strong>Monster:</strong> Cannot be disarmed"
     },
     "weakspot": {
       "piercing": "Piercing weapons only: Target gaps in armor",
