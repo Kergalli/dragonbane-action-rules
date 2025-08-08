@@ -37,7 +37,7 @@
       },
       "enforceRangeChecking": {
         "name": "Tvinga Avståndskontroll",
-        "hint": "Validera att attacker är inom vapnets räckvidd (närstrid: intill, avstånd: upp till 2x grundräckvidd)"
+        "hint": "Validera att attacker är inom vapnets räckvidd (närstrid: upp till 2m/4m för långa, avstånd: upp till 2x grundräckvidd, kast: kontextuell)"
       },
       "enableShoveReminders": {
         "name": "VALFRI REGEL: Aktivera Knuff-regelpåminnelser",
@@ -77,17 +77,21 @@
     "speakers": {
       "generic": "{action} Regler",
       "shove": "Knuff Tillgänglig",
-      "evade": "SMYGA Rörelse"
+      "evade": "SMYGA Rörelse",
+      "dodgeAndParry": "Undvika och Parera Regler"
     },
     "durability": "Brytvärde",
     "unknownWeapon": "Okänt Vapen",
     "weaponTypes": {
       "melee": "närstridsvapen",
-      "longMelee": "långt närstridsvapen"
+      "longMelee": "långt närstridsvapen",
+      "thrown": "kastvapen"
     },
     "range": {
       "adjacentOnly": "intill",
-      "adjacentOrOneSquare": "intill eller 1 ruta bort (4m) från"
+      "adjacentOrOneSquare": "intill eller 1 ruta bort (4m) från",
+      "upToTwoMeters": "inom 2m från",
+      "upToFourMeters": "inom 4m från"
     },
     "validation": {
       "selectToken": "Välj din spelfigur innan du attackerar med {weapon}.",
@@ -95,7 +99,9 @@
       "noTarget": "Välj ett mål innan du attackerar med {weapon}.",
       "tooManyTargets": "Välj endast ett mål för {weapon}.",
       "meleeOutOfRange": "Målet är för långt bort! {weapon} är ett {weaponType} och måste vara {maxRange} målet, men målet är {distance}m bort.",
-      "rangedOutOfRange": "Målet är för långt bort! {weapon} har en maximal räckvidd på {maxRange}m, men målet är {distance}m bort."
+      "rangedOutOfRange": "Målet är för långt bort! {weapon} har en maximal räckvidd på {maxRange}m, men målet är {distance}m bort.",
+      "thrownMeleeRange": "Använder {weapon} i närstrid på {distance}m",
+      "thrownRangedRange": "Kastar {weapon} på avstånd {distance}m"
     },
     "parry": {
       "reaction": "Parering använder din handling för rundan (reaktion)",
@@ -104,7 +110,9 @@
       "monster": "Monsterattacker kan inte pareras (om inte annat anges)",
       "movement": "Lyckas = flytta dig själv och fienden 2m (räknas inte som förflyttning, inga gratisattacker)",
       "dragon": "Drake = motattack (kan inte duckas/pareras). Om angriparen slog Drake, behöver Drake för att parera (ingen motattack)",
-      "noWeaponFound": "⚠️ Kunde inte bestämma pareringsvapen"
+      "noWeaponFound": "⚠️ Kunde inte bestämma pareringsvapen",
+      "dodgeMovement": "<strong>Om Undvikande:</strong> Du kan förflyttas upp till 2m i valfri riktning (inga gratisattacker utlöses)",
+      "ifParrying": "Om Parering:"
     },
     "topple": {
       "noDamage": "Ingen skada tillfogad",
@@ -112,7 +120,8 @@
       "cannotDefend": "Kan inte duckas eller pareras",
       "success": "Lyckas = motståndaren blir liggande",
       "weaponFeature": "Fäll-funktion",
-      "boonBonus": "+1 Fördel"
+      "boonBonus": "+1 Fördel",
+      "monsterRule": "<strong>Monster:</strong> 4 ben eller fler = nackdel på slaget"
     },
     "disarm": {
       "noDamage": "Ingen skada tillfogad",
@@ -120,7 +129,8 @@
       "cannotDefend": "Kan inte duckas eller pareras",
       "twoHanded": "Tvåhandsvapen = du får nackdel",
       "success": "Lyckas = vapnet hamnar T6 meter bort (du väljer riktning)",
-      "limitations": "Kan inte avväpna sköldar eller naturliga vapen"
+      "limitations": "Kan inte avväpna sköldar eller naturliga vapen",
+      "monstersCannotBeDisarmed": "<strong>Monster:</strong> Kan inte avväpnas"
     },
     "weakspot": {
       "piercing": "Endast stickande vapen: Sikta på glipor i rustningen",
