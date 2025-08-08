@@ -11,7 +11,7 @@ import { DragonbaneEncumbranceMonitor } from './encumbrance-monitor.js';
 
 class DragonbaneActionRules {
     static ID = 'dragonbane-action-rules';
-    static VERSION = '1.2.3';
+    static VERSION = '1.2.4';
     
     static FLAGS = {
         RULES_MESSAGE: 'dragonbaneRulesMessage'
@@ -28,8 +28,6 @@ class DragonbaneActionRules {
      * Initialize the module
      */
     static initialize() {
-        console.log(`${DragonbaneActionRules.ID} | ${game.i18n.localize("DRAGONBANE_ACTION_RULES.console.initializing")} v${DragonbaneActionRules.VERSION}`);
-        
         if (game.system.id !== 'dragonbane') {
             console.warn(`${DragonbaneActionRules.ID} | ${game.i18n.localize("DRAGONBANE_ACTION_RULES.console.wrongSystem")}`);
             return;
@@ -48,6 +46,13 @@ class DragonbaneActionRules {
 
         // Add console commands
         DragonbaneActionRules.setupConsoleCommands();
+
+        // Conditional initialization logging
+        setTimeout(() => {
+            if (DragonbaneActionRules.settings?.isDebugMode()) {
+                console.log(`${DragonbaneActionRules.ID} | ${game.i18n.localize("DRAGONBANE_ACTION_RULES.console.initializing")} v${DragonbaneActionRules.VERSION}`);
+            }
+        }, 100); // Small delay to ensure settings are registered
     }
 
     /**
