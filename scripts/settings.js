@@ -105,52 +105,11 @@ export class DragonbaneSettings {
             type: Boolean,
             default: true
         });
-
-        game.settings.register(this.moduleId, DragonbaneSettings.SETTINGS.ENABLE_PARRY_MOVEMENT_REMINDERS, {
-            name: game.i18n.localize("DRAGONBANE_ACTION_RULES.settings.enableParryMovementReminders.name"),
-            hint: game.i18n.localize("DRAGONBANE_ACTION_RULES.settings.enableParryMovementReminders.hint"),
-            scope: 'world',
-            config: true,
-            type: Boolean,
-            default: true
-        });
     }
 
     /**
-     * Register optional rules header
+     * Register optional rules settings
      */
-    registerOptionalRulesHeader() {
-        game.settings.register(this.moduleId, 'optionalRulesHeader', {
-            name: '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━',
-            hint: game.i18n.localize("DRAGONBANE_ACTION_RULES.settings.headers.optionalRulesSection"),
-            scope: 'world',
-            config: true,
-            type: String,
-            default: '',
-            choices: {
-                '': ''
-            },
-            onChange: () => {} // No-op
-        });
-    }
-
-    /**
-     * Register encumbrance header  
-     */
-    registerEncumbranceHeader() {
-        game.settings.register(this.moduleId, 'encumbranceHeader', {
-            name: '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━',
-            hint: game.i18n.localize("DRAGONBANE_ACTION_RULES.settings.headers.encumbranceSection"),
-            scope: 'world',
-            config: true,
-            type: String,
-            default: '',
-            choices: {
-                '': ''
-            },
-            onChange: () => {} // No-op
-        });
-    }
     registerOptionalRulesSettings() {
         game.settings.register(this.moduleId, DragonbaneSettings.SETTINGS.ENABLE_SHOVE_REMINDERS, {
             name: game.i18n.localize("DRAGONBANE_ACTION_RULES.settings.enableShoveReminders.name"),
