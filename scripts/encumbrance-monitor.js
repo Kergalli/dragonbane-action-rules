@@ -132,8 +132,6 @@ export class DragonbaneEncumbranceMonitor {
                 await this.handleEncumbranceStateChange(actor, isOverEncumbered, currentEnc, maxEnc);
             }
 
-            this.debugLog(`${actor.name}: ${currentEnc}/${maxEnc} items (Over-encumbered: ${isOverEncumbered})`);
-
         } catch (error) {
             console.error(`${this.moduleId} | Error checking encumbrance for ${actor.name}:`, error);
         }
@@ -170,11 +168,11 @@ export class DragonbaneEncumbranceMonitor {
             // Add to CONFIG.statusEffects if it exists
             if (CONFIG.statusEffects && Array.isArray(CONFIG.statusEffects)) {
                 CONFIG.statusEffects.push(newStatusEffect);
-                this.debugLog(`Created new status effect: "${statusEffectName}" with anchor icon`);
+                this.debugLog(`Created status effect: "${statusEffectName}"`);
             } else {
                 // Initialize CONFIG.statusEffects if it doesn't exist
                 CONFIG.statusEffects = [newStatusEffect];
-                this.debugLog(`Initialized CONFIG.statusEffects with new status effect: "${statusEffectName}"`);
+                this.debugLog(`Initialized CONFIG.statusEffects with: "${statusEffectName}"`);
             }
             
         } catch (error) {
