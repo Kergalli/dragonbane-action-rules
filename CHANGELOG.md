@@ -2,6 +2,39 @@
 
 All notable changes to the Dragonbane Combat Assistant module will be documented here.
 
+## [1.2.4] - 2025-08-06
+
+### Major New Features
+- **Thrown Weapon Support**
+  - Contextual range validation for weapons with "Thrown" feature
+  - Thrown weapons work in melee (≤2m normal, ≤4m long) AND at range (up to 2x weapon range)
+
+### Technical Improvements
+- **Pattern-Based Attack Detection System**
+  - Complete rewrite of shove detection using chat message content analysis
+  - Uses Dragonbane's own localization keys for language-agnostic operation
+
+- **Enhanced Language Support**
+  - Fully language-agnostic shove detection
+  - Dynamic pattern building from Dragonbane system translation keys
+  - All weapon feature detection now uses core Dragonbane system keys (`DoD.weaponFeatureTypes.*`)
+
+- **Shove Rules Detection**
+  - **Allowed for Shove:** Normal attacks, Stab, Slash, Find Weak Spot (damage-dealing melee)
+  - **Excluded from Shove:** Topple, Disarm (no damage), Parry (defensive), Ranged attacks, Spells
+
+### Code Optimization & Performance
+- **Streamlined Codebase**
+  - Simplified CSS (removed dark mode support)
+
+### Bug Fixes
+- Thrown weapons no longer incorrectly blocked at valid throwing distances
+- Shove reminders now appear for thrown weapons used in melee combat
+- Range validation messages properly distinguish weapon types
+- Pattern-based detection eliminates false positives from spells and non-damage attacks
+
+---
+
 ## [1.2.3] - 2025-08-05
 
 ### Major New Features
