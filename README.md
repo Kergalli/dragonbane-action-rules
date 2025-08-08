@@ -1,6 +1,6 @@
 # Dragonbane Combat Assistant
 
-![Version](https://img.shields.io/badge/version-1.2.3-blue)
+![Version](https://img.shields.io/badge/version-1.2.4-blue)
 ![Foundry Version](https://img.shields.io/badge/foundry-v12%20%7C%20v13-green)
 ![System](https://img.shields.io/badge/system-dragonbane-orange)
 
@@ -10,7 +10,8 @@
 
 ### 🎯 **Attack Validation (Before Roll)**
 - **Enforces target selection** - No more accidental attacks into empty space
-- **Validates weapon range** - Prevents impossible attacks before they happen
+- **Smart weapon range validation** - Prevents impossible attacks before they happen
+- **Contextual thrown weapon support** - Thrown weapons work in melee (up to 2m/4m) AND at range (up to 2x weapon range)
 - **Smart distance calculation** - Handles multi-grid tokens and diagonal movement correctly
 - **Melee range enforcement** - Standard melee weapons require adjacency, long weapons can reach 1 square away
 - **Ranged range enforcement** - Ranged weapons can target up x2 their base range
@@ -35,17 +36,19 @@
 - **Dodge movement** - Helpful reminders about dodge movement options on successful EVADE rolls
 - **Intelligent conditions** - Only shows when rules actually apply (right weapon types, STR advantages, etc.)
 
-## New in Version 1.2.3
+## New in Version 1.2.4
 
-### 🥊 **Advanced Optional Rule System**
-- **Optional Shove Rule Integration** - Automatic reminders for the optional shove rule when your STR damage bonus ≥ opponent's
-- **Smart Conditions** - Only appears for damage-dealing attacks (excludes Topple/Disarm that don't deal damage)
-- **Dodge Movement Reminders** - Shows "If Dodging: You may move up to 2m in any direction (no free attacks triggered)" on successful EVADE rolls
-- **Optional Parry Movement Integration** - Configurable reminder for the optional parry movement rule
+### 🗡️ **Thrown Weapon Support**
+- **Contextual Range Validation** - Thrown weapons (daggers, spears, handaxes, etc.) now work correctly at both melee and ranged distances
+- **Smart Weapon Detection** - Automatically detects weapons with "Thrown" feature using proper Dragonbane localization
+- **Melee + Ranged Capability** - Thrown weapons validate as melee when close (≤2m normal, ≤4m long) and as ranged when farther
+- **Shove Rule Integration** - Thrown weapons can trigger shove reminders when used in melee combat
 
-### ⚙️ **Enhanced Configuration**
-- **Organized Settings** - Clear "OPTIONAL RULE:" prefixes for optional rule settings
-- **Granular Control** - Enable/disable each optional rule reminder independently
+### 🔬 **Pattern-Based Detection System for Shove Special Rules**
+- **Reliability** - Completely rebuilt shove detection using chat message content analysis
+- **Language Agnostic** - Uses Dragonbane's own translation keys to work in English, Swedish, and future languages
+- **✅ Shove Allowed:** Normal attacks, Stab, Slash, Find Weak Spot (damage-dealing melee)
+- **❌ Shove Excluded:** Topple, Disarm (no damage), Parry (defensive), Ranged attacks, Spells
 
 ## Installation
 
@@ -65,12 +68,13 @@ Use this manifest URL in Foundry's Install Module dialog:
 1. **Install and enable** module
 2. **No additional setup required** - it works immediately
 3. **Try attacking without a target** - you'll see the validation in action
-4. **Use a special attack that succeeds** - rules will appear automatically
-5. **Parry with a weapon** - see durability and the new "Mark Weapon Broken" button
-6. **Use topple with a staff** - see the "+1 Boon" bonus displayed
-7. **Add items to a character** - watch for automatic over-encumbrance detection
-8. **Try a successful EVADE roll** - see the movement reminder
-9. **Use Weakspot with STR advantage** - see the shove option appear
+4. **Try a thrown weapon at different distances** - see contextual validation
+5. **Use a special attack that succeeds** - rules will appear automatically
+6. **Parry with a weapon** - see durability and the new "Mark Weapon Broken" button
+7. **Use topple with a staff** - see the "+1 Boon" bonus displayed
+8. **Add items to a character** - watch for automatic over-encumbrance detection
+9. **Try a successful EVADE roll** - see the movement reminder
+10. **Use Weakspot with STR advantage** - see the shove option appear
 
 ## Settings
 
@@ -80,7 +84,7 @@ Access via **Configure Settings → Module Settings → Dragonbane Combat Assist
 |---------|---------|-------------|
 | **Enable Combat Assistant** | ✅ On | Master on/off switch |
 | **Enforce Target Selection** | ✅ On | Require target before attacking |
-| **Enforce Range Checking** | ✅ On | Validate weapon range |
+| **Enforce Range Checking** | ✅ On | Validate weapon range (includes thrown weapon support) |
 | **Display Delay** | 3 seconds | How long to wait before showing rules |
 | **Show Weapon Durability** | ✅ On | Display durability for parry decisions |
 | **OPTIONAL RULE: Enable Shove Rule Reminders** | ✅ On | Show shove reminders when STR advantage allows it |
@@ -94,6 +98,11 @@ Access via **Configure Settings → Module Settings → Dragonbane Combat Assist
 
 ## Special Cases
 
+**Thrown Weapons:** The module automatically detects weapons with the "Thrown" feature and validates them contextually:
+- **Close Range (≤2m normal, ≤4m long)**: Validates as melee weapon
+- **Far Range (>2m/4m)**: Validates as ranged weapon up to 2x base range
+- **Examples**: Dagger at 1m = melee ✅, Dagger at 8m = thrown ✅, Dagger at 25m = blocked ❌
+
 **Parrying Long Weapons:** If you're using a standard melee weapon to parry an attack from someone with a long weapon (who is 1 square away), simply target yourself when parrying. The range validation will understand you're defending at your position.
 
 **Parrying Ranged Attacks with a Shield:** When using a shield to parry a ranged attack, simply target yourself when parrying. The range validation will understand you're defending at your position.
@@ -104,7 +113,7 @@ Access via **Configure Settings → Module Settings → Dragonbane Combat Assist
 - You have permission to modify the weapon
 
 **Shove Conditions:** Shove reminders only appear when:
-- Using a melee weapon (not ranged)
+- Using a melee weapon or thrown weapon in melee range
 - Attack deals damage (excludes Topple/Disarm)
 - Attacker is not a monster
 - Target is not a monster  
