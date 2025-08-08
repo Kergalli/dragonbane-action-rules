@@ -1,6 +1,6 @@
 /**
  * Dragonbane Combat Assistant - Attack Validation
- * Handles target selection and weapon range
+ * Handles target selection and weapon range with thrown weapon support
  */
 
 export class DragonbaneValidator {
@@ -33,8 +33,7 @@ export class DragonbaneValidator {
 
             // Get validation settings
             const settings = this.getValidationSettings();
-            this.debugLog(`Validation settings - Target: ${settings.enforceTarget}, Range: ${settings.enforceRange}`);
-            this.debugLog(`Current targets: ${game.user.targets.size}, Selected token: ${!!selectedToken}`);
+            this.debugLog(`Validation for ${weaponName} - Target: ${settings.enforceTarget}, Range: ${settings.enforceRange}`);
 
             // Perform validations
             if (settings.enforceTarget) {
@@ -48,7 +47,6 @@ export class DragonbaneValidator {
                 if (!rangeValidation.success) return rangeValidation;
             }
 
-            this.debugLog(`Validation passed for weapon: ${weaponName}`);
             return { success: true };
 
         } catch (error) {
@@ -114,23 +112,47 @@ export class DragonbaneValidator {
     }
 
     /**
-     * Validate attack range with localized text
+     * Validate attack range with thrown weapon support
      */
     validateRange(attackerToken, targetToken, weapon, weaponName) {
         try {
             const distance = this.calculateTokenDistance(attackerToken, targetToken);
-            const isRanged = this.isRangedWeapon(weapon);
             
-            if (isRanged) {
-                return this.validateRangedWeaponRange(distance, weapon, weaponName);
-            } else {
-                return this.validateMeleeWeaponRange(distance, weapon, weaponName);
+            // Handle thrown weapons contextually based on distance
+            if (this.hasThrownFeature(weapon)) {
+                return this.validateThrownWeaponRange(distance, weapon, weaponName);
             }
+            
+            // Handle pure ranged weapons
+            if (this.isRangedWeapon(weapon)) {
+                return this.validateRangedWeaponRange(distance, weapon, weaponName);
+            }
+            
+            // Handle pure melee weapons
+            return this.validateMeleeWeaponRange(distance, weapon, weaponName);
 
         } catch (error) {
             console.error(`${this.moduleId} | Error validating range:`, error);
             return { success: true };
         }
+    }
+
+    /**
+     * Validate thrown weapon range (contextual melee/ranged)
+     */
+    validateThrownWeaponRange(distance, weapon, weaponName) {
+        // Determine melee range based on weapon length
+        const meleeRange = this.hasLongProperty(weapon) ? 4 : 0; // 0m = standard melee, 4m = long melee
+        
+        // If within melee range, validate as melee weapon
+        if (distance <= meleeRange) {
+            this.debugLog(`Thrown weapon ${weaponName} used in melee at ${distance}m`);
+            return this.validateMeleeWeaponRange(distance, weapon, weaponName);
+        }
+        
+        // If beyond melee range, validate as ranged weapon (thrown)
+        this.debugLog(`Thrown weapon ${weaponName} thrown at ${distance}m`);
+        return this.validateRangedWeaponRange(distance, weapon, weaponName);
     }
 
     /**
@@ -160,21 +182,26 @@ export class DragonbaneValidator {
     validateMeleeWeaponRange(distance, weapon, weaponName) {
         const isLongWeapon = this.hasLongProperty(weapon);
         
-        // Adjacent - all melee weapons can attack
+        // Adjacent (0m) - all melee weapons can attack
         if (distance === 0) {
             return { success: true };
         }
         
-        // 1 square away (4m) - only long weapons can attack
-        if (distance === 4 && isLongWeapon) {
+        // Standard melee range (2m) - all melee weapons can attack
+        if (distance <= 2) {
+            return { success: true };
+        }
+        
+        // Extended melee range (4m) - only long weapons can attack
+        if (distance <= 4 && isLongWeapon) {
             return { success: true };
         }
         
         // Too far for melee attack
         const weaponType = isLongWeapon ? "longMelee" : "melee";
         const maxRange = isLongWeapon ? 
-            game.i18n.localize("DRAGONBANE_ACTION_RULES.range.adjacentOrOneSquare") : 
-            game.i18n.localize("DRAGONBANE_ACTION_RULES.range.adjacentOnly");
+            game.i18n.localize("DRAGONBANE_ACTION_RULES.range.upToFourMeters") : 
+            game.i18n.localize("DRAGONBANE_ACTION_RULES.range.upToTwoMeters");
         
         return {
             success: false,
@@ -216,7 +243,6 @@ export class DragonbaneValidator {
             const gridDistanceResult = Math.max(dx, dy);
             const gameDistance = gridDistanceResult <= 1 ? 0 : gridDistanceResult * gridDistance;
             
-            this.debugLog(`Distance calculation: ${gameDistance}m between ${token1.name} and ${token2.name}`);
             return gameDistance;
             
         } catch (error) {
@@ -236,16 +262,74 @@ export class DragonbaneValidator {
     }
 
     /**
-     * Check if weapon has the "Long" property
+     * Check if weapon has the "Long" property (using proper localization)
      */
     hasLongProperty(weapon) {
-        if (weapon.system?.features && Array.isArray(weapon.system.features)) {
-            return weapon.system.features.some(feature => feature.toLowerCase() === 'long');
+        if (!weapon || !weapon.system) return false;
+        
+        // Get both English and localized terms for long using Dragonbane system keys
+        const englishTerm = "long";
+        const localizedTerm = this.getLocalizedTerm("DoD.weaponFeatureTypes.long", "long").toLowerCase();
+        
+        // Check in features array
+        if (weapon.system.features && Array.isArray(weapon.system.features)) {
+            return weapon.system.features.some(feature => {
+                const featureLower = feature.toLowerCase();
+                return featureLower === englishTerm || featureLower === localizedTerm;
+            });
         }
+        
+        // Check if weapon has long feature method (alternative system approach)
         if (typeof weapon.hasWeaponFeature === 'function') {
-            return weapon.hasWeaponFeature('long');
+            return weapon.hasWeaponFeature(englishTerm) || weapon.hasWeaponFeature(localizedTerm);
         }
+        
         return false;
+    }
+
+    /**
+     * Check if weapon has the "Thrown" feature (using proper localization)
+     */
+    hasThrownFeature(weapon) {
+        if (!weapon || !weapon.system) return false;
+        
+        // Get both English and localized terms for thrown using Dragonbane system keys
+        const englishTerm = "thrown";
+        const localizedTerm = this.getLocalizedTerm("DoD.weaponFeatureTypes.thrown", "thrown").toLowerCase();
+        
+        // Check in features array (same location as "Long" feature)
+        if (weapon.system.features && Array.isArray(weapon.system.features)) {
+            const hasFeature = weapon.system.features.some(feature => {
+                const featureLower = feature.toLowerCase();
+                return featureLower === englishTerm || featureLower === localizedTerm;
+            });
+            
+            if (hasFeature) {
+                this.debugLog(`Found thrown feature in ${weapon.name}`);
+            }
+            
+            return hasFeature;
+        }
+        
+        // Check if weapon has thrown feature method (alternative system approach)
+        if (typeof weapon.hasWeaponFeature === 'function') {
+            return weapon.hasWeaponFeature(englishTerm) || weapon.hasWeaponFeature(localizedTerm);
+        }
+        
+        return false;
+    }
+
+    /**
+     * Get localized term with English fallback
+     */
+    getLocalizedTerm(key, fallback) {
+        try {
+            const localized = game.i18n.localize(key);
+            // If localization failed, it returns the key itself
+            return localized === key ? fallback : localized;
+        } catch (error) {
+            return fallback;
+        }
     }
 
     /**
