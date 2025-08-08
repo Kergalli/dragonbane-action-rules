@@ -13,6 +13,10 @@ export class DragonbaneRulesDisplay {
         this.successPattern = null;
         this.failurePattern = null;
         
+        // Shove attack type patterns
+        this.allowedShoveAttacks = [];
+        this.excludedShoveAttacks = [];
+        
         // Initialize patterns when ready
         Hooks.once('ready', () => this.initializeLocalizedPatterns());
     }
@@ -47,12 +51,49 @@ export class DragonbaneRulesDisplay {
             this.successPattern = new RegExp(`(${this.escapeRegex(success)}|${this.escapeRegex(dragonWord)})`, 'i');
             this.failurePattern = new RegExp(`(${this.escapeRegex(failure)})`, 'i');
             
-            this.debugLog(`Localized patterns initialized for language: ${game.i18n.lang}`);
+            // Initialize shove attack patterns
+            this.initializeShoveAttackPatterns();
+            
+            this.debugLog(`Patterns initialized for language: ${game.i18n.lang}`);
             
         } catch (error) {
             console.warn(`${this.moduleId} | Error building localized patterns, falling back to English:`, error);
             this.initializeFallbackPatterns();
         }
+    }
+
+    /**
+     * Initialize shove attack type patterns
+     */
+    initializeShoveAttackPatterns() {
+        // Allowed attacks (damage-dealing melee attacks)
+        this.allowedShoveAttacks = [
+            this.getLocalizedTerm("DoD.attackTypes.normal", "attack"),
+            this.getLocalizedTerm("DoD.attackTypes.stab", "stab"),
+            this.getLocalizedTerm("DoD.attackTypes.slash", "slash"),
+            this.getLocalizedTerm("DoD.attackTypes.weakpoint", "weakpoint"),
+            "weak\\s+spot" // English fallback
+        ].map(term => this.escapeRegex(term));
+
+        // Excluded attacks (non-damage, non-melee, or defensive)
+        this.excludedShoveAttacks = [
+            this.getLocalizedTerm("DoD.attackTypes.topple", "topple"),
+            this.getLocalizedTerm("DoD.attackTypes.disarm", "disarm"),
+            this.getLocalizedTerm("DoD.attackTypes.parry", "parry"),
+            this.getLocalizedTerm("DoD.attackTypes.ranged", "ranged"),
+            this.getLocalizedTerm("DoD.attackTypes.throw", "throw")
+        ].map(term => this.escapeRegex(term));
+
+        this.debugLog(`Shove patterns initialized - Allowed: ${this.allowedShoveAttacks.length}, Excluded: ${this.excludedShoveAttacks.length}`);
+    }
+
+    /**
+     * Check if message represents a spell attack
+     */
+    isSpellAttack(message) {
+        // Extract item from UUID and check if it's a spell
+        const item = this.extractItemFromMessage(message, 'spell');
+        return item && item.type === 'spell';
     }
 
     /**
@@ -82,6 +123,11 @@ export class DragonbaneRulesDisplay {
         this.actionPattern = /(parry|topple|disarm|weakpoint|weak\s+spot)/i;
         this.successPattern = /(succeeded|succeded|dragon)/i;
         this.failurePattern = /failed/i;
+        
+        // Fallback shove patterns
+        this.allowedShoveAttacks = ["attack", "stab", "slash", "weakpoint", "weak\\s+spot"];
+        this.excludedShoveAttacks = ["topple", "disarm", "parry", "ranged", "throw", "power level"];
+        
         this.debugLog("Using fallback English patterns");
     }
 
@@ -156,6 +202,38 @@ export class DragonbaneRulesDisplay {
     }
 
     /**
+     * Get actor from speaker data, preferring token-specific data over base actor
+     * This is the core utility method used by all other actor lookup methods
+     */
+    getActorFromSpeakerData(speakerData) {
+        if (!speakerData) return null;
+        
+        // Try to get token-specific actor first (for scene-placed NPCs with overrides)
+        if (speakerData.scene && speakerData.token) {
+            const scene = game.scenes.get(speakerData.scene);
+            const token = scene?.tokens.get(speakerData.token);
+            if (token?.actor) {
+                return token.actor;
+            }
+        }
+        
+        // Fallback to base actor
+        if (speakerData.actor) {
+            const baseActor = game.actors.get(speakerData.actor);
+            return baseActor;
+        }
+        
+        return null;
+    }
+
+    /**
+     * Get actor from message speaker, preferring token-specific data over base actor
+     */
+    getActorFromMessage(message) {
+        return this.getActorFromSpeakerData(message?.speaker);
+    }
+
+    /**
      * Process detected action and display rules
      */
     async processAction(message, actionMatch) {
@@ -170,28 +248,28 @@ export class DragonbaneRulesDisplay {
         if (normalizedAction === 'parry') {
             weapon = this.extractWeaponFromMessage(message);
             const dragonRolled = this.detectDragonRoll(message);
-            const actor = message.speaker?.actor ? game.actors.get(message.speaker.actor) : null;
+            const actor = this.getActorFromMessage(message);
             const parryResult = this.getParryRules(weapon, dragonRolled, actor);
             ruleContent = parryResult.content;
             weapon = parryResult.weapon;
         } else if (normalizedAction === 'topple') {
             weapon = this.extractWeaponFromMessage(message);
-            const actor = message.speaker?.actor ? game.actors.get(message.speaker.actor) : null;
+            const actor = this.getActorFromMessage(message);
             ruleContent = this.getToppleRules(weapon, actor);
         } else if (normalizedAction === 'disarm') {
             weapon = this.extractWeaponFromMessage(message);
-            const actor = message.speaker?.actor ? game.actors.get(message.speaker.actor) : null;
+            const actor = this.getActorFromMessage(message);
             ruleContent = this.getDisarmRules(weapon, actor);
         } else if (normalizedAction === 'weakspot') {
             weapon = this.extractWeaponFromMessage(message);
-            const actor = message.speaker?.actor ? game.actors.get(message.speaker.actor) : null;
-            ruleContent = this.getWeakspotRules(weapon, actor);
+            const actor = this.getActorFromMessage(message);
+            ruleContent = this.getWeakspotRules(weapon, actor, message);
         } else {
             ruleContent = this.getActionRules(normalizedAction);
         }
 
         if (ruleContent) {
-            await this.displayRules(normalizedAction, ruleContent, weapon, message.speaker?.actor);
+            await this.displayRules(normalizedAction, ruleContent, weapon, message.speaker);
         }
     }
 
@@ -200,15 +278,10 @@ export class DragonbaneRulesDisplay {
      */
     async processRegularMeleeAttack(message) {
         try {
-            const weapon = this.extractItemFromMessage(message, 'weapon');
+            const actor = this.getActorFromMessage(message);
             
-            // Only process melee weapons
-            if (!weapon || this.isRangedWeapon(weapon)) return;
-
-            const actor = message.speaker?.actor ? game.actors.get(message.speaker.actor) : null;
-            
-            // Use same validation as special attacks
-            const shoveRule = this.getShoveRuleIfApplicable(weapon, actor);
+            // Check if this attack type is allowed for shove using the new pattern-based approach
+            const shoveRule = this.getShoveRuleIfApplicable(message, actor);
             
             if (shoveRule) {
                 await this.displayShoveRule(shoveRule);
@@ -220,7 +293,32 @@ export class DragonbaneRulesDisplay {
     }
 
     /**
-     * Handle EVADE skill rolls independently
+     * Check if attack type allows shove based on chat message content
+     */
+    isAttackTypeAllowedForShove(content) {
+        if (!content || !this.allowedShoveAttacks || !this.excludedShoveAttacks) return false;
+
+        // First check if any excluded attack types are present
+        for (const excludedPattern of this.excludedShoveAttacks) {
+            const regex = new RegExp(excludedPattern, 'i');
+            if (regex.test(content)) {
+                return false;
+            }
+        }
+
+        // Then check if any allowed attack types are present
+        for (const allowedPattern of this.allowedShoveAttacks) {
+            const regex = new RegExp(allowedPattern, 'i');
+            if (regex.test(content)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Handle EVADE skill rolls for PCs and NPCs (monsters get dodge rules via parry)
      */
     async handleEvadeSkillRoll(message) {
         try {
@@ -230,11 +328,25 @@ export class DragonbaneRulesDisplay {
             // Only process successful actions
             if (!this.isSuccessfulAction(message.content)) return;
 
-            // Check if this is a skill roll message with EVADE
-            const skill = this.extractItemFromMessage(message, 'skill');
-            if (!skill || !this.isEvadeSkill(skill)) return;
+            // Check if this is from a monster - if so, skip (they get dodge rules via parry)
+            const actor = this.getActorFromMessage(message);
+            if (this.isMonsterActor(actor)) {
+                return;
+            }
 
-            this.debugLog("EVADE skill roll detected");
+            // Try UUID-based detection first (works for most PCs/NPCs)
+            const skill = this.extractSkillFromMessage(message);
+            if (skill && this.isEvadeSkill(skill)) {
+                this.debugLog("EVADE skill roll detected via UUID");
+            } 
+            // Fallback to simple text pattern for NPCs without UUID
+            else if (this.isEvadeSkillRollFromText(message.content)) {
+                this.debugLog("EVADE skill roll detected via text pattern");
+            }
+            // No EVADE detected
+            else {
+                return;
+            }
 
             // Prevent duplicate rules when multiple users are online
             if (!this.shouldCreateRules(message)) return;
@@ -248,64 +360,24 @@ export class DragonbaneRulesDisplay {
     }
 
     /**
-     * Process skill roll for potential EVADE movement reminder
+     * Simplified EVADE text detection for PCs and NPCs only
      */
-    async processSkillRoll(message) {
-        try {
-            this.debugLog("Processing skill roll message");
-            
-            // Extract skill from message
-            const skill = this.extractSkillFromMessage(message);
-            if (!skill) {
-                this.debugLog("No skill found in message");
-                return;
-            }
-
-            this.debugLog(`Skill found: ${skill.name} (type: ${skill.type})`);
-
-            // Check if this is an EVADE skill roll
-            if (this.isEvadeSkill(skill)) {
-                this.debugLog("EVADE skill detected, processing dodge movement");
-                this.processEvadeAction(message);
-            } else {
-                this.debugLog(`Skill ${skill.name} is not EVADE, skipping`);
-            }
-
-            // Future: Could add other skill-specific reminders here
-
-        } catch (error) {
-            console.error(`${this.moduleId} | Error processing skill roll:`, error);
-        }
-    }
-
-    /**
-     * Process successful EVADE action for potential movement reminder
-     */
-    async processEvadeAction(message) {
-        try {
-            this.debugLog("Processing EVADE action");
-            
-            // Check if dodge movement reminders are enabled
-            if (!this.getSetting('enableDodgeMovementReminders', true)) {
-                this.debugLog("Dodge movement reminders disabled, skipping");
-                return;
-            }
-
-            // Extract skill from message and verify it's EVADE
-            const skill = this.extractSkillFromMessage(message);
-            if (!skill || !this.isEvadeSkill(skill)) {
-                this.debugLog("Not an EVADE skill, skipping");
-                return;
-            }
-
-            this.debugLog("All checks passed, displaying evade movement rule");
-            
-            // Show dodge movement reminder
-            await this.displayEvadeMovementRule();
-
-        } catch (error) {
-            console.error(`${this.moduleId} | Error processing EVADE action:`, error);
-        }
+    isEvadeSkillRollFromText(content) {
+        if (!content) return false;
+        
+        // Get localized evade term from Dragonbane system
+        const evadeLocal = this.getLocalizedTerm("DoD.skills.evade", "evade").toLowerCase();
+        
+        // Simple pattern for PC/NPC evade rolls: "Skill roll for Evade succeeded"
+        const evadePatterns = [evadeLocal, 'evade']
+            .filter((term, index, array) => term && term.length > 0 && array.indexOf(term) === index)
+            .map(term => this.escapeRegex(term))
+            .join('|');
+        
+        // More flexible pattern - matches "Skill roll for [anything with evade] [success]"
+        const skillRollPattern = new RegExp(`skill\\s+roll\\s+for\\s+.*?(?:${evadePatterns}).*?(?:succeeded|succeed|success)`, 'i');
+        
+        return skillRollPattern.test(content);
     }
 
     /**
@@ -313,20 +385,29 @@ export class DragonbaneRulesDisplay {
      */
     extractItemFromMessage(message, itemType) {
         try {
-            // UUID pattern remains static as it's not localized
-            const UUID_PATTERN = /@UUID\[Actor\.[^\.]+\.Item\.([^\]]+)\]/;
+            // Single flexible UUID pattern that handles various structures
+            const UUID_PATTERN = /@UUID\[(?:[^\.]+\.)*Item\.([^\]]+)\]/;
             
-            // Try to extract from UUID pattern first
+            // Extract item ID from UUID
             const uuidMatch = message.content.match(UUID_PATTERN);
-            if (uuidMatch && message.speaker?.actor) {
-                const actor = game.actors.get(message.speaker.actor);
-                const item = actor?.items.get(uuidMatch[1]);
-                if (item && item.type === itemType) return item;
+            let itemId = null;
+            
+            if (uuidMatch) {
+                itemId = uuidMatch[1];
+            }
+            
+            if (uuidMatch && itemId && message.speaker?.actor) {
+                // Use token-specific actor instead of base actor
+                const actor = this.getActorFromMessage(message);
+                const item = actor?.items.get(itemId);
+                if (item && item.type === itemType) {
+                    return item;
+                }
             }
 
             // For weapons, fallback to equipped weapons
             if (itemType === 'weapon' && message.speaker?.actor) {
-                const actor = game.actors.get(message.speaker.actor);
+                const actor = this.getActorFromMessage(message);
                 const equippedWeapons = actor?.items.filter(i => 
                     i.type === "weapon" && (i.system?.worn === true || i.system?.mainHand === true)
                 );
@@ -358,7 +439,9 @@ export class DragonbaneRulesDisplay {
      * Check if skill is EVADE skill
      */
     isEvadeSkill(skill) {
-        if (!skill || skill.type !== 'skill') return false;
+        if (!skill || skill.type !== 'skill') {
+            return false;
+        }
         
         // Get localized EVADE term
         const evadeLocal = this.getLocalizedTerm("DoD.skills.evade", "evade").toLowerCase();
@@ -369,7 +452,7 @@ export class DragonbaneRulesDisplay {
     }
 
     /**
-     * Get parry rules with weapon durability (hidden for monsters)
+     * Get parry rules with weapon durability and monster support
      */
     getParryRules(weapon, dragonRolled = false, actor = null) {
         const showDurability = this.getSetting('showParryDurability', true);
@@ -387,7 +470,7 @@ export class DragonbaneRulesDisplay {
             }
         }
         
-        content += this.getParryRulesList(dragonRolled);
+        content += this.getParryRulesList(dragonRolled, isMonster);
         return { content, weapon: isMonster ? null : weapon }; // Don't return weapon for monsters (prevents broken button)
     }
 
@@ -397,40 +480,51 @@ export class DragonbaneRulesDisplay {
     isMonsterActor(actor) {
         if (!actor) return false;
         
-        this.debugLog(`Checking actor type: ${actor.name} (type: ${actor.type})`);
-        
         // Check actor type - monsters typically have type "monster" in Dragonbane
         if (actor.type === 'monster') {
-            this.debugLog(`Detected monster: ${actor.name} - hiding weapon durability`);
+            this.debugLog(`Monster detected: ${actor.name}`);
             return true;
         }
         
-        // Additional check: monsters might be identified by other properties
-        // Could also check for actor.system.monsterType or similar if needed
-        
-        this.debugLog(`Not a monster: ${actor.name} - showing weapon durability`);
         return false;
     }
 
     /**
-     * Get parry rules list with conditional dragon highlighting and optional movement
+     * Get parry rules list with conditional dragon highlighting, optional movement, and monster dodge support
      */
-    getParryRulesList(dragonRolled = false) {
+    getParryRulesList(dragonRolled = false, isMonster = false) {
         const dragonRule = dragonRolled ? 
             `<li><strong class="dragon-highlight">${game.i18n.localize("DRAGONBANE_ACTION_RULES.parry.dragon")}</strong></li>` :
             `<li>${game.i18n.localize("DRAGONBANE_ACTION_RULES.parry.dragon")}</li>`;
         
         let rules = `<li>${game.i18n.localize("DRAGONBANE_ACTION_RULES.parry.reaction")}</li>
-                     <li>${game.i18n.localize("DRAGONBANE_ACTION_RULES.parry.success")}</li>
-                     <li>${game.i18n.localize("DRAGONBANE_ACTION_RULES.parry.piercing")}</li>
-                     <li>${game.i18n.localize("DRAGONBANE_ACTION_RULES.parry.monster")}</li>`;
+                     <li>${game.i18n.localize("DRAGONBANE_ACTION_RULES.parry.success")}</li>`;
         
-        // Add movement rule if enabled
-        if (this.getSetting('enableParryMovementReminders', true)) {
-            rules += `<li>${game.i18n.localize("DRAGONBANE_ACTION_RULES.parry.movement")}</li>`;
+        // Add dragon rule right after success (groups outcome rules together)
+        rules += dragonRule;
+        
+        rules += `<li>${game.i18n.localize("DRAGONBANE_ACTION_RULES.parry.piercing")}</li>`;
+        
+        // Hide monster parry rule from monsters themselves (they don't need to know their attacks can't be parried)
+        if (!isMonster) {
+            rules += `<li>${game.i18n.localize("DRAGONBANE_ACTION_RULES.parry.monster")}</li>`;
         }
         
-        rules += dragonRule;
+        // Add movement rule - different prefixes for monsters vs others
+        if (this.getSetting('enableParryMovementReminders', true)) {
+            if (isMonster) {
+                // For monsters: add "If Parrying:" prefix since they have both dodge and parry options
+                rules += `<li><strong>${game.i18n.localize("DRAGONBANE_ACTION_RULES.parry.ifParrying")}</strong> ${game.i18n.localize("DRAGONBANE_ACTION_RULES.parry.movement")}</li>`;
+            } else {
+                // For PCs/NPCs: no prefix needed since parrying is separate from dodge
+                rules += `<li>${game.i18n.localize("DRAGONBANE_ACTION_RULES.parry.movement")}</li>`;
+            }
+        }
+        
+        // Add dodge movement rule for monsters only (as last bullet point, adjacent to parry movement)
+        if (isMonster && this.getSetting('enableDodgeMovementReminders', true)) {
+            rules += `<li>${game.i18n.localize("DRAGONBANE_ACTION_RULES.parry.dodgeMovement")}</li>`;
+        }
         
         return rules;
     }
@@ -441,17 +535,17 @@ export class DragonbaneRulesDisplay {
     detectDragonRoll(message) {
         if (!message || !message.content) return false;
         
-        // Look for Dragon indicators in the chat message
-        // Common patterns: "Dragon", "rolled 1", "natural 1", etc.
-        const dragonPatterns = [
-            /\bdragon\b/i,
-            /\brolled\s+1\b/i,
-            /\bnatural\s+1\b/i,
-            /\b1\s*\(dragon\)/i,
-            /result[^>]*>\s*1\s*</i  // HTML result containing 1
-        ];
+        // Get localized dragon term from the message "succedeed with a Dragon!"
+        const dragonMessage = this.getLocalizedTerm("DoD.roll.dragon", "succedeed with a Dragon!");
         
-        return dragonPatterns.some(pattern => pattern.test(message.content));
+        // Extract the actual dragon word (after "a " or before "!")
+        const dragonWordMatch = dragonMessage.match(/\ba\s+(\w+)[!\s]*$/i) || dragonMessage.match(/(\w+)!?\s*$/);
+        const dragonWord = dragonWordMatch ? dragonWordMatch[1] : "dragon";
+        
+        // Create pattern for the dragon word
+        const dragonPattern = new RegExp(`\\b${this.escapeRegex(dragonWord)}\\b`, 'i');
+        
+        return dragonPattern.test(message.content);
     }
 
     /**
@@ -468,7 +562,7 @@ export class DragonbaneRulesDisplay {
     }
 
     /**
-     * Get topple rules with weapon feature information
+     * Get topple rules with weapon feature information and monster-specific rules
      */
     getToppleRules(weapon, actor = null) {
         let content = "";
@@ -484,6 +578,12 @@ export class DragonbaneRulesDisplay {
                     <li>${game.i18n.localize("DRAGONBANE_ACTION_RULES.topple.evadeRoll")}</li>
                     <li>${game.i18n.localize("DRAGONBANE_ACTION_RULES.topple.cannotDefend")}</li>
                     <li>${game.i18n.localize("DRAGONBANE_ACTION_RULES.topple.success")}</li>`;
+        
+        // Add monster-specific rule if targeting a monster
+        const target = this.getCurrentTarget();
+        if (target && this.isMonsterActor(target)) {
+            content += `<li>${game.i18n.localize("DRAGONBANE_ACTION_RULES.topple.monsterRule")}</li>`;
+        }
         
         return content;
     }
@@ -527,9 +627,16 @@ export class DragonbaneRulesDisplay {
     }
 
     /**
-     * Get disarm rules
+     * Get disarm rules with monster handling
      */
     getDisarmRules(weapon, actor = null) {
+        // Check if targeting a monster
+        const target = this.getCurrentTarget();
+        if (target && this.isMonsterActor(target)) {
+            return `<li>${game.i18n.localize("DRAGONBANE_ACTION_RULES.disarm.monstersCannotBeDisarmed")}</li>`;
+        }
+        
+        // Normal disarm rules for PCs/NPCs
         return `<li>${game.i18n.localize("DRAGONBANE_ACTION_RULES.disarm.noDamage")}</li>
                 <li>${game.i18n.localize("DRAGONBANE_ACTION_RULES.disarm.skillRoll")}</li>
                 <li>${game.i18n.localize("DRAGONBANE_ACTION_RULES.disarm.cannotDefend")}</li>
@@ -541,28 +648,35 @@ export class DragonbaneRulesDisplay {
     /**
      * Get weakspot rules with optional shove
      */
-    getWeakspotRules(weapon, actor = null) {
+    getWeakspotRules(weapon, actor = null, message = null) {
         let content = `<li>${game.i18n.localize("DRAGONBANE_ACTION_RULES.weakspot.piercing")}</li>
                 <li>${game.i18n.localize("DRAGONBANE_ACTION_RULES.weakspot.bane")}</li>
                 <li>${game.i18n.localize("DRAGONBANE_ACTION_RULES.weakspot.success")}</li>`;
         
-        // Add shove rule if applicable
-        content += this.getShoveRuleIfApplicable(weapon, actor);
+        // Add shove rule if applicable (weakspot is a damage-dealing attack)
+        if (message) {
+            content += this.getShoveRuleIfApplicable(message, actor);
+        }
         
         return content;
     }
 
     /**
-     * Get shove rule if conditions are met
+     * Get shove rule if conditions are met using pattern-based detection
      */
-    getShoveRuleIfApplicable(weapon, actor) {
+    getShoveRuleIfApplicable(message, actor) {
         // Check if shove reminders are enabled
         if (!this.getSetting('enableShoveReminders', true)) {
             return "";
         }
 
-        // Check if this is a melee weapon
-        if (!weapon || this.isRangedWeapon(weapon)) {
+        // Check if this is a spell attack (spells cannot shove)
+        if (this.isSpellAttack(message)) {
+            return "";
+        }
+
+        // Check if this attack type is allowed for shove using pattern-based detection
+        if (!this.isAttackTypeAllowedForShove(message.content)) {
             return "";
         }
 
@@ -589,31 +703,68 @@ export class DragonbaneRulesDisplay {
     }
 
     /**
-     * Get current target actor
+     * Get current target actor with token-specific data
      */
     getCurrentTarget() {
         const targets = Array.from(game.user.targets);
         if (targets.length !== 1) return null;
-        return targets[0].actor;
+        
+        const targetToken = targets[0];
+        
+        // Use token's actor (which includes token-specific overrides) instead of base actor
+        const tokenActor = targetToken.actor;
+        
+        return tokenActor;
     }
 
     /**
-     * Check if weapon is ranged
-     */
-    isRangedWeapon(weapon) {
-        return weapon.isRangedWeapon || (weapon.system?.calculatedRange && weapon.system.calculatedRange >= 10);
-    }
-
-    /**
-     * Extract STR damage bonus from actor
+     * Extract STR damage bonus from actor with Dragonbane key support
      */
     extractStrDamageBonus(actor) {
+        if (!actor || !actor.system) {
+            return 0;
+        }
+
+        // Use the provided actor directly (it might be token-specific data)
         const bonusValue = actor.system?.damageBonus?.str?.value;
-        if (!bonusValue) return 0;
         
-        // Convert "D6" -> 6, "D4" -> 4, etc.
-        const match = bonusValue.match(/D(\d+)/i);
-        return match ? parseInt(match[1]) : 0;
+        if (!bonusValue) {
+            return 0;
+        }
+        
+        // Handle different formats including Dragonbane internal keys
+        if (typeof bonusValue === 'number') {
+            return bonusValue;
+        }
+        
+        if (typeof bonusValue === 'string') {
+            // Handle "none" case (no damage bonus)
+            if (bonusValue.toLowerCase() === 'none' || bonusValue === '' || bonusValue === '0') {
+                return 0;
+            }
+            
+            // Handle internal Dragonbane dice keys: "d4", "d6", "d8", "d10", "d12"
+            const diceKeyMatch = bonusValue.match(/^d(\d+)$/i);
+            if (diceKeyMatch) {
+                return parseInt(diceKeyMatch[1]);
+            }
+            
+            // Handle display format: "D6", "D4", etc.
+            const displayMatch = bonusValue.match(/^D(\d+)$/i);
+            if (displayMatch) {
+                return parseInt(displayMatch[1]);
+            }
+            
+            // Handle numeric strings: "4", "6", etc.
+            const numericMatch = bonusValue.match(/^(\d+)$/);
+            if (numericMatch) {
+                return parseInt(numericMatch[1]);
+            }
+            
+            return 0;
+        }
+        
+        return 0;
     }
 
     /**
@@ -623,26 +774,36 @@ export class DragonbaneRulesDisplay {
         const attackerBonus = this.extractStrDamageBonus(attacker);
         const defenderBonus = this.extractStrDamageBonus(defender);
         
-        this.debugLog(`Shove check: ${attacker.name} STR bonus D${attackerBonus} vs ${defender.name} STR bonus D${defenderBonus}`);
+        this.debugLog(`Shove check: ${attacker.name} D${attackerBonus} vs ${defender.name} D${defenderBonus}`);
         
         return attackerBonus >= defenderBonus;
     }
 
     /**
-     * Display rules in chat
+     * Display rules in chat with monster-aware speaker names
      */
-    async displayRules(action, content, weapon = null, actorId = null) {
+    async displayRules(action, content, weapon = null, speaker = null) {
         const delay = this.getSetting('delay', 3000);
         
-        const actionName = game.i18n.localize(`DRAGONBANE_ACTION_RULES.actions.${action}`);
-        const speakerName = game.i18n.format("DRAGONBANE_ACTION_RULES.speakers.generic", { action: actionName });
+        // Get actor to check if it's a monster (for speaker name)
+        const actor = this.getActorFromSpeakerData(speaker);
+        const isMonster = this.isMonsterActor(actor);
+        
+        // Determine speaker name
+        let speakerName;
+        if (action === 'parry' && isMonster) {
+            speakerName = game.i18n.localize("DRAGONBANE_ACTION_RULES.speakers.dodgeAndParry");
+        } else {
+            const actionName = game.i18n.localize(`DRAGONBANE_ACTION_RULES.actions.${action}`);
+            speakerName = game.i18n.format("DRAGONBANE_ACTION_RULES.speakers.generic", { action: actionName });
+        }
 
         // Build the main content
         let chatContent = `<div class="dragonbane-action-rules"><ul>${content}</ul>`;
         
         // Add weapon broken button for parry if we have a weapon and it's not already broken
-        if (action === 'parry' && weapon && actorId && !weapon.system?.broken) {
-            chatContent += this.buildWeaponBrokenButton(weapon, actorId);
+        if (action === 'parry' && weapon && speaker && !weapon.system?.broken) {
+            chatContent += this.buildWeaponBrokenButton(weapon, speaker);
         }
         
         chatContent += `</div>`;
@@ -722,13 +883,15 @@ export class DragonbaneRulesDisplay {
     /**
      * Build the weapon broken button HTML
      */
-    buildWeaponBrokenButton(weapon, actorId) {
+    buildWeaponBrokenButton(weapon, speaker) {
         const buttonText = game.i18n.localize("DRAGONBANE_ACTION_RULES.weaponBroken.buttonText");
         return `
             <div class="weapon-actions" style="margin-top: 8px; text-align: center;">
                 <button class="chat-button weapon-roll mark-weapon-broken" 
                         data-weapon-id="${weapon.id}" 
-                        data-actor-id="${actorId}">
+                        data-actor-id="${speaker.actor || ''}"
+                        data-scene-id="${speaker.scene || ''}"
+                        data-token-id="${speaker.token || ''}">
                     ${buttonText}
                 </button>
             </div>`;
@@ -737,9 +900,17 @@ export class DragonbaneRulesDisplay {
     /**
      * Handle marking weapon as broken
      */
-    async markWeaponBroken(weaponId, actorId) {
+    async markWeaponBroken(weaponId, actorId, sceneId = null, tokenId = null) {
         try {
-            const actor = game.actors.get(actorId);
+            // Build speaker data object and use consolidated lookup
+            const speakerData = {
+                actor: actorId,
+                scene: sceneId,
+                token: tokenId
+            };
+            
+            const actor = this.getActorFromSpeakerData(speakerData);
+            
             if (!actor) {
                 ui.notifications.error(game.i18n.localize("DRAGONBANE_ACTION_RULES.weaponBroken.errors.actorNotFound"));
                 return;
