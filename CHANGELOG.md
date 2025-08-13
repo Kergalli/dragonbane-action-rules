@@ -2,6 +2,22 @@
 
 All notable changes to the Dragonbane Combat Assistant module will be documented here.
 
+## [1.3.1] - 2025-08-13
+
+### Major New Features
+- **Keyboard Shortcuts for Validation Overrides**
+  - Quick bypass controls for temporarily disabling validation rules during gameplay
+  - **Alt + T** - Toggle target selection enforcement on/off
+  - **Alt + R** - Toggle weapon range checking on/off  
+  - **Alt + A** - Override all validation rules at once
+  - **Alt + X** - Reset all overrides to default state
+  - Per-user control - each player manages their own override state independently
+  - Session-only overrides - automatically clear when Foundry reloads
+  - Fully customizable keybinds through Foundry's Configure Controls menu
+  - Localized notifications provide clear feedback when overrides are toggled
+
+---
+
 ## [1.3.0] - 2025-08-12
 
 ### Major New Features
@@ -35,7 +51,26 @@ All notable changes to the Dragonbane Combat Assistant module will be documented
 - **Complete Language Coverage**
   - Additional localization strings for comprehensive coverage
   - Fixed "weakspot/weakpoint" terminology confusion between display and localization keys
+  - Cleaned up unused language keys for leaner translation files
   - Improved language-agnostic operation across all features
+
+### Technical Improvements
+- **Foundry v14 Compatibility Preparation**
+  - Updated several (but not all) items that will be deprecated in Foundry v14
+  - Improved compatibility with current and future Foundry versions
+  - Enhanced status effect handling with v12+ compatible properties
+
+- **Code Quality & Maintenance**
+  - Removed abandoned development code and unused console commands
+  - Consolidated redundant utility methods
+  - Improved error handling and fallback mechanisms
+  - Enhanced debug logging and troubleshooting capabilities
+
+### Bug Fixes
+- Fixed pattern detection accuracy for special attack types
+- Improved reliability of thrown weapon contextual validation
+- Enhanced actor and message processing error handling
+- Resolved edge cases in encumbrance monitoring
 
 ### Known Issues
 - **Thrown Weapons vs Large Tokens**: In the core Dragonbane module, thrown weapons measure distance to a single reference grid square (upper left) instead of using token bounds. This causes attacks with thrown weapons against large and huge tokens to default to the Throw dialog when attacking from anywhere not adjacent to the upper left grid square of the enemy. This is a limitation of the core system's distance calculation and is outside the scope of this module to fix.
