@@ -173,6 +173,15 @@
       "strRollReminder": "Must make STR rolls to move in combat or during travel shifts while over-encumbered.",
       "systemMessage": "Encumbrance Monitor"
     },
+    "overrides": {
+      "targetEnforcementDisabled": "Target selection enforcement disabled",
+      "targetEnforcementEnabled": "Target selection enforcement enabled",
+      "rangeCheckingDisabled": "Range checking disabled", 
+      "rangeCheckingEnabled": "Range checking enabled",
+      "allValidationDisabled": "All validation rules disabled",
+      "allValidationEnabled": "All validation rules enabled",
+      "allOverridesCleared": "All validation overrides cleared"
+    },
     "yze": {
       "actionAlreadyPerformed": "An action has already been performed by {actorName}."
     }
