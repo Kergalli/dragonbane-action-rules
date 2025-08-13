@@ -1,6 +1,6 @@
 # Dragonbane Combat Assistant
 
-![Version](https://img.shields.io/badge/version-1.3.0-blue)
+![Version](https://img.shields.io/badge/version-1.3.1-blue)
 ![Foundry Version](https://img.shields.io/badge/foundry-v12%20%7C%20v13-green)
 ![System](https://img.shields.io/badge/system-dragonbane-orange)
 
@@ -15,6 +15,12 @@
 - **Smart distance calculation** - Handles multi-grid tokens and diagonal movement correctly
 - **Melee range enforcement** - Standard melee weapons require adjacency, long weapons can reach 1 square away
 - **Ranged range enforcement** - Ranged weapons can target up x2 their base range
+- **Quick bypass controls** - Temporarily disable validation rules with keyboard shortcuts
+- **Individual toggles** - Override target selection (Alt+T) or range checking (Alt+R) separately
+- **Complete override** - Disable all validation rules at once (Alt+A)
+- **Easy reset** - Clear all overrides instantly (Alt+X)
+- **Per-user control** - Each player manages their own override state independently
+- **Foundry integration** - Fully customizable through Configure Controls menu
 
 ### 📖 **Automatic Rule Display** 
 - **Shows combat rules when you need them** - Only on successful special attacks
@@ -41,9 +47,18 @@
 - **Automatic status effects** - Applies action markers when characters act in combat
 - **Smart detection** - Recognizes weapon attacks, spells, skills, and monster attacks
 - **Reaction handling** - Excludes reaction spells from action tracking
-- **Customizable exclusions** - Configure which dice rolls to ignore (might not work in all cases)
+- **Customizable exclusions** - Configure which dice rolls to ignore
 
-## New in Version 1.3.0
+## New in Version 1.3.1
+
+### ⌨️ **Keyboard Shortcuts for Validation Overrides**
+- **Quick Override Controls** - Instantly bypass validation rules during gameplay without changing settings
+- **Intuitive Key Bindings** - Alt+T (Target), Alt+R (Range), Alt+A (All), Alt+X (Reset)
+- **Individual Control** - Each user can override their own validation independently
+- **Session-Only** - Overrides automatically clear when Foundry reloads
+- **Foundry Integration** - Fully customizable keybinds through Configure Controls menu
+
+## What Was New in Version 1.3.0
 
 ### 🔗 **Year Zero Engine Combat Integration**
 - **Seamless Single Action Tracking** - Automatically integrates with YZE Combat module when installed and single action mode is enabled
@@ -62,6 +77,7 @@
 ### 🌍 **Enhanced Localization**
 - **Complete Language Support** - Comprehensive localization coverage for all features
 - **Fixed Localization Issues** - Resolved "weakspot/weakpoint" terminology confusion
+- **Cleaned Language Files** - Removed unused translation keys for leaner file sizes
 
 ## Installation
 
@@ -89,6 +105,19 @@ Use this manifest URL in Foundry's Install Module dialog:
 9. **Try a successful EVADE roll** - see the movement reminder
 10. **Use Weakspot with STR advantage** - see the shove option appear
 11. **Install YZE Combat module** - enable single action mode for automatic action tracking
+12. **Use keyboard shortcuts** - press Alt+T to temporarily disable target enforcement, Alt+R for range checking
+
+## Keyboard Shortcuts
+
+The module provides convenient keyboard shortcuts for temporarily overriding validation rules during gameplay:
+
+| Shortcut | Function | Description |
+|----------|----------|-------------|
+| **Alt + T** | Toggle Target Override | Temporarily disable/enable target selection enforcement |
+| **Alt + R** | Toggle Range Override | Temporarily disable/enable weapon range validation |
+| **Alt + A** | Override All | Temporarily disable/enable all validation rules |
+| **Alt + X** | Reset All | Clear all temporary overrides |
+
 
 ## Settings
 
@@ -97,8 +126,8 @@ Access via **Configure Settings → Module Settings → Dragonbane Combat Assist
 | Setting | Default | What It Does |
 |---------|---------|-------------|
 | **Enable Combat Assistant** | ✅ On | Master on/off switch |
-| **Enforce Target Selection** | ✅ On | Require target before attacking |
-| **Enforce Range Checking** | ✅ On | Validate weapon range (includes thrown weapon support) |
+| **Enforce Target Selection** | ✅ On | Require target before attacking (can be overridden with Alt+T) |
+| **Enforce Range Checking** | ✅ On | Validate weapon range (can be overridden with Alt+R) |
 | **Display Delay** | 3 seconds | How long to wait before showing rules |
 | **Show Weapon Durability** | ✅ On | Display durability for parry decisions |
 | **OPTIONAL RULE: Enable Shove Rule Reminders** | ✅ On | Show shove reminders when STR advantage allows it |
@@ -118,6 +147,12 @@ Access via **Configure Settings → Module Settings → Dragonbane Combat Assist
 - **Close Range (≤2m normal, ≤4m long)**: Validates as melee weapon
 - **Far Range (>2m/4m)**: Validates as ranged weapon up to 2x base range
 - **Examples**: Dagger at 1m = melee ✅, Dagger at 8m = thrown ✅, Dagger at 25m = blocked ❌
+
+**Year Zero Engine Integration:** When YZE Combat module is installed with single action mode enabled:
+- **Automatic Detection**: Recognizes all types of actions from chat messages
+- **Action Tracking**: Applies appropriate action status effects automatically
+- **Reaction Exclusions**: Reaction spells don't count as actions
+- **Multiple Actions**: Handles characters with multiple action slots correctly
 
 **Parrying Long Weapons:** If you're using a standard melee weapon to parry an attack from someone with a long weapon (who is 1 square away), simply target yourself when parrying. The range validation will understand you're defending at your position.
 
@@ -146,5 +181,5 @@ Access via **Configure Settings → Module Settings → Dragonbane Combat Assist
 - Dragonbane system only
 - Token Action HUD
 - Argon - Combat HUD (DRAGONBANE)
-- Year Zero Engine: Combat
+- Year Zero Engine Combat module
 - Dragonbane Character Sheet
