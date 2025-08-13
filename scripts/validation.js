@@ -3,6 +3,8 @@
  * Handles target selection and weapon range with thrown weapon support
  */
 
+import { DragonbaneUtils } from './utils.js';
+
 export class DragonbaneValidator {
     constructor(moduleId) {
         this.moduleId = moduleId;
@@ -16,24 +18,24 @@ export class DragonbaneValidator {
             // Get actor and token
             const { selectedActor, selectedToken } = this.getActorAndToken(actor);
             if (!selectedActor || !selectedToken) {
-                return { 
-                    success: false, 
-                    message: game.i18n.format("DRAGONBANE_ACTION_RULES.validation.selectToken", { weapon: weaponName }) 
+                return {
+                    success: false,
+                    message: game.i18n.format("DRAGONBANE_ACTION_RULES.validation.selectToken", { weapon: weaponName })
                 };
             }
 
             // Find weapon
             const weapon = selectedActor.items.find(i => i.name === weaponName && i.type === 'weapon');
             if (!weapon) {
-                return { 
-                    success: false, 
-                    message: game.i18n.format("DRAGONBANE_ACTION_RULES.validation.noWeapon", { weapon: weaponName }) 
+                return {
+                    success: false,
+                    message: game.i18n.format("DRAGONBANE_ACTION_RULES.validation.noWeapon", { weapon: weaponName })
                 };
             }
 
             // Get validation settings
             const settings = this.getValidationSettings();
-            this.debugLog(`Validation for ${weaponName} - Target: ${settings.enforceTarget}, Range: ${settings.enforceRange}`);
+            DragonbaneUtils.debugLog(this.moduleId, 'Validator', `Validation for ${weaponName} - Target: ${settings.enforceTarget}, Range: ${settings.enforceRange}`);
 
             // Perform validations
             if (settings.enforceTarget) {
@@ -61,7 +63,7 @@ export class DragonbaneValidator {
     getActorAndToken(actor) {
         let selectedActor = actor;
         let selectedToken = null;
-        
+
         if (!selectedActor) {
             selectedToken = canvas.tokens.controlled[0];
             if (selectedToken) {
@@ -83,8 +85,8 @@ export class DragonbaneValidator {
      */
     getValidationSettings() {
         return {
-            enforceTarget: this.getSetting('enforceTargetSelection', true),
-            enforceRange: this.getSetting('enforceRangeChecking', true)
+            enforceTarget: DragonbaneUtils.getSetting(this.moduleId, 'enforceTargetSelection', true),
+            enforceRange: DragonbaneUtils.getSetting(this.moduleId, 'enforceRangeChecking', true)
         };
     }
 
@@ -93,21 +95,21 @@ export class DragonbaneValidator {
      */
     validateTarget(weaponName) {
         const targets = Array.from(game.user.targets);
-        
+
         if (targets.length === 0) {
-            return { 
-                success: false, 
-                message: game.i18n.format("DRAGONBANE_ACTION_RULES.validation.noTarget", { weapon: weaponName }) 
+            return {
+                success: false,
+                message: game.i18n.format("DRAGONBANE_ACTION_RULES.validation.noTarget", { weapon: weaponName })
             };
         }
-        
+
         if (targets.length > 1) {
-            return { 
-                success: false, 
-                message: game.i18n.format("DRAGONBANE_ACTION_RULES.validation.tooManyTargets", { weapon: weaponName }) 
+            return {
+                success: false,
+                message: game.i18n.format("DRAGONBANE_ACTION_RULES.validation.tooManyTargets", { weapon: weaponName })
             };
         }
-        
+
         return { success: true };
     }
 
@@ -117,17 +119,17 @@ export class DragonbaneValidator {
     validateRange(attackerToken, targetToken, weapon, weaponName) {
         try {
             const distance = this.calculateTokenDistance(attackerToken, targetToken);
-            
+
             // Handle thrown weapons contextually based on distance
-            if (this.hasThrownFeature(weapon)) {
+            if (DragonbaneUtils.hasThrownFeature(weapon)) {
                 return this.validateThrownWeaponRange(distance, weapon, weaponName);
             }
-            
+
             // Handle pure ranged weapons
             if (this.isRangedWeapon(weapon)) {
                 return this.validateRangedWeaponRange(distance, weapon, weaponName);
             }
-            
+
             // Handle pure melee weapons
             return this.validateMeleeWeaponRange(distance, weapon, weaponName);
 
@@ -142,16 +144,16 @@ export class DragonbaneValidator {
      */
     validateThrownWeaponRange(distance, weapon, weaponName) {
         // Determine melee range based on weapon length
-        const meleeRange = this.hasLongProperty(weapon) ? 4 : 0; // 0m = standard melee, 4m = long melee
-        
+        const meleeRange = DragonbaneUtils.hasLongProperty(weapon) ? 4 : 0; // 0m = standard melee, 4m = long melee
+
         // If within melee range, validate as melee weapon
         if (distance <= meleeRange) {
-            this.debugLog(`Thrown weapon ${weaponName} used in melee at ${distance}m`);
+            DragonbaneUtils.debugLog(this.moduleId, 'Validator', `Thrown weapon ${weaponName} used in melee at ${distance}m`);
             return this.validateMeleeWeaponRange(distance, weapon, weaponName);
         }
-        
+
         // If beyond melee range, validate as ranged weapon (thrown)
-        this.debugLog(`Thrown weapon ${weaponName} thrown at ${distance}m`);
+        DragonbaneUtils.debugLog(this.moduleId, 'Validator', `Thrown weapon ${weaponName} thrown at ${distance}m`);
         return this.validateRangedWeaponRange(distance, weapon, weaponName);
     }
 
@@ -161,7 +163,7 @@ export class DragonbaneValidator {
     validateRangedWeaponRange(distance, weapon, weaponName) {
         const baseRange = weapon.system?.calculatedRange || 10;
         const maxRange = baseRange * 2;
-        
+
         if (distance > maxRange) {
             return {
                 success: false,
@@ -172,7 +174,7 @@ export class DragonbaneValidator {
                 })
             };
         }
-        
+
         return { success: true };
     }
 
@@ -180,29 +182,29 @@ export class DragonbaneValidator {
      * Validate melee weapon range
      */
     validateMeleeWeaponRange(distance, weapon, weaponName) {
-        const isLongWeapon = this.hasLongProperty(weapon);
-        
+        const isLongWeapon = DragonbaneUtils.hasLongProperty(weapon);
+
         // Adjacent (0m) - all melee weapons can attack
         if (distance === 0) {
             return { success: true };
         }
-        
+
         // Standard melee range (2m) - all melee weapons can attack
         if (distance <= 2) {
             return { success: true };
         }
-        
+
         // Extended melee range (4m) - only long weapons can attack
         if (distance <= 4 && isLongWeapon) {
             return { success: true };
         }
-        
+
         // Too far for melee attack
         const weaponType = isLongWeapon ? "longMelee" : "melee";
-        const maxRange = isLongWeapon ? 
-            game.i18n.localize("DRAGONBANE_ACTION_RULES.range.upToFourMeters") : 
+        const maxRange = isLongWeapon ?
+            game.i18n.localize("DRAGONBANE_ACTION_RULES.range.upToFourMeters") :
             game.i18n.localize("DRAGONBANE_ACTION_RULES.range.upToTwoMeters");
-        
+
         return {
             success: false,
             message: game.i18n.format("DRAGONBANE_ACTION_RULES.validation.meleeOutOfRange", {
@@ -221,7 +223,7 @@ export class DragonbaneValidator {
         try {
             const gridSize = canvas.grid.size;
             const gridDistance = canvas.grid.distance || 2;
-            
+
             // Helper function to get token bounds
             const getTokenBounds = (token) => {
                 const doc = token.document || token;
@@ -231,26 +233,26 @@ export class DragonbaneValidator {
                 const h = doc.height || 1;
                 return { left: x, right: x + w - 1, top: y, bottom: y + h - 1 };
             };
-            
+
             const bounds1 = getTokenBounds(token1);
             const bounds2 = getTokenBounds(token2);
-            
+
             // Calculate minimum distance between token boundaries
             const dx = Math.max(0, bounds2.left - bounds1.right, bounds1.left - bounds2.right);
             const dy = Math.max(0, bounds2.top - bounds1.bottom, bounds1.top - bounds2.bottom);
-            
+
             // Use Chebyshev distance (8-directional movement) and convert to game distance
             const gridDistanceResult = Math.max(dx, dy);
             const gameDistance = gridDistanceResult <= 1 ? 0 : gridDistanceResult * gridDistance;
-            
+
             return gameDistance;
-            
+
         } catch (error) {
             console.error(`${this.moduleId} | Error calculating token distance:`, error);
             // Fallback to standard measurement
-            return canvas.grid.measurePath ? 
+            return canvas.grid.measurePath ?
                 canvas.grid.measurePath([token1, token2]).distance :
-                canvas.grid.measureDistance(token1, token2, {gridSpaces: false});
+                canvas.grid.measureDistance(token1, token2, { gridSpaces: false });
         }
     }
 
@@ -259,97 +261,5 @@ export class DragonbaneValidator {
      */
     isRangedWeapon(weapon) {
         return weapon.isRangedWeapon || (weapon.system?.calculatedRange && weapon.system.calculatedRange >= 10);
-    }
-
-    /**
-     * Check if weapon has the "Long" property (using proper localization)
-     */
-    hasLongProperty(weapon) {
-        if (!weapon || !weapon.system) return false;
-        
-        // Get both English and localized terms for long using Dragonbane system keys
-        const englishTerm = "long";
-        const localizedTerm = this.getLocalizedTerm("DoD.weaponFeatureTypes.long", "long").toLowerCase();
-        
-        // Check in features array
-        if (weapon.system.features && Array.isArray(weapon.system.features)) {
-            return weapon.system.features.some(feature => {
-                const featureLower = feature.toLowerCase();
-                return featureLower === englishTerm || featureLower === localizedTerm;
-            });
-        }
-        
-        // Check if weapon has long feature method (alternative system approach)
-        if (typeof weapon.hasWeaponFeature === 'function') {
-            return weapon.hasWeaponFeature(englishTerm) || weapon.hasWeaponFeature(localizedTerm);
-        }
-        
-        return false;
-    }
-
-    /**
-     * Check if weapon has the "Thrown" feature (using proper localization)
-     */
-    hasThrownFeature(weapon) {
-        if (!weapon || !weapon.system) return false;
-        
-        // Get both English and localized terms for thrown using Dragonbane system keys
-        const englishTerm = "thrown";
-        const localizedTerm = this.getLocalizedTerm("DoD.weaponFeatureTypes.thrown", "thrown").toLowerCase();
-        
-        // Check in features array (same location as "Long" feature)
-        if (weapon.system.features && Array.isArray(weapon.system.features)) {
-            const hasFeature = weapon.system.features.some(feature => {
-                const featureLower = feature.toLowerCase();
-                return featureLower === englishTerm || featureLower === localizedTerm;
-            });
-            
-            if (hasFeature) {
-                this.debugLog(`Found thrown feature in ${weapon.name}`);
-            }
-            
-            return hasFeature;
-        }
-        
-        // Check if weapon has thrown feature method (alternative system approach)
-        if (typeof weapon.hasWeaponFeature === 'function') {
-            return weapon.hasWeaponFeature(englishTerm) || weapon.hasWeaponFeature(localizedTerm);
-        }
-        
-        return false;
-    }
-
-    /**
-     * Get localized term with English fallback
-     */
-    getLocalizedTerm(key, fallback) {
-        try {
-            const localized = game.i18n.localize(key);
-            // If localization failed, it returns the key itself
-            return localized === key ? fallback : localized;
-        } catch (error) {
-            return fallback;
-        }
-    }
-
-    /**
-     * Get setting value with fallback
-     */
-    getSetting(settingName, fallback) {
-        try {
-            return game.settings.get(this.moduleId, settingName);
-        } catch (error) {
-            console.warn(`${this.moduleId} | Failed to get setting ${settingName}:`, error);
-            return fallback;
-        }
-    }
-
-    /**
-     * Debug logging
-     */
-    debugLog(message) {
-        if (this.getSetting('debugMode', false)) {
-            console.log(`${this.moduleId} | Validator: ${message}`);
-        }
     }
 }
