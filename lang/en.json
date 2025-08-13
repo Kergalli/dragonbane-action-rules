@@ -66,6 +66,14 @@
       "encumbranceChatNotifications": {
         "name": "Encumbrance Chat Notifications",
         "hint": "Also create chat messages for encumbrance changes (in addition to UI notifications)"
+      },
+      "enableYZEIntegration": {
+        "name": "Enable Year Zero Engine Integration",
+        "hint": "Automatically apply single action status effects when Year Zero Engine Combat module is installed and single action mode is enabled"
+      },
+      "yzeCustomExclusions": {
+        "name": "YZE Action Exclusions",
+        "hint": "Additional words/phrases to exclude from action tracking (comma-separated). These dice rolls will not trigger action status effects. Example: 'reroll,bonus,extra'. Note: Reaction spells are automatically excluded by checking their casting time."
       }
     },
     "actions": {
@@ -84,12 +92,9 @@
     "unknownWeapon": "Unknown Weapon",
     "weaponTypes": {
       "melee": "melee weapon",
-      "longMelee": "long melee weapon",
-      "thrown": "thrown weapon"
+      "longMelee": "long melee weapon"
     },
     "range": {
-      "adjacentOnly": "adjacent to",
-      "adjacentOrOneSquare": "adjacent or 1 square away (4m) from",
       "upToTwoMeters": "within 2m of",
       "upToFourMeters": "within 4m of"
     },
@@ -99,9 +104,7 @@
       "noTarget": "Please target a token before attacking with {weapon}.",
       "tooManyTargets": "Please target only one token for {weapon}.",
       "meleeOutOfRange": "Target is too far away! {weapon} is a {weaponType} and must be {maxRange} the target, but target is {distance}m away.",
-      "rangedOutOfRange": "Target is too far away! {weapon} has a maximum range of {maxRange}m, but target is {distance}m away.",
-      "thrownMeleeRange": "Using {weapon} in melee combat at {distance}m",
-      "thrownRangedRange": "Throwing {weapon} at range {distance}m"
+      "rangedOutOfRange": "Target is too far away! {weapon} has a maximum range of {maxRange}m, but target is {distance}m away."
     },
     "parry": {
       "reaction": "Parrying uses your action for the turn (reaction)",
@@ -169,6 +172,9 @@
       "carryingItems": "Carrying {currentEnc}/{maxEnc} items",
       "strRollReminder": "Must make STR rolls to move in combat or during travel shifts while over-encumbered.",
       "systemMessage": "Encumbrance Monitor"
+    },
+    "yze": {
+      "actionAlreadyPerformed": "An action has already been performed by {actorName}."
     }
   }
 }
