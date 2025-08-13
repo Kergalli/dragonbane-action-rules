@@ -1,12 +1,12 @@
 # Dragonbane Combat Assistant
 
-![Version](https://img.shields.io/badge/version-1.2.4-blue)
+![Version](https://img.shields.io/badge/version-1.3.0-blue)
 ![Foundry Version](https://img.shields.io/badge/foundry-v12%20%7C%20v13-green)
 ![System](https://img.shields.io/badge/system-dragonbane-orange)
 
 ## What This Module Does
 
-**Dragonbane Combat Assistant** enhances melee/ranged combat and character management in four powerful ways:
+**Dragonbane Combat Assistant** enhances melee/ranged combat and character management in five powerful ways:
 
 ### 🎯 **Attack Validation (Before Roll)**
 - **Enforces target selection** - No more accidental attacks into empty space
@@ -36,19 +36,32 @@
 - **Dodge movement** - Helpful reminders about dodge movement options on successful EVADE rolls
 - **Intelligent conditions** - Only shows when rules actually apply (right weapon types, STR advantages, etc.)
 
-## New in Version 1.2.4
+### ⚡ **Year Zero Engine Integration**
+- **Seamless action tracking** - Works with YZE Combat module for single action mode
+- **Automatic status effects** - Applies action markers when characters act in combat
+- **Smart detection** - Recognizes weapon attacks, spells, skills, and monster attacks
+- **Reaction handling** - Excludes reaction spells from action tracking
+- **Customizable exclusions** - Configure which dice rolls to ignore (might not work in all cases)
 
-### 🗡️ **Thrown Weapon Support**
-- **Contextual Range Validation** - Thrown weapons (daggers, spears, handaxes, etc.) now work correctly at both melee and ranged distances
-- **Smart Weapon Detection** - Automatically detects weapons with "Thrown" feature using proper Dragonbane localization
-- **Melee + Ranged Capability** - Thrown weapons validate as melee when close (≤2m normal, ≤4m long) and as ranged when farther
-- **Shove Rule Integration** - Thrown weapons can trigger shove reminders when used in melee combat
+## New in Version 1.3.0
 
-### 🔬 **Pattern-Based Detection System for Shove Special Rules**
-- **Reliability** - Completely rebuilt shove detection using chat message content analysis
-- **Language Agnostic** - Uses Dragonbane's own translation keys to work in English, Swedish, and future languages
-- **✅ Shove Allowed:** Normal attacks, Stab, Slash, Find Weak Spot (damage-dealing melee)
-- **❌ Shove Excluded:** Topple, Disarm (no damage), Parry (defensive), Ranged attacks, Spells
+### 🔗 **Year Zero Engine Combat Integration**
+- **Seamless Single Action Tracking** - Automatically integrates with YZE Combat module when installed and single action mode is enabled
+- **Smart Action Detection** - Recognizes weapon attacks, spell casting, skill tests, and monster attacks from chat messages
+- **Intelligent Exclusions** - Automatically excludes reaction spells and provides customizable exclusion patterns
+- **Multi-Action Support** - Handles characters with multiple actions per round correctly
+- **User-Friendly Notifications** - Informs players when they've already used all available actions
+
+### 🛠️ **Major Code Refactoring & Optimization**
+- **Consolidated Pattern Management** - All localization and pattern matching logic centralized for better performance
+- **Streamlined Message Processing** - Improved chat message analysis with language-agnostic detection
+- **Enhanced Hook Management** - Simplified and more reliable integration with Foundry and other modules
+- **Performance Improvements** - Optimized token distance calculations and pattern matching
+- **Code Organization** - Merged duplicate methods and consolidated utility functions
+
+### 🌍 **Enhanced Localization**
+- **Complete Language Support** - Comprehensive localization coverage for all features
+- **Fixed Localization Issues** - Resolved "weakspot/weakpoint" terminology confusion
 
 ## Installation
 
@@ -75,6 +88,7 @@ Use this manifest URL in Foundry's Install Module dialog:
 8. **Add items to a character** - watch for automatic over-encumbrance detection
 9. **Try a successful EVADE roll** - see the movement reminder
 10. **Use Weakspot with STR advantage** - see the shove option appear
+11. **Install YZE Combat module** - enable single action mode for automatic action tracking
 
 ## Settings
 
@@ -94,6 +108,8 @@ Access via **Configure Settings → Module Settings → Dragonbane Combat Assist
 | **Encumbrance Monitor Folder** | "Party" | Which actor folder to monitor (blank = all characters) |
 | **Encumbrance Status Effect** | "Encumbered" | Name of status effect to apply when over-encumbered |
 | **Encumbrance Chat Notifications** | ❌ Off | Also create chat messages with rule reminders |
+| **Enable Year Zero Engine Integration** | ✅ On | Integrate with YZE Combat module for action tracking |
+| **YZE Action Exclusions** | "" | Additional words/phrases to exclude from action tracking |
 | **Debug Mode** | ❌ Off | Enable for troubleshooting |
 
 ## Special Cases
@@ -119,6 +135,10 @@ Access via **Configure Settings → Module Settings → Dragonbane Combat Assist
 - Target is not a monster  
 - Attacker's STR damage bonus ≥ target's STR damage bonus
 
+## Known Issues
+
+**Thrown Weapons vs Large Tokens:** In the core Dragonbane module, thrown weapons measure distance to a single reference grid square (upper left) instead of using token bounds. This causes attacks with thrown weapons against large and huge tokens to default to the Throw dialog when attacking from anywhere not adjacent to the upper left grid square of the enemy. This is a limitation of the core system's distance calculation and is outside the scope of this module to fix.
+
 ## Technical Details
 
 **Compatible With:**
@@ -126,4 +146,5 @@ Access via **Configure Settings → Module Settings → Dragonbane Combat Assist
 - Dragonbane system only
 - Token Action HUD
 - Argon - Combat HUD (DRAGONBANE)
+- Year Zero Engine: Combat
 - Dragonbane Character Sheet
