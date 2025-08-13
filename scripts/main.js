@@ -8,10 +8,13 @@ import { DragonbaneHooks } from './hooks.js';
 import { DragonbaneValidator } from './validation.js';
 import { DragonbaneRulesDisplay } from './rules-display.js';
 import { DragonbaneEncumbranceMonitor } from './encumbrance-monitor.js';
+import { DragonbaneYZEIntegration } from './yze-integration.js';
+import { DragonbanePatternManager } from './pattern-manager.js';
+import { DragonbaneUtils } from './utils.js';
 
 class DragonbaneActionRules {
     static ID = 'dragonbane-action-rules';
-    static VERSION = '1.2.4';
+    static VERSION = '1.3.0';
     
     static FLAGS = {
         RULES_MESSAGE: 'dragonbaneRulesMessage'
@@ -23,6 +26,9 @@ class DragonbaneActionRules {
     static validator = null;
     static rulesDisplay = null;
     static encumbranceMonitor = null;
+    static yzeIntegration = null;
+    static patternManager = null;
+    static utils = DragonbaneUtils; // Make utils available
 
     /**
      * Initialize the module
@@ -33,12 +39,16 @@ class DragonbaneActionRules {
             return;
         }
 
-        // Initialize components
+        // Initialize core components first
         DragonbaneActionRules.settings = new DragonbaneSettings(DragonbaneActionRules.ID);
+        DragonbaneActionRules.patternManager = new DragonbanePatternManager(DragonbaneActionRules.ID);
+        
+        // Initialize other components with pattern manager dependency
         DragonbaneActionRules.hooks = new DragonbaneHooks(DragonbaneActionRules.ID);
         DragonbaneActionRules.validator = new DragonbaneValidator(DragonbaneActionRules.ID);
-        DragonbaneActionRules.rulesDisplay = new DragonbaneRulesDisplay(DragonbaneActionRules.ID);
+        DragonbaneActionRules.rulesDisplay = new DragonbaneRulesDisplay(DragonbaneActionRules.ID, DragonbaneActionRules.patternManager);
         DragonbaneActionRules.encumbranceMonitor = new DragonbaneEncumbranceMonitor(DragonbaneActionRules.ID);
+        DragonbaneActionRules.yzeIntegration = new DragonbaneYZEIntegration(DragonbaneActionRules.ID, DragonbaneActionRules.patternManager);
 
         // Register settings and hooks
         DragonbaneActionRules.settings.register();
@@ -68,6 +78,11 @@ class DragonbaneActionRules {
             if (DragonbaneActionRules.settings.isEncumbranceMonitoringEnabled()) {
                 DragonbaneActionRules.encumbranceMonitor.initialize();
             }
+
+            // Initialize YZE integration if enabled
+            if (DragonbaneActionRules.settings.isYZEIntegrationEnabled()) {
+                DragonbaneActionRules.yzeIntegration.initialize();
+            }
         });
     }
 
@@ -84,10 +99,12 @@ class DragonbaneActionRules {
             // Encumbrance callbacks
             onActorUpdate: DragonbaneActionRules.encumbranceMonitor.onActorUpdate.bind(DragonbaneActionRules.encumbranceMonitor),
             onItemUpdate: DragonbaneActionRules.encumbranceMonitor.onItemUpdate.bind(DragonbaneActionRules.encumbranceMonitor),
-            onItemChange: DragonbaneActionRules.encumbranceMonitor.onItemChange.bind(DragonbaneActionRules.encumbranceMonitor)
+            onItemChange: DragonbaneActionRules.encumbranceMonitor.onItemChange.bind(DragonbaneActionRules.encumbranceMonitor),
+            // YZE integration callback (post-roll via chat detection)
+            onChatMessageAction: DragonbaneActionRules.yzeIntegration.onChatMessageAction.bind(DragonbaneActionRules.yzeIntegration)
         });
         
-        DragonbaneActionRules.debugLog(game.i18n.localize("DRAGONBANE_ACTION_RULES.console.moduleEnabled"));
+        DragonbaneUtils.debugLog(DragonbaneActionRules.ID, 'Main', game.i18n.localize("DRAGONBANE_ACTION_RULES.console.moduleEnabled"));
     }
 
     /**
@@ -95,7 +112,7 @@ class DragonbaneActionRules {
      */
     static disableModule() {
         DragonbaneActionRules.hooks.disableAll();
-        DragonbaneActionRules.debugLog(game.i18n.localize("DRAGONBANE_ACTION_RULES.console.moduleDisabled"));
+        DragonbaneUtils.debugLog(DragonbaneActionRules.ID, 'Main', game.i18n.localize("DRAGONBANE_ACTION_RULES.console.moduleDisabled"));
     }
 
     /**
@@ -103,34 +120,43 @@ class DragonbaneActionRules {
      */
     static setupConsoleCommands() {
         Hooks.once('ready', () => {
-            window.DragonbaneActionRules = {
+            // Add console commands to the existing class instead of replacing it
+            Object.assign(window.DragonbaneActionRules, {
                 enable: () => DragonbaneActionRules.enableModule(),
                 disable: () => DragonbaneActionRules.disableModule(),
                 version: DragonbaneActionRules.VERSION,
+                yze: DragonbaneActionRules.yzeIntegration,
+                utils: DragonbaneActionRules.utils,
+                patterns: DragonbaneActionRules.patternManager,
+                // Refresh patterns manually
+                refreshPatterns: () => {
+                    if (DragonbaneActionRules.patternManager) {
+                        DragonbaneActionRules.patternManager.refreshPatterns();
+                        console.log("Patterns refreshed for current language");
+                    } else {
+                        console.log("Pattern manager not available");
+                    }
+                },
                 debug: () => {
                     console.log(game.i18n.localize("DRAGONBANE_ACTION_RULES.debug.header"));
                     console.log(`${game.i18n.localize("DRAGONBANE_ACTION_RULES.debug.moduleEnabled")}: ${DragonbaneActionRules.hooks.isEnabled()}`);
                     console.log(`${game.i18n.localize("DRAGONBANE_ACTION_RULES.debug.controlledTokens")}: ${canvas.tokens.controlled.length}`);
                     console.log(`${game.i18n.localize("DRAGONBANE_ACTION_RULES.debug.targetedTokens")}: ${game.user.targets.size}`);
+                    console.log(`YZE Integration: ${DragonbaneActionRules.yzeIntegration?.isEnabled() ? 'Enabled' : 'Disabled'}`);
+                    console.log(`Patterns Initialized: ${DragonbaneActionRules.patternManager?.areInitialized() ? 'Yes' : 'No'}`);
                     console.log(game.i18n.localize("DRAGONBANE_ACTION_RULES.debug.rangeRules"));
                     console.log(game.i18n.localize("DRAGONBANE_ACTION_RULES.debug.footer"));
                 }
-            };
+            });
         });
-    }
-
-    /**
-     * Debug logging
-     */
-    static debugLog(message) {
-        if (DragonbaneActionRules.settings.isDebugMode()) {
-            console.log(`${DragonbaneActionRules.ID} | ${message}`);
-        }
     }
 }
 
 // Initialize when Foundry is ready
 Hooks.once('init', DragonbaneActionRules.initialize);
+
+// Make the class globally available
+window.DragonbaneActionRules = DragonbaneActionRules;
 
 // Export for use by other modules
 export { DragonbaneActionRules };
