@@ -33,7 +33,7 @@ export class DragonbaneValidator {
                 };
             }
 
-            // Get validation settings
+            // Get validation settings with override checking
             const settings = this.getValidationSettings();
             DragonbaneUtils.debugLog(this.moduleId, 'Validator', `Validation for ${weaponName} - Target: ${settings.enforceTarget}, Range: ${settings.enforceRange}`);
 
@@ -81,12 +81,23 @@ export class DragonbaneValidator {
     }
 
     /**
-     * Get validation settings
+     * Get validation settings with override checking
      */
     getValidationSettings() {
+        // Get base settings from module configuration
+        let enforceTarget = DragonbaneUtils.getSetting(this.moduleId, 'enforceTargetSelection', true);
+        let enforceRange = DragonbaneUtils.getSetting(this.moduleId, 'enforceRangeChecking', true);
+        
+        // Check for keyboard shortcut overrides if the main class is available
+        if (window.DragonbaneActionRules?.overrides) {
+            const overrides = window.DragonbaneActionRules.overrides;
+            enforceTarget = enforceTarget && !overrides.targetSelection && !overrides.allValidations;
+            enforceRange = enforceRange && !overrides.rangeChecking && !overrides.allValidations;
+        }
+        
         return {
-            enforceTarget: DragonbaneUtils.getSetting(this.moduleId, 'enforceTargetSelection', true),
-            enforceRange: DragonbaneUtils.getSetting(this.moduleId, 'enforceRangeChecking', true)
+            enforceTarget,
+            enforceRange
         };
     }
 
@@ -144,7 +155,7 @@ export class DragonbaneValidator {
      */
     validateThrownWeaponRange(distance, weapon, weaponName) {
         // Determine melee range based on weapon length
-        const meleeRange = DragonbaneUtils.hasLongProperty(weapon) ? 4 : 0; // 0m = standard melee, 4m = long melee
+        const meleeRange = DragonbaneUtils.hasLongProperty(weapon) ? 4 : 2; // 2m = standard melee, 4m = long melee
 
         // If within melee range, validate as melee weapon
         if (distance <= meleeRange) {
