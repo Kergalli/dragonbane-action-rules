@@ -21,7 +21,10 @@ export class DragonbaneSettings {
         // Shove settings
         ENABLE_SHOVE_REMINDERS: 'enableShoveReminders',
         // Dodge movement settings
-        ENABLE_DODGE_MOVEMENT_REMINDERS: 'enableDodgeMovementReminders'
+        ENABLE_DODGE_MOVEMENT_REMINDERS: 'enableDodgeMovementReminders',
+        // YZE integration settings
+        ENABLE_YZE_INTEGRATION: 'enableYZEIntegration',
+        YZE_CUSTOM_EXCLUSIONS: 'yzeCustomExclusions'
     };
 
     constructor(moduleId) {
@@ -37,6 +40,7 @@ export class DragonbaneSettings {
         this.registerDisplaySettings();
         this.registerOptionalRulesSettings();
         this.registerEncumbranceSettings();
+        this.registerYZEIntegrationSettings();
         this.registerDebugSettings();
     }
 
@@ -53,7 +57,7 @@ export class DragonbaneSettings {
             default: true,
             onChange: (value) => {
                 // Import main class dynamically to avoid circular imports
-                import('./main.js').then(({ DragonbaneActionRules }) => {
+                import('/modules/dragonbane-action-rules/scripts/main.js').then(({ DragonbaneActionRules }) => {
                     value ? DragonbaneActionRules.enableModule() : DragonbaneActionRules.disableModule();
                 });
             }
@@ -152,7 +156,7 @@ export class DragonbaneSettings {
             default: true,
             onChange: (value) => {
                 // Import main class dynamically to avoid circular imports
-                import('./main.js').then(({ DragonbaneActionRules }) => {
+                import('/modules/dragonbane-action-rules/scripts/main.js').then(({ DragonbaneActionRules }) => {
                     if (value) {
                         DragonbaneActionRules.encumbranceMonitor?.initialize();
                     }
@@ -169,7 +173,7 @@ export class DragonbaneSettings {
             default: 'Party',
             onChange: () => {
                 // Refresh monitored actors when folder changes
-                import('./main.js').then(({ DragonbaneActionRules }) => {
+                import('/modules/dragonbane-action-rules/scripts/main.js').then(({ DragonbaneActionRules }) => {
                     DragonbaneActionRules.encumbranceMonitor?.initializePreviousStates();
                 });
             }
@@ -184,7 +188,7 @@ export class DragonbaneSettings {
             default: 'Encumbered',
             onChange: () => {
                 // Ensure the new status effect exists when setting changes
-                import('./main.js').then(({ DragonbaneActionRules }) => {
+                import('/modules/dragonbane-action-rules/scripts/main.js').then(({ DragonbaneActionRules }) => {
                     DragonbaneActionRules.encumbranceMonitor?.ensureStatusEffectExists();
                 });
             }
@@ -197,6 +201,43 @@ export class DragonbaneSettings {
             config: true,
             type: Boolean,
             default: false
+        });
+    }
+
+    /**
+     * Register YZE integration settings
+     */
+    registerYZEIntegrationSettings() {
+        game.settings.register(this.moduleId, DragonbaneSettings.SETTINGS.ENABLE_YZE_INTEGRATION, {
+            name: game.i18n.localize("DRAGONBANE_ACTION_RULES.settings.enableYZEIntegration.name"),
+            hint: game.i18n.localize("DRAGONBANE_ACTION_RULES.settings.enableYZEIntegration.hint"),
+            scope: 'world',
+            config: true,
+            type: Boolean,
+            default: true,
+            onChange: (value) => {
+                // Import main class dynamically to avoid circular imports
+                import('/modules/dragonbane-action-rules/scripts/main.js').then(({ DragonbaneActionRules }) => {
+                    if (value) {
+                        DragonbaneActionRules.yzeIntegration?.initialize();
+                    }
+                });
+            }
+        });
+
+        game.settings.register(this.moduleId, DragonbaneSettings.SETTINGS.YZE_CUSTOM_EXCLUSIONS, {
+            name: game.i18n.localize("DRAGONBANE_ACTION_RULES.settings.yzeCustomExclusions.name"),
+            hint: game.i18n.localize("DRAGONBANE_ACTION_RULES.settings.yzeCustomExclusions.hint"),
+            scope: 'world',
+            config: true,
+            type: String,
+            default: "",
+            onChange: () => {
+                // Refresh patterns when exclusions change
+                import('/modules/dragonbane-action-rules/scripts/main.js').then(({ DragonbaneActionRules }) => {
+                    DragonbaneActionRules.patternManager?.refreshPatterns();
+                });
+            }
         });
     }
 
@@ -227,7 +268,7 @@ export class DragonbaneSettings {
     }
 
     /**
-     * Convenience methods for common settings
+     * Convenience methods for common settings (only the ones actually used)
      */
     isEnabled() {
         return this.get(DragonbaneSettings.SETTINGS.ENABLED, true);
@@ -237,50 +278,11 @@ export class DragonbaneSettings {
         return this.get(DragonbaneSettings.SETTINGS.DEBUG_MODE, false);
     }
 
-    getDisplayDelay() {
-        return this.get(DragonbaneSettings.SETTINGS.DELAY, 3000);
-    }
-
-    shouldShowParryDurability() {
-        return this.get(DragonbaneSettings.SETTINGS.SHOW_PARRY_DURABILITY, true);
-    }
-
-    shouldShowParryMovementReminders() {
-        return this.get(DragonbaneSettings.SETTINGS.ENABLE_PARRY_MOVEMENT_REMINDERS, true);
-    }
-
-    shouldEnforceTargetSelection() {
-        return this.get(DragonbaneSettings.SETTINGS.ENFORCE_TARGET_SELECTION, true);
-    }
-
-    shouldEnforceRangeChecking() {
-        return this.get(DragonbaneSettings.SETTINGS.ENFORCE_RANGE_CHECKING, true);
-    }
-
-    // Shove convenience methods
-    shouldShowShoveReminders() {
-        return this.get(DragonbaneSettings.SETTINGS.ENABLE_SHOVE_REMINDERS, true);
-    }
-
-    // Dodge movement convenience methods
-    shouldShowDodgeMovementReminders() {
-        return this.get(DragonbaneSettings.SETTINGS.ENABLE_DODGE_MOVEMENT_REMINDERS, true);
-    }
-
-    // Encumbrance convenience methods
     isEncumbranceMonitoringEnabled() {
         return this.get(DragonbaneSettings.SETTINGS.ENABLE_ENCUMBRANCE_MONITORING, true);
     }
 
-    getEncumbranceMonitorFolder() {
-        return this.get(DragonbaneSettings.SETTINGS.ENCUMBRANCE_MONITOR_FOLDER, 'Party');
-    }
-
-    getEncumbranceStatusEffect() {
-        return this.get(DragonbaneSettings.SETTINGS.ENCUMBRANCE_STATUS_EFFECT, 'Encumbered');
-    }
-
-    shouldShowEncumbranceChatNotifications() {
-        return this.get(DragonbaneSettings.SETTINGS.ENCUMBRANCE_CHAT_NOTIFICATIONS, false);
+    isYZEIntegrationEnabled() {
+        return this.get(DragonbaneSettings.SETTINGS.ENABLE_YZE_INTEGRATION, true);
     }
 }
