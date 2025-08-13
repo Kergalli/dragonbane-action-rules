@@ -66,6 +66,14 @@
       "encumbranceChatNotifications": {
         "name": "Bärförmåge-chattnotifieringar",
         "hint": "Skapa även chattmeddelanden för bärförmågeförändringar (utöver UI-notifieringar)"
+      },
+      "enableYZEIntegration": {
+        "name": "Aktivera Year Zero Engine Integration",
+        "hint": "Tillämpa automatiskt enkelhandlings-statuseffekter när Year Zero Engine Combat-modulen är installerad och enkelhandlingsläget är aktiverat"
+      },
+      "yzeCustomExclusions": {
+        "name": "YZE Handlings-undantag",
+        "hint": "Ytterligare ord/fraser att utesluta från handlingsspårning (kommaseparerade). Dessa tärningskast kommer inte att utlösa handlings-statuseffekter. Exempel: 'omslag,bonus,extra'. Obs: Reaktions-trollformler undantas automatiskt genom att kontrollera deras kasttid."
       }
     },
     "actions": {
@@ -84,12 +92,9 @@
     "unknownWeapon": "Okänt Vapen",
     "weaponTypes": {
       "melee": "närstridsvapen",
-      "longMelee": "långt närstridsvapen",
-      "thrown": "kastvapen"
+      "longMelee": "långt närstridsvapen"
     },
     "range": {
-      "adjacentOnly": "intill",
-      "adjacentOrOneSquare": "intill eller 1 ruta bort (4m) från",
       "upToTwoMeters": "inom 2m från",
       "upToFourMeters": "inom 4m från"
     },
@@ -99,14 +104,12 @@
       "noTarget": "Välj ett mål innan du attackerar med {weapon}.",
       "tooManyTargets": "Välj endast ett mål för {weapon}.",
       "meleeOutOfRange": "Målet är för långt bort! {weapon} är ett {weaponType} och måste vara {maxRange} målet, men målet är {distance}m bort.",
-      "rangedOutOfRange": "Målet är för långt bort! {weapon} har en maximal räckvidd på {maxRange}m, men målet är {distance}m bort.",
-      "thrownMeleeRange": "Använder {weapon} i närstrid på {distance}m",
-      "thrownRangedRange": "Kastar {weapon} på avstånd {distance}m"
+      "rangedOutOfRange": "Målet är för långt bort! {weapon} har en maximal räckvidd på {maxRange}m, men målet är {distance}m bort."
     },
     "parry": {
       "reaction": "Parering använder din handling för rundan (reaktion)",
       "success": "Lyckas = ingen skada. Om skada > brytvärde, skadas vapnet tills det repareras",
-      "piercing": "Stickattacker kan inte skada pareringsvapen/sköldar",
+      "piercing": "Stickattacker kan inte skada pareringsvapen/sköldrar",
       "monster": "Monsterattacker kan inte pareras (om inte annat anges)",
       "movement": "Lyckas = flytta dig själv och fienden 2m (räknas inte som förflyttning, inga gratisattacker)",
       "dragon": "Drake = motattack (kan inte duckas/pareras). Om angriparen slog Drake, behöver Drake för att parera (ingen motattack)",
@@ -129,7 +132,7 @@
       "cannotDefend": "Kan inte duckas eller pareras",
       "twoHanded": "Tvåhandsvapen = du får nackdel",
       "success": "Lyckas = vapnet hamnar T6 meter bort (du väljer riktning)",
-      "limitations": "Kan inte avväpna sköldar eller naturliga vapen",
+      "limitations": "Kan inte avväpna sköldrar eller naturliga vapen",
       "monstersCannotBeDisarmed": "<strong>Monster:</strong> Kan inte avväpnas"
     },
     "weakspot": {
@@ -169,6 +172,9 @@
       "carryingItems": "Bär {currentEnc}/{maxEnc} föremål",
       "strRollReminder": "Måste göra STY-slag för att röra sig i strid eller under reseskift när överbelastad.",
       "systemMessage": "Bärförmågeövervakare"
+    },
+    "yze": {
+      "actionAlreadyPerformed": "En handling har redan utförts av {actorName}."
     }
   }
 }
