@@ -173,6 +173,15 @@
       "strRollReminder": "Måste göra STY-slag för att röra sig i strid eller under reseskift när överbelastad.",
       "systemMessage": "Bärförmågeövervakare"
     },
+    "overrides": {
+      "targetEnforcementDisabled": "Målval-kontroll inaktiverad",
+      "targetEnforcementEnabled": "Målval-kontroll aktiverad",
+      "rangeCheckingDisabled": "Avståndskontroll inaktiverad",
+      "rangeCheckingEnabled": "Avståndskontroll aktiverad", 
+      "allValidationDisabled": "Alla valideringsregler inaktiverade",
+      "allValidationEnabled": "Alla valideringsregler aktiverade",
+      "allOverridesCleared": "Alla valideringsåsidosättningar rensade"
+    },
     "yze": {
       "actionAlreadyPerformed": "En handling har redan utförts av {actorName}."
     }
