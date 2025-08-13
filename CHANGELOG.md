@@ -2,6 +2,46 @@
 
 All notable changes to the Dragonbane Combat Assistant module will be documented here.
 
+## [1.3.0] - 2025-08-12
+
+### Major New Features
+- **Year Zero Engine Combat Integration**
+  - Seamless integration with YZE Combat module for single action tracking
+  - Automatic action detection from chat messages (weapon attacks, spells, skills, monster attacks)
+  - Smart exclusion of reaction spells from action tracking
+  - Configurable custom exclusions for specific dice roll patterns
+  - Multi-action support for characters with multiple action slots per round
+  - User-friendly notifications when all actions have been used
+
+### Major Code Refactoring & Optimization
+- **Consolidated Pattern Management**
+  - All localization and pattern matching logic centralized to `pattern-manager.js`
+  - Language-agnostic pattern compilation using Dragonbane's core localization keys
+  - Improved pattern accuracy and performance optimization
+
+- **Streamlined Architecture**
+  - Consolidated message processing across all components
+  - Simplified hook management system for better reliability
+  - Merged duplicate methods from `rules-display.js` into centralized `utils.js`
+  - Enhanced code organization and maintainability
+
+- **Performance Improvements**
+  - Greatly simplified token distance calculation algorithm
+  - Optimized pattern matching and chat message analysis
+  - Removed unnecessary fallback methods and cleaned up abandoned code
+  - Reduced memory footprint and improved execution speed
+
+### Enhanced Localization Support
+- **Complete Language Coverage**
+  - Additional localization strings for comprehensive coverage
+  - Fixed "weakspot/weakpoint" terminology confusion between display and localization keys
+  - Improved language-agnostic operation across all features
+
+### Known Issues
+- **Thrown Weapons vs Large Tokens**: In the core Dragonbane module, thrown weapons measure distance to a single reference grid square (upper left) instead of using token bounds. This causes attacks with thrown weapons against large and huge tokens to default to the Throw dialog when attacking from anywhere not adjacent to the upper left grid square of the enemy. This is a limitation of the core system's distance calculation and is outside the scope of this module to fix.
+
+---
+
 ## [1.2.4] - 2025-08-06
 
 ### Major New Features
