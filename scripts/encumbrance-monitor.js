@@ -3,10 +3,12 @@
  * Event-driven encumbrance monitoring with configurable status effects
  */
 
+import { DragonbaneUtils } from './utils.js';
+
 export class DragonbaneEncumbranceMonitor {
     constructor(moduleId) {
         this.moduleId = moduleId;
-        this.previousStates = new Map(); // Simple boolean cache: actorId -> wasOverEncumbered
+        this.previousStates = new Map();
     }
 
     /**
@@ -138,45 +140,15 @@ export class DragonbaneEncumbranceMonitor {
     }
 
     /**
-     * Ensure the configured status effect exists in the game
+     * Ensure the configured status effect exists in the game (using centralized utility)
      */
     ensureStatusEffectExists() {
-        try {
-            const statusEffectName = this.getSetting('encumbranceStatusEffect', 'Encumbered');
-            
-            // Check if status effect already exists
-            const existingEffect = CONFIG.statusEffects?.find(effect => 
-                effect.name === statusEffectName || 
-                effect.label === statusEffectName || 
-                effect.id === statusEffectName ||
-                effect.id === statusEffectName.toLowerCase().replace(/\s+/g, '-')
-            );
-            
-            if (existingEffect) {
-                this.debugLog(`Status effect "${statusEffectName}" already exists`);
-                return;
-            }
-            
-            // Create new status effect
-            const newStatusEffect = {
-                id: statusEffectName.toLowerCase().replace(/\s+/g, '-'),
-                name: statusEffectName,
-                label: statusEffectName,
-                icon: "icons/svg/anchor.svg"
-            };
-            
-            // Add to CONFIG.statusEffects if it exists
-            if (CONFIG.statusEffects && Array.isArray(CONFIG.statusEffects)) {
-                CONFIG.statusEffects.push(newStatusEffect);
-                this.debugLog(`Created status effect: "${statusEffectName}"`);
-            } else {
-                // Initialize CONFIG.statusEffects if it doesn't exist
-                CONFIG.statusEffects = [newStatusEffect];
-                this.debugLog(`Initialized CONFIG.statusEffects with: "${statusEffectName}"`);
-            }
-            
-        } catch (error) {
-            console.warn(`${this.moduleId} | Error ensuring status effect exists:`, error);
+        const statusEffectName = this.getSetting('encumbranceStatusEffect', 'Encumbered');
+        
+        if (DragonbaneUtils.ensureStatusEffectExists(statusEffectName, "icons/svg/anchor.svg")) {
+            this.debugLog(`Status effect "${statusEffectName}" ensured`);
+        } else {
+            console.warn(`${this.moduleId} | Failed to ensure status effect: ${statusEffectName}`);
         }
     }
 
@@ -197,44 +169,25 @@ export class DragonbaneEncumbranceMonitor {
     }
 
     /**
-     * Toggle encumbrance status effect
+     * Toggle encumbrance status effect (using centralized utilities)
      */
     async toggleEncumbranceStatusEffect(actor, isOverEncumbered) {
-        try {
-            const statusEffectName = this.getSetting('encumbranceStatusEffect', 'Encumbered');
-            const statusEffectId = statusEffectName.toLowerCase().replace(/\s+/g, '-');
-            
-            // Find the status effect (should exist due to ensureStatusEffectExists)
-            const statusEffect = CONFIG.statusEffects?.find(effect => 
-                effect.name === statusEffectName || 
-                effect.label === statusEffectName || 
-                effect.id === statusEffectName ||
-                effect.id === statusEffectId
-            );
+        const statusEffectName = this.getSetting('encumbranceStatusEffect', 'Encumbered');
+        
+        // Check current state using centralized utility
+        const hasEffect = DragonbaneUtils.hasStatusEffect(actor, statusEffectName);
 
-            if (!statusEffect) {
-                console.warn(`${this.moduleId} | Status effect "${statusEffectName}" not found despite initialization`);
-                return;
-            }
-
-            // Check current state
-            const hasEffect = actor.effects.some(effect => 
-                effect.statuses?.has(statusEffect.id) || 
-                effect.statuses?.has(statusEffectId) ||
-                effect.name === statusEffectName
-            );
-
-            // Toggle if needed
-            if (isOverEncumbered && !hasEffect) {
-                await actor.toggleStatusEffect(statusEffect.id, { active: true });
+        // Toggle if needed using centralized utility
+        if (isOverEncumbered && !hasEffect) {
+            const success = await DragonbaneUtils.toggleStatusEffect(actor, statusEffectName, true);
+            if (success) {
                 this.debugLog(`Applied ${statusEffectName} to ${actor.name}`);
-            } else if (!isOverEncumbered && hasEffect) {
-                await actor.toggleStatusEffect(statusEffect.id, { active: false });
+            }
+        } else if (!isOverEncumbered && hasEffect) {
+            const success = await DragonbaneUtils.toggleStatusEffect(actor, statusEffectName, false);
+            if (success) {
                 this.debugLog(`Removed ${statusEffectName} from ${actor.name}`);
             }
-
-        } catch (error) {
-            console.error(`${this.moduleId} | Error toggling status effect:`, error);
         }
     }
 
@@ -327,20 +280,13 @@ export class DragonbaneEncumbranceMonitor {
      * Get setting value with fallback
      */
     getSetting(settingName, fallback) {
-        try {
-            return game.settings.get(this.moduleId, settingName);
-        } catch (error) {
-            console.warn(`${this.moduleId} | Failed to get setting ${settingName}:`, error);
-            return fallback;
-        }
+        return DragonbaneUtils.getSetting(this.moduleId, settingName, fallback);
     }
 
     /**
      * Debug logging
      */
     debugLog(message) {
-        if (this.getSetting('debugMode', false)) {
-            console.log(`${this.moduleId} | EncumbranceMonitor: ${message}`);
-        }
+        DragonbaneUtils.debugLog(this.moduleId, 'EncumbranceMonitor', message);
     }
 }
