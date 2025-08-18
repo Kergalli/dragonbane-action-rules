@@ -1,6 +1,6 @@
 # Dragonbane Combat Assistant
 
-![Version](https://img.shields.io/badge/version-1.3.1-blue)
+![Version](https://img.shields.io/badge/version-1.3.2-blue)
 ![Foundry Version](https://img.shields.io/badge/foundry-v12%20%7C%20v13-green)
 ![System](https://img.shields.io/badge/system-dragonbane-orange)
 
@@ -16,11 +16,11 @@
 - **Melee range enforcement** - Standard melee weapons require adjacency, long weapons can reach 1 square away
 - **Ranged range enforcement** - Ranged weapons can target up x2 their base range
 - **Quick bypass controls** - Temporarily disable validation rules with keyboard shortcuts
-- **Individual toggles** - Override target selection (Alt+T) or range checking (Alt+R) separately
-- **Complete override** - Disable all validation rules at once (Alt+A)
-- **Easy reset** - Clear all overrides instantly (Alt+X)
-- **Per-user control** - Each player manages their own override state independently
-- **Foundry integration** - Fully customizable through Configure Controls menu
+  - **Individual toggles** - Override target selection (Alt+T) or range checking (Alt+R) separately
+  - **Complete override** - Disable all validation rules at once (Alt+A)
+  - **Easy reset** - Clear all overrides instantly (Alt+X)
+  - **Per-user control** - Each player manages their own override state independently
+  - **Foundry integration** - Fully customizable through Configure Controls menu
 
 ### 📖 **Automatic Rule Display** 
 - **Shows combat rules when you need them** - Only on successful special attacks
@@ -48,36 +48,30 @@
 - **Smart detection** - Recognizes weapon attacks, spells, skills, and monster attacks
 - **Reaction handling** - Excludes reaction spells from action tracking
 - **Customizable exclusions** - Configure which dice rolls to ignore
+- **Override support** - Temporarily disable action tracking with Alt+Y for edge cases
 
-## New in Version 1.3.1
+## New in Version 1.3.2
 
-### ⌨️ **Keyboard Shortcuts for Validation Overrides**
-- **Quick Override Controls** - Instantly bypass validation rules during gameplay without changing settings
-- **Intuitive Key Bindings** - Alt+T (Target), Alt+R (Range), Alt+A (All), Alt+X (Reset)
-- **Individual Control** - Each user can override their own validation independently
-- **Session-Only** - Overrides automatically clear when Foundry reloads
-- **Foundry Integration** - Fully customizable keybinds through Configure Controls menu
+### ⚡ **YZE Action Tracking Override (Alt+Y)**
+- **Edge Case Handling** - Temporarily disable automatic YZE action status effect application
+- **Manual Control** - Handle situations where rolls are incorrectly detected as actions
+- **Test Roll Support** - Prevent test rolls from consuming action slots
+- **Session-Only** - Override automatically clears when Foundry reloads
 
-## What Was New in Version 1.3.0
+### 📊 **Override Status Display (Alt+S)**  
+- **Personal Status Check** - Show your current override status via notification
+- **Clean Display** - Shows only active overrides or "All validation rules active"
+- **No Chat Clutter** - Personal notifications that don't affect other players
+- **Quick Reference** - Instant feedback on what validation rules are currently bypassed
 
-### 🔗 **Year Zero Engine Combat Integration**
-- **Seamless Single Action Tracking** - Automatically integrates with YZE Combat module when installed and single action mode is enabled
-- **Smart Action Detection** - Recognizes weapon attacks, spell casting, skill tests, and monster attacks from chat messages
-- **Intelligent Exclusions** - Automatically excludes reaction spells and provides customizable exclusion patterns
-- **Multi-Action Support** - Handles characters with multiple actions per round correctly
-- **User-Friendly Notifications** - Informs players when they've already used all available actions
+### 🔧 **Enhanced Override System**
+- **Expanded "All Overrides"** - Alt+A now includes YZE action tracking in addition to validation rules
+- **Complete Reset** - Alt+X clears all override types including the new YZE override
+- **Improved Console Commands** - Enhanced debugging and manual testing capabilities
 
-### 🛠️ **Major Code Refactoring & Optimization**
-- **Consolidated Pattern Management** - All localization and pattern matching logic centralized for better performance
-- **Streamlined Message Processing** - Improved chat message analysis with language-agnostic detection
-- **Enhanced Hook Management** - Simplified and more reliable integration with Foundry and other modules
-- **Performance Improvements** - Optimized token distance calculations and pattern matching
-- **Code Organization** - Merged duplicate methods and consolidated utility functions
-
-### 🌍 **Enhanced Localization**
-- **Complete Language Support** - Comprehensive localization coverage for all features
-- **Fixed Localization Issues** - Resolved "weakspot/weakpoint" terminology confusion
-- **Cleaned Language Files** - Removed unused translation keys for leaner file sizes
+### 🛠️ **Bug Fixes**
+- **Fixed "Mark Weapon Broken" Button** - Resolved timing issues that prevented the button from working
+- **Improved Error Handling** - Better module initialization and hook management
 
 ## Installation
 
@@ -106,6 +100,8 @@ Use this manifest URL in Foundry's Install Module dialog:
 10. **Use Weakspot with STR advantage** - see the shove option appear
 11. **Install YZE Combat module** - enable single action mode for automatic action tracking
 12. **Use keyboard shortcuts** - press Alt+T to temporarily disable target enforcement, Alt+R for range checking
+13. **Check your override status** - press Alt+S to see which validation rules are currently bypassed
+14. **Handle YZE edge cases** - press Alt+Y to temporarily disable action tracking for test rolls
 
 ## Keyboard Shortcuts
 
@@ -115,9 +111,10 @@ The module provides convenient keyboard shortcuts for temporarily overriding val
 |----------|----------|-------------|
 | **Alt + T** | Toggle Target Override | Temporarily disable/enable target selection enforcement |
 | **Alt + R** | Toggle Range Override | Temporarily disable/enable weapon range validation |
-| **Alt + A** | Override All | Temporarily disable/enable all validation rules |
+| **Alt + Y** | Toggle YZE Override | Temporarily disable/enable automatic YZE action tracking |
+| **Alt + S** | Show Override Status | Display current override status via personal notification |
+| **Alt + A** | Override All | Temporarily disable/enable all validation rules and action tracking |
 | **Alt + X** | Reset All | Clear all temporary overrides |
-
 
 ## Settings
 
@@ -137,7 +134,7 @@ Access via **Configure Settings → Module Settings → Dragonbane Combat Assist
 | **Encumbrance Monitor Folder** | "Party" | Which actor folder to monitor (blank = all characters) |
 | **Encumbrance Status Effect** | "Encumbered" | Name of status effect to apply when over-encumbered |
 | **Encumbrance Chat Notifications** | ❌ Off | Also create chat messages with rule reminders |
-| **Enable Year Zero Engine Integration** | ✅ On | Integrate with YZE Combat module for action tracking |
+| **Enable Year Zero Engine Integration** | ✅ On | Integrate with YZE Combat module for action tracking (can be overridden with Alt+Y) |
 | **YZE Action Exclusions** | "" | Additional words/phrases to exclude from action tracking |
 | **Debug Mode** | ❌ Off | Enable for troubleshooting |
 
@@ -153,6 +150,13 @@ Access via **Configure Settings → Module Settings → Dragonbane Combat Assist
 - **Action Tracking**: Applies appropriate action status effects automatically
 - **Reaction Exclusions**: Reaction spells don't count as actions
 - **Multiple Actions**: Handles characters with multiple action slots correctly
+- **Override Support**: Use Alt+Y to temporarily disable action tracking for edge cases
+
+**Override System:** Each player manages their own validation overrides independently:
+- **Personal Control**: Your overrides only affect your own client
+- **Status Checking**: Use Alt+S to see which overrides are currently active
+- **Edge Case Handling**: Use Alt+Y to prevent test rolls from consuming YZE action slots
+- **Session-Only**: All overrides automatically clear when Foundry reloads
 
 **Parrying Long Weapons:** If you're using a standard melee weapon to parry an attack from someone with a long weapon (who is 1 square away), simply target yourself when parrying. The range validation will understand you're defending at your position.
 
@@ -172,7 +176,7 @@ Access via **Configure Settings → Module Settings → Dragonbane Combat Assist
 
 ## Known Issues
 
-**Thrown Weapons vs Large Tokens:** In the core Dragonbane module, thrown weapons measure distance to a single reference grid square (upper left) instead of using token bounds. This causes attacks with thrown weapons against large and huge tokens to default to the Throw dialog when attacking from anywhere not adjacent to the upper left grid square of the enemy. This is a limitation of the core system's distance calculation and is outside the scope of this module to fix.
+**Thrown Weapons vs Large Tokens:** In the core Dragonbane module, thrown weapons measure distance to a single reference grid square (upper left) instead of using token bounds. This causes attacks with thrown weapons against large and huge tokens to default to the Throw dialog when attacking from anywhere not adjacent to the upper left grid square of the enemy. This is a limitation of the core system's distance calculation and is outside the scope of this module to fix. **NOTE: This should be fixed in the next version of the core Draognbane system.**
 
 ## Technical Details
 
