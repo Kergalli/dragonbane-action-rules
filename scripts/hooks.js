@@ -15,11 +15,11 @@ export class DragonbaneHooks {
     /**
      * Enable all hook systems
      */
-    enableAll(callbacks) {
+    enableAll(callbacks, rulesDisplay) {
         this.callbacks = callbacks;
 
         this.enableChatHook();
-        this.enableChatButtonHook();
+        this.enableChatButtonHook(rulesDisplay);
         this.enableTokenActionHUD();
         this.enableCharacterSheets();
         this.enableEncumbranceHooks();
@@ -79,7 +79,7 @@ export class DragonbaneHooks {
     /**
      * Enable chat button interaction hook
      */
-    enableChatButtonHook() {
+    enableChatButtonHook(rulesDisplay) {
         if (this.activeHooks.has('chatButton')) return;
 
         const hookId = Hooks.on('renderChatMessage', (message, html, data) => {
@@ -97,16 +97,18 @@ export class DragonbaneHooks {
                 const sceneId = button.dataset.sceneId;
                 const tokenId = button.dataset.tokenId;
 
-                if (weaponId && actorId) {
-                    // Get the rules display instance and call markWeaponBroken with all the data
-                    import('/modules/dragonbane-action-rules/scripts/main.js').then(({ DragonbaneActionRules }) => {
-                        DragonbaneActionRules.rulesDisplay.markWeaponBroken(weaponId, actorId, sceneId, tokenId);
-                    });
+                if (weaponId && actorId && rulesDisplay) {
+                    // Use the passed rulesDisplay instance directly
+                    rulesDisplay.markWeaponBroken(weaponId, actorId, sceneId, tokenId);
 
                     // Disable the button to prevent multiple clicks
                     button.disabled = true;
                     button.style.opacity = '0.5';
                     button.textContent = game.i18n.localize("DRAGONBANE_ACTION_RULES.weaponBroken.buttonTextCompleted");
+                } else {
+                    console.error(`${this.moduleId} | Missing data for weapon broken button:`, {
+                        weaponId, actorId, sceneId, tokenId, rulesDisplay: !!rulesDisplay
+                    });
                 }
             });
         });
