@@ -109,7 +109,7 @@
     "parry": {
       "reaction": "Parering använder din handling för rundan (reaktion)",
       "success": "Lyckas = ingen skada. Om skada > brytvärde, skadas vapnet tills det repareras",
-      "piercing": "Stickattacker kan inte skada pareringsvapen/sköldrar",
+      "piercing": "Stickattacker kan inte skada pareringsvapen/sköldar",
       "monster": "Monsterattacker kan inte pareras (om inte annat anges)",
       "movement": "Lyckas = flytta dig själv och fienden 2m (räknas inte som förflyttning, inga gratisattacker)",
       "dragon": "Drake = motattack (kan inte duckas/pareras). Om angriparen slog Drake, behöver Drake för att parera (ingen motattack)",
@@ -132,7 +132,7 @@
       "cannotDefend": "Kan inte duckas eller pareras",
       "twoHanded": "Tvåhandsvapen = du får nackdel",
       "success": "Lyckas = vapnet hamnar T6 meter bort (du väljer riktning)",
-      "limitations": "Kan inte avväpna sköldrar eller naturliga vapen",
+      "limitations": "Kan inte avväpna sköldar eller naturliga vapen",
       "monstersCannotBeDisarmed": "<strong>Monster:</strong> Kan inte avväpnas"
     },
     "weakspot": {
@@ -177,10 +177,20 @@
       "targetEnforcementDisabled": "Målval-kontroll inaktiverad",
       "targetEnforcementEnabled": "Målval-kontroll aktiverad",
       "rangeCheckingDisabled": "Avståndskontroll inaktiverad",
-      "rangeCheckingEnabled": "Avståndskontroll aktiverad", 
-      "allValidationDisabled": "Alla valideringsregler inaktiverade",
-      "allValidationEnabled": "Alla valideringsregler aktiverade",
-      "allOverridesCleared": "Alla valideringsåsidosättningar rensade"
+      "rangeCheckingEnabled": "Avståndskontroll aktiverad",
+      "yzeActionTrackingDisabled": "YZE handlingsspårning inaktiverad",
+      "yzeActionTrackingEnabled": "YZE handlingsspårning aktiverad",
+      "allValidationDisabled": "Alla valideringsregler och handlingsspårning inaktiverade",
+      "allValidationEnabled": "Alla valideringsregler och handlingsspårning aktiverade",
+      "allOverridesCleared": "Alla validerings- och spårningsåsidosättningar rensade",
+      "status": {
+        "targetSelection": "Målval",
+        "rangeChecking": "Avståndskontroll",
+        "yzeActionTracking": "YZE Handlingsspårning", 
+        "allValidations": "Alla Valideringar",
+        "allActive": "Alla valideringsregler aktiva (inga åsidosättningar)",
+        "activeOverrides": "Aktiva åsidosättningar: {overrides}"
+      }
     },
     "yze": {
       "actionAlreadyPerformed": "En handling har redan utförts av {actorName}."
