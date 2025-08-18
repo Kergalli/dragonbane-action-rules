@@ -85,12 +85,30 @@ export class DragonbaneYZEIntegration {
     }
 
     /**
+     * Check if this is a damage or healing roll
+     */
+    _isDamageRoll(message) {
+        if (!message?.content) return false;
+        const content = message.content.toLowerCase();
+        
+        // Check for damage/healing roll CSS classes (most reliable)
+        return content.includes('class="damage-roll"') || 
+               content.includes('class="healing-roll"') ||
+               // Backup: check for data attributes
+               content.includes('data-damage=') || 
+               content.includes('data-healing=');
+    }
+
+    /**
      * Simplified action type determination using pattern manager with HTML monster attack detection
      */
     determineActionType(message) {
         if (!message?.content) return null;
         
         const content = message.content.toLowerCase();
+        
+        // Check for damage rolls first (before any other detection)
+        if (this._isDamageRoll(message)) return null;
         
         // Quick exclusion check
         if (this.patternManager.isExcludedRoll(content)) return null;
