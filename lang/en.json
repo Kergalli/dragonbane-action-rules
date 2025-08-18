@@ -178,9 +178,19 @@
       "targetEnforcementEnabled": "Target selection enforcement enabled",
       "rangeCheckingDisabled": "Range checking disabled", 
       "rangeCheckingEnabled": "Range checking enabled",
-      "allValidationDisabled": "All validation rules disabled",
-      "allValidationEnabled": "All validation rules enabled",
-      "allOverridesCleared": "All validation overrides cleared"
+      "yzeActionTrackingDisabled": "YZE action tracking disabled",
+      "yzeActionTrackingEnabled": "YZE action tracking enabled",
+      "allValidationDisabled": "All validation rules and action tracking disabled",
+      "allValidationEnabled": "All validation rules and action tracking enabled",
+      "allOverridesCleared": "All validation and tracking overrides cleared",
+      "status": {
+        "targetSelection": "Target Selection",
+        "rangeChecking": "Range Checking", 
+        "yzeActionTracking": "YZE Action Tracking",
+        "allValidations": "All Validations",
+        "allActive": "All validation rules active (no overrides)",
+        "activeOverrides": "Active overrides: {overrides}"
+      }
     },
     "yze": {
       "actionAlreadyPerformed": "An action has already been performed by {actorName}."
