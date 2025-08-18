@@ -34,6 +34,7 @@ class DragonbaneActionRules {
     static overrides = {
         targetSelection: false,
         rangeChecking: false,
+        yzeActionTracking: false,
         allValidations: false
     };
 
@@ -114,10 +115,26 @@ class DragonbaneActionRules {
             onDown: () => DragonbaneActionRules.toggleRangeOverride()
         });
 
+        // Toggle YZE Action Tracking Override
+        game.keybindings.register(DragonbaneActionRules.ID, "toggleYZEOverride", {
+            name: "Toggle YZE Action Tracking Override",
+            hint: "Temporarily disable automatic YZE action status effect application",
+            editable: [{ key: "KeyY", modifiers: ["Alt"] }],
+            onDown: () => DragonbaneActionRules.toggleYZEOverride()
+        });
+
+        // Show Override Status
+        game.keybindings.register(DragonbaneActionRules.ID, "showOverrideStatus", {
+            name: "Show Override Status",
+            hint: "Display current status of all validation and tracking overrides",
+            editable: [{ key: "KeyS", modifiers: ["Alt"] }],
+            onDown: () => DragonbaneActionRules.showOverrideStatus()
+        });
+
         // Override All Validations
         game.keybindings.register(DragonbaneActionRules.ID, "toggleAllOverrides", {
             name: "Override All Validations",
-            hint: "Temporarily disable all attack validation rules",
+            hint: "Temporarily disable all attack validation rules and YZE action tracking",
             editable: [{ key: "KeyA", modifiers: ["Alt"] }],
             onDown: () => DragonbaneActionRules.toggleAllOverrides()
         });
@@ -125,7 +142,7 @@ class DragonbaneActionRules {
         // Reset All Overrides
         game.keybindings.register(DragonbaneActionRules.ID, "resetOverrides", {
             name: "Reset All Overrides",
-            hint: "Clear all temporary validation overrides",
+            hint: "Clear all temporary validation and tracking overrides",
             editable: [{ key: "KeyX", modifiers: ["Alt"] }],
             onDown: () => DragonbaneActionRules.resetOverrides()
         });
@@ -137,7 +154,7 @@ class DragonbaneActionRules {
     static enableModule() {
         if (DragonbaneActionRules.hooks.isEnabled()) return;
 
-        // Enable all hook systems with callbacks
+        // Enable all hook systems with callbacks and pass rulesDisplay instance
         DragonbaneActionRules.hooks.enableAll({
             onChatMessage: DragonbaneActionRules.rulesDisplay.onChatMessage.bind(DragonbaneActionRules.rulesDisplay),
             performWeaponAttack: DragonbaneActionRules.validator.performWeaponAttack.bind(DragonbaneActionRules.validator),
@@ -147,7 +164,7 @@ class DragonbaneActionRules {
             onItemChange: DragonbaneActionRules.encumbranceMonitor.onItemChange.bind(DragonbaneActionRules.encumbranceMonitor),
             // YZE integration callback (post-roll via chat detection)
             onChatMessageAction: DragonbaneActionRules.yzeIntegration.onChatMessageAction.bind(DragonbaneActionRules.yzeIntegration)
-        });
+        }, DragonbaneActionRules.rulesDisplay); // Pass the rulesDisplay instance
         
         DragonbaneUtils.debugLog(DragonbaneActionRules.ID, 'Main', game.i18n.localize("DRAGONBANE_ACTION_RULES.console.moduleEnabled"));
     }
@@ -185,6 +202,18 @@ class DragonbaneActionRules {
     }
 
     /**
+     * Toggle YZE action tracking override
+     */
+    static toggleYZEOverride() {
+        DragonbaneActionRules.overrides.yzeActionTracking = !DragonbaneActionRules.overrides.yzeActionTracking;
+        const messageKey = DragonbaneActionRules.overrides.yzeActionTracking ? 
+            'DRAGONBANE_ACTION_RULES.overrides.yzeActionTrackingDisabled' : 
+            'DRAGONBANE_ACTION_RULES.overrides.yzeActionTrackingEnabled';
+        ui.notifications.info(game.i18n.localize(messageKey), { permanent: false });
+        DragonbaneUtils.debugLog(DragonbaneActionRules.ID, 'Main', `YZE action tracking override: ${DragonbaneActionRules.overrides.yzeActionTracking}`);
+    }
+
+    /**
      * Toggle all validation overrides
      */
     static toggleAllOverrides() {
@@ -197,15 +226,51 @@ class DragonbaneActionRules {
     }
 
     /**
+     * Show override status to the current user
+     */
+    static showOverrideStatus() {
+        const activeOverrides = [];
+        
+        if (DragonbaneActionRules.overrides.targetSelection) {
+            activeOverrides.push(game.i18n.localize('DRAGONBANE_ACTION_RULES.overrides.status.targetSelection'));
+        }
+        
+        if (DragonbaneActionRules.overrides.rangeChecking) {
+            activeOverrides.push(game.i18n.localize('DRAGONBANE_ACTION_RULES.overrides.status.rangeChecking'));
+        }
+        
+        if (DragonbaneActionRules.overrides.yzeActionTracking) {
+            activeOverrides.push(game.i18n.localize('DRAGONBANE_ACTION_RULES.overrides.status.yzeActionTracking'));
+        }
+        
+        if (DragonbaneActionRules.overrides.allValidations) {
+            activeOverrides.push(game.i18n.localize('DRAGONBANE_ACTION_RULES.overrides.status.allValidations'));
+        }
+        
+        let message;
+        if (activeOverrides.length === 0) {
+            message = game.i18n.localize('DRAGONBANE_ACTION_RULES.overrides.status.allActive');
+        } else {
+            const overrideList = activeOverrides.join(', ');
+            message = game.i18n.format('DRAGONBANE_ACTION_RULES.overrides.status.activeOverrides', { overrides: overrideList });
+        }
+        
+        ui.notifications.info(message, { permanent: false });
+        DragonbaneUtils.debugLog(DragonbaneActionRules.ID, 'Main', `Override status requested: ${message}`);
+    }
+
+    /**
      * Reset all overrides to default state
      */
     static resetOverrides() {
         const hadOverrides = DragonbaneActionRules.overrides.targetSelection || 
                             DragonbaneActionRules.overrides.rangeChecking || 
+                            DragonbaneActionRules.overrides.yzeActionTracking ||
                             DragonbaneActionRules.overrides.allValidations;
         
         DragonbaneActionRules.overrides.targetSelection = false;
         DragonbaneActionRules.overrides.rangeChecking = false;
+        DragonbaneActionRules.overrides.yzeActionTracking = false;
         DragonbaneActionRules.overrides.allValidations = false;
         
         if (hadOverrides) {
@@ -230,13 +295,16 @@ class DragonbaneActionRules {
                 // Override controls for manual testing
                 overrides: {
                     target: () => DragonbaneActionRules.toggleTargetOverride(),
-                    range: () => DragonbaneActionRules.toggleRangeOverride(), 
+                    range: () => DragonbaneActionRules.toggleRangeOverride(),
+                    yze: () => DragonbaneActionRules.toggleYZEOverride(),
                     all: () => DragonbaneActionRules.toggleAllOverrides(),
                     reset: () => DragonbaneActionRules.resetOverrides(),
-                    status: () => {
+                    status: () => DragonbaneActionRules.showOverrideStatus(),
+                    consoleStatus: () => {
                         console.log('Override Status:');
                         console.log(`  Target Selection: ${DragonbaneActionRules.overrides.targetSelection ? 'DISABLED' : 'enabled'}`);
                         console.log(`  Range Checking: ${DragonbaneActionRules.overrides.rangeChecking ? 'DISABLED' : 'enabled'}`);
+                        console.log(`  YZE Action Tracking: ${DragonbaneActionRules.overrides.yzeActionTracking ? 'DISABLED' : 'enabled'}`);
                         console.log(`  All Validations: ${DragonbaneActionRules.overrides.allValidations ? 'DISABLED' : 'enabled'}`);
                     }
                 },
@@ -258,6 +326,7 @@ class DragonbaneActionRules {
                     console.log(`Patterns Initialized: ${DragonbaneActionRules.patternManager?.areInitialized() ? 'Yes' : 'No'}`);
                     console.log(`Target Override: ${DragonbaneActionRules.overrides.targetSelection}`);
                     console.log(`Range Override: ${DragonbaneActionRules.overrides.rangeChecking}`);
+                    console.log(`YZE Override: ${DragonbaneActionRules.overrides.yzeActionTracking}`);
                     console.log(`All Overrides: ${DragonbaneActionRules.overrides.allValidations}`);
                     console.log(game.i18n.localize("DRAGONBANE_ACTION_RULES.debug.rangeRules"));
                     console.log(game.i18n.localize("DRAGONBANE_ACTION_RULES.debug.footer"));
