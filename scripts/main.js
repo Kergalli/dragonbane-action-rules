@@ -14,7 +14,7 @@ import { DragonbaneUtils } from './utils.js';
 
 class DragonbaneActionRules {
     static ID = 'dragonbane-action-rules';
-    static VERSION = '1.3.1';
+    static VERSION = '1.3.4';
     
     static FLAGS = {
         RULES_MESSAGE: 'dragonbaneRulesMessage'
