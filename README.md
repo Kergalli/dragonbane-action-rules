@@ -1,6 +1,6 @@
 # Dragonbane Combat Assistant
 
-![Version](https://img.shields.io/badge/version-1.3.2-blue)
+![Version](https://img.shields.io/badge/version-1.3.4-blue)
 ![Foundry Version](https://img.shields.io/badge/foundry-v12%20%7C%20v13-green)
 ![System](https://img.shields.io/badge/system-dragonbane-orange)
 
@@ -49,6 +49,20 @@
 - **Reaction handling** - Excludes reaction spells from action tracking
 - **Customizable exclusions** - Configure which dice rolls to ignore
 - **Override support** - Temporarily disable action tracking with Alt+Y for edge cases
+
+## New in Version 1.3.3 / 1.3.4
+
+### 🛠️ **Critical YZE Integration Bug Fixes**
+- **Non-Combat Token Fix** - Resolved issue where tokens not in combat were incorrectly receiving "action already performed" messages
+- **Damage Roll Fix** - Fixed double action detection where damage rolls were incorrectly treated as separate actions
+- **Improved Detection** - Enhanced YZE integration logic to properly distinguish between combatants, non-combatants, and damage rolls
+
+### 🔧 **Technical Improvements**
+- **Smarter Combatant Detection** - YZE integration now properly verifies if actors are actually in the current combat
+- **Reliable Damage Roll Detection** - Uses CSS classes and data attributes to accurately identify damage/healing rolls
+- **Better Action Workflow** - Attack → Damage button workflow now correctly applies only one action status effect
+
+---
 
 ## New in Version 1.3.2
 
