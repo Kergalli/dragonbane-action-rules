@@ -2,6 +2,29 @@
 
 All notable changes to the Dragonbane Combat Assistant module will be documented here.
 
+## [1.3.3] and [1.3.4] - 2025-08-17
+
+### Bug Fixes
+- **Fixed Non-Combat Token YZE Messages**
+  - Resolved issue where tokens not in combat were incorrectly showing "An action has already been performed by..." messages
+  - YZE integration now properly distinguishes between combatants and non-combatants
+  - Non-combat tokens are silently ignored by action tracking system
+
+- **Fixed Damage Roll Double Action Detection**
+  - Resolved issue where damage rolls (from "Roll Damage" buttons) were incorrectly detected as separate actions
+  - Damage and healing rolls are now properly excluded from YZE action tracking
+  - Prevents double action status effects when following attack → damage workflow
+  - Uses reliable CSS class and data attribute detection for all damage/healing roll types
+
+### Technical Improvements
+- **Enhanced YZE Integration Logic**
+  - Added `isActorInCurrentCombat()` method for proper combatant verification
+  - Added `_isDamageRoll()` method for reliable damage/healing roll detection
+  - Improved action detection priority to check damage rolls before pattern matching
+  - Better separation of concerns between combat and non-combat scenarios
+
+---
+
 ## [1.3.2] - 2025-08-17
 
 ### New Features
