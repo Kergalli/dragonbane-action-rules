@@ -127,17 +127,49 @@ export class DragonbaneYZEIntegration {
     }
 
     /**
+     * Check if an actor/token is actually in the current combat
+     */
+    isActorInCurrentCombat(actor, tokenId) {
+        if (!DragonbaneUtils.hasCombat()) return false;
+
+        // If we have a token ID, check for that specific token
+        if (tokenId) {
+            return game.combat.turns.some(turn => turn.tokenId === tokenId);
+        }
+
+        // Fallback to checking by actor ID
+        if (actor) {
+            return game.combat.turns.some(turn => turn.actor?.id === actor.id);
+        }
+
+        return false;
+    }
+
+    /**
      * Handle action taken by a combatant (token-specific with notifications)
      */
     async onActionTaken(actor, actionType = 'unknown', tokenInfo = {}) {
         if (!this.isEnabled()) return;
         if (!DragonbaneUtils.isCombatActive()) return;
 
+        // Check if YZE action tracking is overridden
+        if (window.DragonbaneActionRules?.overrides?.yzeActionTracking || 
+            window.DragonbaneActionRules?.overrides?.allValidations) {
+            DragonbaneUtils.debugLog(this.moduleId, 'YZEIntegration', `YZE action tracking skipped due to override for ${actor.name} (${actionType})`);
+            return;
+        }
+
         try {
-            // First check if this specific token has any available actions left
+            // Check if this actor/token is actually in the current combat
+            if (!this.isActorInCurrentCombat(actor, tokenInfo.tokenId)) {
+                DragonbaneUtils.debugLog(this.moduleId, 'YZEIntegration', `Action by ${actor.name} ignored - not a combatant in current combat`);
+                return; // Silently ignore actions from non-combatants
+            }
+
+            // Check if this specific token has any available actions left
             const nextCombatant = this.getNextAvailableCombatantForToken(actor, tokenInfo.tokenId);
             if (!nextCombatant) {
-                // Show localized notification that character has already acted
+                // Only show notification if they're actually in combat but used all actions
                 const message = game.i18n.format("DRAGONBANE_ACTION_RULES.yze.actionAlreadyPerformed", { 
                     actorName: actor.name 
                 });
