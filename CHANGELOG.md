@@ -2,6 +2,45 @@
 
 All notable changes to the Dragonbane Combat Assistant module will be documented here.
 
+## [1.3.2] - 2025-08-17
+
+### New Features
+- **YZE Action Tracking Override (Alt+Y)**
+  - New keyboard shortcut to temporarily disable Year Zero Engine action status effect application
+  - Useful for handling edge cases where rolls are incorrectly detected as actions
+  - Allows manual action management when automatic tracking isn't desired
+  - Follows the same pattern as existing validation overrides
+
+- **Override Status Display (Alt+S)**
+  - New keyboard shortcut to show personal override status via notification
+  - Displays currently active overrides or "All validation rules active" if none
+  - Personal notifications that don't clutter chat or affect other players
+  - Localized support for English and Swedish
+
+### Bug Fixes
+- **Fixed "Mark Weapon Broken" Button**
+  - Resolved "Cannot read properties of null (reading 'markWeaponBroken')" error
+  - Button now works correctly again after module initialization timing issues
+  - Improved error handling and logging for weapon marking functionality
+
+### Enhanced Override System
+- **Updated "All Overrides" (Alt+A)**
+  - Now includes YZE action tracking in addition to validation rules
+  - Updated localization to reflect expanded scope
+  - Reset function (Alt+X) now clears all override types including YZE
+
+### Updated Keyboard Shortcuts
+| Shortcut | Function | Description |
+|----------|----------|-------------|
+| **Alt + T** | Toggle Target Override | Temporarily disable/enable target selection enforcement |
+| **Alt + R** | Toggle Range Override | Temporarily disable/enable weapon range validation |
+| **Alt + Y** | Toggle YZE Override | Temporarily disable/enable YZE action tracking |
+| **Alt + S** | Show Override Status | Display current override status via personal notification |
+| **Alt + A** | Override All | Temporarily disable/enable all validation and tracking |
+| **Alt + X** | Reset All | Clear all temporary overrides |
+
+---
+
 ## [1.3.1] - 2025-08-13
 
 ### Major New Features
