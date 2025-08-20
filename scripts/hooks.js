@@ -283,13 +283,14 @@ export class DragonbaneHooks {
     enableMonsterActionPrevention() {
         if (this.activeHooks.has('monsterActionPrevention')) return;
 
+        // Main prevention hook
         const hookId = Hooks.on('preCreateChatMessage', (document, data, options, userId) => {
             // Only process for current user to avoid duplicate dialogs
             if (userId !== game.user.id) return;
 
-            // Check for bypass flag (when user clicked "Proceed")
-            if (this._bypassUntil && Date.now() < this._bypassUntil) {
-                this.debugLog("Bypassing prevention due to active bypass period");
+            // Check for active bypass
+            if (this._bypassActive) {
+                this.debugLog("Bypassing prevention due to active bypass");
                 return; // Allow this message to proceed
             }
 
@@ -313,13 +314,38 @@ export class DragonbaneHooks {
 
             } catch (error) {
                 console.error(`${this.moduleId} | Error in monster action prevention:`, error);
-                // Clear bypass on error to prevent stuck state
-                this._bypassUntil = null;
+                this._clearBypass();
+            }
+        });
+
+        // Watch for rules messages to clear bypass
+        const rulesWatcherId = Hooks.on('createChatMessage', (message) => {
+            // Only check if bypass is active
+            if (!this._bypassActive || !this._bypassAction) return;
+
+            // Check if this is a rules message for the action we're bypassing
+            const content = message.content;
+            if (!content) return;
+
+            // Get localized "Parry Rules" or "Disarm Rules" text
+            const actionKey = this._bypassAction === 'parry' ? 
+                'DRAGONBANE_ACTION_RULES.actions.parry' : 
+                'DRAGONBANE_ACTION_RULES.actions.disarm';
+            
+            const actionName = game.i18n.localize(actionKey);
+            const rulesText = game.i18n.format('DRAGONBANE_ACTION_RULES.speakers.generic', { action: actionName });
+            
+            // Check if message contains the rules text (in speaker alias or content)
+            const speaker = message.speaker?.alias || '';
+            if (speaker.includes(rulesText) || content.includes(rulesText)) {
+                this.debugLog(`Detected ${this._bypassAction} rules message, clearing bypass`);
+                this._clearBypass();
             }
         });
 
         this.activeHooks.set('monsterActionPrevention', hookId);
-        this.debugLog("Monster action prevention hook enabled");
+        this.activeHooks.set('monsterActionRulesWatcher', rulesWatcherId);
+        this.debugLog("Monster action prevention hooks enabled");
     }
 
     /**
@@ -329,38 +355,45 @@ export class DragonbaneHooks {
         this._showMonsterActionConfirmation(action, targetName).then(proceed => {
             if (proceed) {
                 this.debugLog(`User confirmed ${action} action against monster ${targetName}, proceeding with roll`);
-
-                // Set bypass with shorter window (2 seconds should be plenty)
-                this._bypassUntil = Date.now() + 2000;
-                this.debugLog(`Monster action bypass window opened until ${new Date(this._bypassUntil).toLocaleTimeString()}`);
-
+                
+                // Set bypass with the specific action we're waiting for
+                this._bypassAction = action; // Store which action we're bypassing for
+                this._bypassActive = true;
+                this.debugLog(`Monster action bypass activated for ${action}`);
+                
+                // Set a fallback timeout (in case rules never appear)
+                this._bypassTimeout = setTimeout(() => {
+                    if (this._bypassActive) {
+                        this._bypassActive = false;
+                        this._bypassAction = null;
+                        this.debugLog("Monster action bypass cleared by timeout (fallback)");
+                    }
+                }, 5000); // 5 second fallback just in case
+                
                 // Recreate the chat message
-                ChatMessage.create(document.toObject())
-                    .catch(error => {
-                        console.error(`${this.moduleId} | Error recreating chat message:`, error);
-                        // Clear bypass immediately on error
-                        this._bypassUntil = null;
-                        this.debugLog("Monster action bypass cleared due to error");
-                    })
-                    .finally(() => {
-                        // Always ensure bypass is cleared after the window
-                        setTimeout(() => {
-                            if (this._bypassUntil && Date.now() > this._bypassUntil) {
-                                this._bypassUntil = null;
-                                this.debugLog("Monster action bypass window closed");
-                            }
-                        }, 2100); // Slightly longer than bypass window
-                    });
+                ChatMessage.create(document.toObject()).catch(error => {
+                    console.error(`${this.moduleId} | Error recreating chat message:`, error);
+                    this._clearBypass();
+                });
             } else {
                 this.debugLog(`Prevented ${action} action against monster ${targetName}`);
-                // Ensure bypass is null when action is cancelled
-                this._bypassUntil = null;
             }
         }).catch(error => {
             console.error(`${this.moduleId} | Error in monster action confirmation:`, error);
-            // Clear bypass on any dialog error
-            this._bypassUntil = null;
         });
+    }
+
+    /**
+     * Clear the bypass state
+     */
+    _clearBypass() {
+        this._bypassActive = false;
+        this._bypassAction = null;
+        if (this._bypassTimeout) {
+            clearTimeout(this._bypassTimeout);
+            this._bypassTimeout = null;
+        }
+        this.debugLog("Monster action bypass cleared");
     }
 
     /**
@@ -368,6 +401,8 @@ export class DragonbaneHooks {
      */
     disableMonsterActionPrevention() {
         this.removeHook('monsterActionPrevention', 'preCreateChatMessage');
+        this.removeHook('monsterActionRulesWatcher', 'createChatMessage');
+        this._clearBypass(); // Clean up any active bypass
     }
 
     /**
