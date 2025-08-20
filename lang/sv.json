@@ -81,6 +81,10 @@
     },
     "durability": "Brytvärde",
     "unknownWeapon": "Okänt Vapen",
+    "weaponTypes": {
+      "melee": "närstridsvapen",
+      "longMelee": "långt närstridsvapen"
+    },
     "range": {
       "upToTwoMeters": "inom 2m från",
       "upToFourMeters": "inom 4m från"
