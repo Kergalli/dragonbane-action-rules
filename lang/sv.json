@@ -6,14 +6,6 @@
       "moduleEnabled": "Modul aktiverad",
       "moduleDisabled": "Modul inaktiverad"
     },
-    "debug": {
-      "header": "=== Drakar och Demoner Stridassistent Debug Info ===",
-      "moduleEnabled": "Modul aktiverad",
-      "controlledTokens": "Kontrollerade spelfigurer",
-      "targetedTokens": "Riktade spelfigurer",
-      "rangeRules": "Avståndsregler: Standard närstrid=2m, Lång närstrid=4m, Avstånd=vapnets räckvidd",
-      "footer": "=== Slut Debug Info ==="
-    },
     "settings": {
       "enabled": {
         "name": "Aktivera Stridassistent",
@@ -85,19 +77,10 @@
     "speakers": {
       "generic": "{action} Regler",
       "shove": "Knuff Tillgänglig",
-      "evade": "SMYGA Rörelse",
-      "dodgeAndParry": "Undvika och Parera Regler"
+      "evade": "SMYGA Rörelse"
     },
     "durability": "Brytvärde",
     "unknownWeapon": "Okänt Vapen",
-    "weaponTypes": {
-      "melee": "närstridsvapen",
-      "longMelee": "långt närstridsvapen"
-    },
-    "range": {
-      "upToTwoMeters": "inom 2m från",
-      "upToFourMeters": "inom 4m från"
-    },
     "validation": {
       "selectToken": "Välj din spelfigur innan du attackerar med {weapon}.",
       "noWeapon": "Du har inte vapnet {weapon}!",
@@ -132,8 +115,7 @@
       "cannotDefend": "Kan inte duckas eller pareras",
       "twoHanded": "Tvåhandsvapen = du får nackdel",
       "success": "Lyckas = vapnet hamnar T6 meter bort (du väljer riktning)",
-      "limitations": "Kan inte avväpna sköldar eller naturliga vapen",
-      "monstersCannotBeDisarmed": "<strong>Monster:</strong> Kan inte avväpnas"
+      "limitations": "Kan inte avväpna sköldar eller naturliga vapen"
     },
     "weakspot": {
       "piercing": "Endast stickande vapen: Sikta på glipor i rustningen",
@@ -193,7 +175,20 @@
       }
     },
     "yze": {
-      "actionAlreadyPerformed": "En handling har redan utförts av {actorName}."
+      "actionAlreadyPerformedOrPushing": "En handling har redan utförts av {actorName} eller de pressar ett slag.",
+      "actionAlreadyPerformedNPC": "{actorName} har använt alla sina tillgängliga handlingar."
+    },
+    "monsterPrevention": {
+      "disarm": {
+        "title": "Avväpna Monster",
+        "content": "Monster kan inte avväpnas. Är du säker på att du vill försöka avväpna {targetName}?"
+      },
+      "parry": {
+        "title": "Parera Monsterattack",
+        "content": "Monsterattacker kan generellt inte pareras (om inte attacken specifikt tillåter det). Är du säker på att du vill försöka parera denna attack från {targetName}?"
+      },
+      "proceed": "Fortsätt",
+      "cancel": "Avbryt"
     }
   }
 }
