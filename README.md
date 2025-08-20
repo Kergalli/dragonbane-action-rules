@@ -1,6 +1,6 @@
 # Dragonbane Combat Assistant
 
-![Version](https://img.shields.io/badge/version-1.3.5-blue)
+![Version](https://img.shields.io/badge/version-1.3.8-blue)
 ![Foundry Version](https://img.shields.io/badge/foundry-v12%20%7C%20v13-green)
 ![System](https://img.shields.io/badge/system-dragonbane-orange)
 
