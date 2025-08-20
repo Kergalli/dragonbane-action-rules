@@ -288,7 +288,6 @@ export class DragonbaneHooks {
             if (userId !== game.user.id) return;
 
             // Check for bypass flag (when user clicked "Proceed")
-            // Use timestamp-based bypass to handle multiple messages from same action
             if (this._bypassUntil && Date.now() < this._bypassUntil) {
                 this.debugLog("Bypassing prevention due to active bypass period");
                 return; // Allow this message to proceed
@@ -314,6 +313,8 @@ export class DragonbaneHooks {
 
             } catch (error) {
                 console.error(`${this.moduleId} | Error in monster action prevention:`, error);
+                // Clear bypass on error to prevent stuck state
+                this._bypassUntil = null;
             }
         });
 
@@ -327,21 +328,38 @@ export class DragonbaneHooks {
     _handleMonsterActionPrevention(document, action, targetName) {
         this._showMonsterActionConfirmation(action, targetName).then(proceed => {
             if (proceed) {
-                // User clicked "Proceed" - recreate the message
                 this.debugLog(`User confirmed ${action} action against monster ${targetName}, proceeding with roll`);
 
-                // Set bypass period (5 seconds should be enough for all related messages)
-                this._bypassUntil = Date.now() + 5000;
+                // Set bypass with shorter window (2 seconds should be plenty)
+                this._bypassUntil = Date.now() + 2000;
+                this.debugLog(`Monster action bypass window opened until ${new Date(this._bypassUntil).toLocaleTimeString()}`);
 
                 // Recreate the chat message
-                ChatMessage.create(document.toObject()).catch(error => {
-                    console.error(`${this.moduleId} | Error recreating chat message:`, error);
-                    // Clear bypass on error
-                    this._bypassUntil = null;
-                });
+                ChatMessage.create(document.toObject())
+                    .catch(error => {
+                        console.error(`${this.moduleId} | Error recreating chat message:`, error);
+                        // Clear bypass immediately on error
+                        this._bypassUntil = null;
+                        this.debugLog("Monster action bypass cleared due to error");
+                    })
+                    .finally(() => {
+                        // Always ensure bypass is cleared after the window
+                        setTimeout(() => {
+                            if (this._bypassUntil && Date.now() > this._bypassUntil) {
+                                this._bypassUntil = null;
+                                this.debugLog("Monster action bypass window closed");
+                            }
+                        }, 2100); // Slightly longer than bypass window
+                    });
             } else {
                 this.debugLog(`Prevented ${action} action against monster ${targetName}`);
+                // Ensure bypass is null when action is cancelled
+                this._bypassUntil = null;
             }
+        }).catch(error => {
+            console.error(`${this.moduleId} | Error in monster action confirmation:`, error);
+            // Clear bypass on any dialog error
+            this._bypassUntil = null;
         });
     }
 
