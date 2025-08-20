@@ -18,7 +18,7 @@ export class DragonbaneRulesDisplay {
         try {
             // Skip if patterns aren't initialized yet
             if (!this.patternManager.areInitialized()) return;
-            
+
             // Skip if already a rules message
             if (message.getFlag(this.moduleId, 'dragonbaneRulesMessage')) return;
 
@@ -43,7 +43,7 @@ export class DragonbaneRulesDisplay {
         if (actionMatch) {
             if (!this.patternManager.isSuccessfulAction(content)) return;
             if (!this._shouldCreateRules(message)) return;
-            
+
             this._processSpecialAction(message, actionMatch);
             return;
         }
@@ -61,7 +61,7 @@ export class DragonbaneRulesDisplay {
     async _processSpecialAction(message, actionMatch) {
         const action = actionMatch[1].toLowerCase();
         const normalizedAction = this._normalizeAction(action);
-        
+
         const ruleData = await this._generateRuleData(normalizedAction, message);
         if (ruleData.content) {
             await this._displayRules(normalizedAction, ruleData.content, ruleData.weapon, message.speaker);
@@ -73,7 +73,7 @@ export class DragonbaneRulesDisplay {
      */
     _normalizeAction(action) {
         const actionLower = action.toLowerCase();
-        
+
         // Get current localized terms for reverse mapping
         const localizedTerms = {
             parry: (game.i18n.localize("DoD.attackTypes.parry") || "parry").toLowerCase(),
@@ -81,19 +81,19 @@ export class DragonbaneRulesDisplay {
             disarm: (game.i18n.localize("DoD.attackTypes.disarm") || "disarm").toLowerCase(),
             weakspot: (game.i18n.localize("DoD.attackTypes.weakpoint") || "weakpoint").toLowerCase() // Key is weakspot, localization is weakpoint
         };
-        
+
         // Reverse map localized terms to English keys
         for (const [englishKey, localizedTerm] of Object.entries(localizedTerms)) {
             if (actionLower === localizedTerm) {
                 return englishKey;
             }
         }
-        
+
         // Handle English variations for weakspot
         if (actionLower === 'find weak spot' || actionLower === 'weakpoint' || actionLower === 'weak spot') {
             return 'weakspot';
         }
-        
+
         // Fallback to original if no mapping found
         return actionLower;
     }
@@ -114,25 +114,25 @@ export class DragonbaneRulesDisplay {
                 content = parryResult.content;
                 weapon = parryResult.weapon;
                 break;
-                
+
             case 'topple':
                 weapon = DragonbaneUtils.extractWeaponFromMessage(message);
                 const toppleActor = DragonbaneUtils.getActorFromMessage(message);
                 content = this._getToppleRules(weapon, toppleActor);
                 break;
-                
+
             case 'disarm':
                 weapon = DragonbaneUtils.extractWeaponFromMessage(message);
                 const disarmActor = DragonbaneUtils.getActorFromMessage(message);
                 content = this._getDisarmRules(weapon, disarmActor);
                 break;
-                
+
             case 'weakspot':
                 weapon = DragonbaneUtils.extractWeaponFromMessage(message);
                 const weakspotActor = DragonbaneUtils.getActorFromMessage(message);
                 content = this._getWeakspotRules(weapon, weakspotActor, message);
                 break;
-                
+
             default:
                 content = this._getActionRules(normalizedAction);
         }
@@ -147,7 +147,7 @@ export class DragonbaneRulesDisplay {
         try {
             const actor = DragonbaneUtils.getActorFromMessage(message);
             const shoveRule = this._getShoveRuleIfApplicable(message, actor);
-            
+
             if (shoveRule) {
                 await this._displayShoveRule(shoveRule);
             }
@@ -178,7 +178,7 @@ export class DragonbaneRulesDisplay {
 
             // Prevent duplicate rules
             if (!DragonbaneUtils.shouldCreateRules(message)) return;
-            
+
             await this._displayEvadeMovementRule();
 
         } catch (error) {
@@ -196,13 +196,13 @@ export class DragonbaneRulesDisplay {
             DragonbaneUtils.debugLog(this.moduleId, 'RulesDisplay', "EVADE skill roll detected via UUID");
             return true;
         }
-        
+
         // Simple text fallback if no UUID found
         if (DragonbaneUtils.isEvadeSkillRollFromText(message.content)) {
             DragonbaneUtils.debugLog(this.moduleId, 'RulesDisplay', "EVADE skill roll detected via text pattern");
             return true;
         }
-        
+
         return false;
     }
 
@@ -218,7 +218,7 @@ export class DragonbaneRulesDisplay {
         const showDurability = DragonbaneUtils.getSetting(this.moduleId, 'showParryDurability', true);
         const isMonster = DragonbaneUtils.isMonsterActor(actor);
         let content = "";
-        
+
         if (showDurability && !isMonster) {
             if (weapon) {
                 const durability = weapon.system?.durability || 0;
@@ -228,26 +228,26 @@ export class DragonbaneRulesDisplay {
                 content += `<li class="weapon-warning">${game.i18n.localize("DRAGONBANE_ACTION_RULES.parry.noWeaponFound")}</li>`;
             }
         }
-        
+
         content += this._getParryRulesList(dragonRolled, isMonster);
         return { content, weapon: isMonster ? null : weapon };
     }
 
     _getParryRulesList(dragonRolled = false, isMonster = false) {
-        const dragonRule = dragonRolled ? 
+        const dragonRule = dragonRolled ?
             `<li><strong class="dragon-highlight">${game.i18n.localize("DRAGONBANE_ACTION_RULES.parry.dragon")}</strong></li>` :
             `<li>${game.i18n.localize("DRAGONBANE_ACTION_RULES.parry.dragon")}</li>`;
-        
+
         let rules = `<li>${game.i18n.localize("DRAGONBANE_ACTION_RULES.parry.reaction")}</li>
                      <li>${game.i18n.localize("DRAGONBANE_ACTION_RULES.parry.success")}</li>`;
-        
+
         rules += dragonRule;
         rules += `<li>${game.i18n.localize("DRAGONBANE_ACTION_RULES.parry.piercing")}</li>`;
-        
+
         if (!isMonster) {
             rules += `<li>${game.i18n.localize("DRAGONBANE_ACTION_RULES.parry.monster")}</li>`;
         }
-        
+
         if (DragonbaneUtils.getSetting(this.moduleId, 'enableParryMovementReminders', true)) {
             if (isMonster) {
                 rules += `<li><strong>${game.i18n.localize("DRAGONBANE_ACTION_RULES.parry.ifParrying")}</strong> ${game.i18n.localize("DRAGONBANE_ACTION_RULES.parry.movement")}</li>`;
@@ -255,33 +255,33 @@ export class DragonbaneRulesDisplay {
                 rules += `<li>${game.i18n.localize("DRAGONBANE_ACTION_RULES.parry.movement")}</li>`;
             }
         }
-        
+
         if (isMonster && DragonbaneUtils.getSetting(this.moduleId, 'enableDodgeMovementReminders', true)) {
             rules += `<li>${game.i18n.localize("DRAGONBANE_ACTION_RULES.parry.dodgeMovement")}</li>`;
         }
-        
+
         return rules;
     }
 
     _getToppleRules(weapon, actor = null) {
         let content = "";
-        
+
         if (weapon && DragonbaneUtils.hasToppleFeature(weapon)) {
             const weaponName = weapon.name || game.i18n.localize("DRAGONBANE_ACTION_RULES.unknownWeapon");
             const toppleBonus = this._getToppleBonus(weapon);
             content += `<li><strong>${weaponName} ${game.i18n.localize("DRAGONBANE_ACTION_RULES.topple.weaponFeature")}:</strong> ${toppleBonus}</li>`;
         }
-        
+
         content += `<li>${game.i18n.localize("DRAGONBANE_ACTION_RULES.topple.noDamage")}</li>
                     <li>${game.i18n.localize("DRAGONBANE_ACTION_RULES.topple.evadeRoll")}</li>
                     <li>${game.i18n.localize("DRAGONBANE_ACTION_RULES.topple.cannotDefend")}</li>
                     <li>${game.i18n.localize("DRAGONBANE_ACTION_RULES.topple.success")}</li>`;
-        
+
         const target = DragonbaneUtils.getCurrentTarget();
         if (target && DragonbaneUtils.isMonsterActor(target)) {
             content += `<li>${game.i18n.localize("DRAGONBANE_ACTION_RULES.topple.monsterRule")}</li>`;
         }
-        
+
         return content;
     }
 
@@ -298,11 +298,11 @@ export class DragonbaneRulesDisplay {
         let content = `<li>${game.i18n.localize("DRAGONBANE_ACTION_RULES.weakspot.piercing")}</li>
                 <li>${game.i18n.localize("DRAGONBANE_ACTION_RULES.weakspot.bane")}</li>
                 <li>${game.i18n.localize("DRAGONBANE_ACTION_RULES.weakspot.success")}</li>`;
-        
+
         if (message) {
             content += this._getShoveRuleIfApplicable(message, actor);
         }
-        
+
         return content;
     }
 
@@ -336,7 +336,7 @@ export class DragonbaneRulesDisplay {
     _canShove(attacker, defender) {
         const attackerBonus = DragonbaneUtils.extractStrDamageBonus(attacker);
         const defenderBonus = DragonbaneUtils.extractStrDamageBonus(defender);
-        
+
         DragonbaneUtils.debugLog(this.moduleId, 'RulesDisplay', `Shove check: ${attacker.name} D${attackerBonus} vs ${defender.name} D${defenderBonus}`);
         return attackerBonus >= defenderBonus;
     }
@@ -349,25 +349,17 @@ export class DragonbaneRulesDisplay {
     // Display methods
     async _displayRules(action, content, weapon = null, speaker = null) {
         const delay = DragonbaneUtils.getSetting(this.moduleId, 'delay', 3000);
-        
-        const actor = DragonbaneUtils.getActorFromSpeakerData(speaker);
-        const isMonster = DragonbaneUtils.isMonsterActor(actor);
-        
-        let speakerName;
-        if (action === 'parry' && isMonster) {
-            speakerName = game.i18n.localize("DRAGONBANE_ACTION_RULES.speakers.dodgeAndParry");
-        } else {
-            const actionName = game.i18n.localize(`DRAGONBANE_ACTION_RULES.actions.${action}`);
-            speakerName = game.i18n.format("DRAGONBANE_ACTION_RULES.speakers.generic", { action: actionName });
-        }
+
+        const actionName = game.i18n.localize(`DRAGONBANE_ACTION_RULES.actions.${action}`);
+        const speakerName = game.i18n.format("DRAGONBANE_ACTION_RULES.speakers.generic", { action: actionName });
 
         let chatContent = `<div class="dragonbane-action-rules"><ul>${content}</ul>`;
-        
+
         // Add weapon broken button for parry with weapon
         if (action === 'parry' && weapon && speaker && !weapon.system?.broken) {
             chatContent += this._buildWeaponBrokenButton(weapon, speaker);
         }
-        
+
         chatContent += `</div>`;
 
         setTimeout(async () => {
@@ -375,10 +367,10 @@ export class DragonbaneRulesDisplay {
                 await ChatMessage.create({
                     content: chatContent,
                     speaker: { alias: speakerName },
-                    flags: { 
-                        [this.moduleId]: { 
-                            dragonbaneRulesMessage: true 
-                        } 
+                    flags: {
+                        [this.moduleId]: {
+                            dragonbaneRulesMessage: true
+                        }
                     }
                 });
             } catch (error) {
@@ -398,10 +390,10 @@ export class DragonbaneRulesDisplay {
                 await ChatMessage.create({
                     content: chatContent,
                     speaker: { alias: speakerName },
-                    flags: { 
-                        [this.moduleId]: { 
-                            dragonbaneRulesMessage: true 
-                        } 
+                    flags: {
+                        [this.moduleId]: {
+                            dragonbaneRulesMessage: true
+                        }
                     }
                 });
             } catch (error) {
@@ -420,10 +412,10 @@ export class DragonbaneRulesDisplay {
                 await ChatMessage.create({
                     content: chatContent,
                     speaker: { alias: speakerName },
-                    flags: { 
-                        [this.moduleId]: { 
-                            dragonbaneRulesMessage: true 
-                        } 
+                    flags: {
+                        [this.moduleId]: {
+                            dragonbaneRulesMessage: true
+                        }
                     }
                 });
             } catch (error) {
@@ -466,9 +458,9 @@ export class DragonbaneRulesDisplay {
                 scene: sceneId,
                 token: tokenId
             };
-            
+
             const actor = DragonbaneUtils.getActorFromSpeakerData(speakerData);
-            
+
             if (!actor) {
                 ui.notifications.error(game.i18n.localize("DRAGONBANE_ACTION_RULES.weaponBroken.errors.actorNotFound"));
                 return;
@@ -513,7 +505,7 @@ export class DragonbaneRulesDisplay {
 
             if (!confirmed) return;
 
-            await weapon.update({"system.broken": true});
+            await weapon.update({ "system.broken": true });
             ui.notifications.info(game.i18n.format("DRAGONBANE_ACTION_RULES.weaponBroken.success", { weaponName: weapon.name }));
             DragonbaneUtils.debugLog(this.moduleId, 'RulesDisplay', `Weapon ${weapon.name} marked as broken by ${game.user.name}`);
 
@@ -526,22 +518,22 @@ export class DragonbaneRulesDisplay {
     async showFullParryRules(weaponId, actorId, dragonRolled) {
         try {
             const actor = fromUuidSync(actorId);
-            
+
             if (!actor) {
                 ui.notifications.error("Actor not found");
                 return;
             }
 
             const weapon = weaponId ? actor.items.get(weaponId) : null;
-            
+
             // Get full parry rules bypassing monster check
             const parryResult = this._getFullParryRules(weapon, dragonRolled === 'true', actor);
-            
+
             if (parryResult.content) {
                 const speakerName = game.i18n.localize("DRAGONBANE_ACTION_RULES.speakers.generic").replace("{action}", game.i18n.localize("DRAGONBANE_ACTION_RULES.actions.parry"));
-                
+
                 let chatContent = `<div class="dragonbane-action-rules"><ul>${parryResult.content}</ul>`;
-                
+
                 if (parryResult.weapon && !parryResult.weapon.system?.broken) {
                     const speakerData = {
                         actor: actorId,
@@ -550,16 +542,16 @@ export class DragonbaneRulesDisplay {
                     };
                     chatContent += this._buildWeaponBrokenButton(parryResult.weapon, speakerData);
                 }
-                
+
                 chatContent += `</div>`;
 
                 await ChatMessage.create({
                     content: chatContent,
                     speaker: { alias: speakerName },
-                    flags: { 
-                        [this.moduleId]: { 
-                            dragonbaneRulesMessage: true 
-                        } 
+                    flags: {
+                        [this.moduleId]: {
+                            dragonbaneRulesMessage: true
+                        }
                     }
                 });
             }
@@ -575,7 +567,7 @@ export class DragonbaneRulesDisplay {
         const showDurability = DragonbaneUtils.getSetting(this.moduleId, 'showParryDurability', true);
         const isMonster = DragonbaneUtils.isMonsterActor(actor);
         let content = "";
-        
+
         if (showDurability && !isMonster) {
             if (weapon) {
                 const durability = weapon.system?.durability || 0;
@@ -585,7 +577,7 @@ export class DragonbaneRulesDisplay {
                 content += `<li class="weapon-warning">${game.i18n.localize("DRAGONBANE_ACTION_RULES.parry.noWeaponFound")}</li>`;
             }
         }
-        
+
         content += this._getParryRulesList(dragonRolled, isMonster);
         return { content, weapon: isMonster ? null : weapon };
     }
