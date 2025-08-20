@@ -78,8 +78,8 @@ export class DragonbanePatternManager {
             allowedShove: [terms.normal, terms.stab, terms.slash, terms.weakpoint],
             excludedShove: [terms.topple, terms.disarm, terms.parry, terms.ranged, terms.thrown],
             weapons: [terms.normal, terms.stab, terms.slash, terms.weakpoint, terms.weapon],
-            spells: [terms.spell, "cast"], // Simple fallbacks
-            skills: [terms.skill, "evade"], // Simple fallbacks
+            spells: [terms.spell],
+            skills: [terms.skill],
             dice: ['d6', 'd8', 'd10', 'd12', 'd20', cleanSuccess, cleanFailure, dragonWord, "roll"],
             monsterAttacks: this._buildMonsterAttackTerms(),
             exclusions: this._buildExclusionTerms()
