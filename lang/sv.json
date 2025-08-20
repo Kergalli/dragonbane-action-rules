@@ -8,7 +8,7 @@
     },
     "settings": {
       "enabled": {
-        "name": "Aktivera Stridassistent",
+        "name": "Aktivera Stridsassistent",
         "hint": "Visa automatiskt regler när stridshandlingar används i chatten"
       },
       "delay": {
@@ -36,12 +36,12 @@
         "hint": "Visa knuff-regelpåminnelser för närstrids specialattacker när STY-skadebonus tillåter det"
       },
       "enableDodgeMovementReminders": {
-        "name": "Aktivera Undvikande-rörelsepåminnelser",
-        "hint": "Visa rörelsepåminnelser för lyckade SMYGA-slag"
+        "name": "Aktivera Ducka-rörelsepåminnelse",
+        "hint": "Visa rörelsepåminnelse för lyckade slag för att ducka."
       },
       "debugMode": {
         "name": "Felsökningsläge",
-        "hint": "Aktivera felsökningsloggning till konsolen (för felsökning)"
+        "hint": "Aktivera felsökningsloggning till konsolen"
       },
       "enableEncumbranceMonitoring": {
         "name": "Aktivera Bärförmågeövervakning",
@@ -70,14 +70,14 @@
     },
     "actions": {
       "parry": "Parera",
-      "topple": "Fäll",
+      "topple": "Fälla",
       "disarm": "Avväpna",
       "weakspot": "Hitta glipa"
     },
     "speakers": {
       "generic": "{action} Regler",
       "shove": "Knuff Tillgänglig",
-      "evade": "SMYGA Rörelse"
+      "evade": "Paradförflyttning"
     },
     "durability": "Brytvärde",
     "unknownWeapon": "Okänt Vapen",
@@ -94,7 +94,7 @@
       "noWeapon": "Du har inte vapnet {weapon}!",
       "noTarget": "Välj ett mål innan du attackerar med {weapon}.",
       "tooManyTargets": "Välj endast ett mål för {weapon}.",
-      "meleeOutOfRange": "Målet är för långt bort! {weapon} är ett {weaponType} och måste vara {maxRange} målet, men målet är {distance}m bort.",
+      "meleeOutOfRange": "Målet är för långt bort! {weapon} är ett {weaponType} och måste vara som mest {maxRange} från målet, men målet är {distance}m bort.",
       "rangedOutOfRange": "Målet är för långt bort! {weapon} har en maximal räckvidd på {maxRange}m, men målet är {distance}m bort."
     },
     "parry": {
@@ -102,15 +102,15 @@
       "success": "Lyckas = ingen skada. Om skada > brytvärde, skadas vapnet tills det repareras",
       "piercing": "Stickattacker kan inte skada pareringsvapen/sköldar",
       "monster": "Monsterattacker kan inte pareras (om inte annat anges)",
-      "movement": "Lyckas = flytta dig själv och fienden 2m (räknas inte som förflyttning, inga gratisattacker)",
-      "dragon": "Drake = motattack (kan inte duckas/pareras). Om angriparen slog Drake, behöver Drake för att parera (ingen motattack)",
+      "movement": "Lyckas = flytta dig själv och fienden 2m (räknas inte som förflyttning, inga frislag)",
+      "dragon": "Drake = motattack (kan inte duckas/pareras). Om angriparen slog Drake, behövs Drake för att parera (ingen motattack)",
       "noWeaponFound": "⚠️ Kunde inte bestämma pareringsvapen",
-      "dodgeMovement": "<strong>Om Undvikande:</strong> Du kan förflyttas upp till 2m i valfri riktning (inga gratisattacker utlöses)",
-      "ifParrying": "Om Parering:"
+      "dodgeMovement": "<strong>Vid Ducka:</strong> Du kan flytta upp till 2m i valfri riktning (inga frislag utlöses)",
+      "ifParrying": "Vid Parering:"
     },
     "topple": {
       "noDamage": "Ingen skada tillfogad",
-      "evadeRoll": "Motståndaren gör ett motsatt SMYGA-slag",
+      "evadeRoll": "Motståndaren gör ett motsatt UNDVIKA-slag",
       "cannotDefend": "Kan inte duckas eller pareras",
       "success": "Lyckas = motståndaren blir liggande",
       "weaponFeature": "Fäll-funktion",
@@ -135,7 +135,7 @@
       "defaultTarget": "målet"
     },
     "evade": {
-      "movementAvailable": "<strong>Om Undvikande:</strong> Du kan förflyttas upp till 2m i valfri riktning (inga gratisattacker utlöses)"
+      "movementAvailable": "<strong>Vid Ducka:</strong> Du kan flytta upp till 2m i valfri riktning (inga frislag utlöses)"
     },
     "weaponBroken": {
       "buttonText": "Markera Vapen Trasigt",
