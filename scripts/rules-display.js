@@ -286,11 +286,6 @@ export class DragonbaneRulesDisplay {
     }
 
     _getDisarmRules(weapon, actor = null) {
-        const target = DragonbaneUtils.getCurrentTarget();
-        if (target && DragonbaneUtils.isMonsterActor(target)) {
-            return `<li>${game.i18n.localize("DRAGONBANE_ACTION_RULES.disarm.monstersCannotBeDisarmed")}</li>`;
-        }
-        
         return `<li>${game.i18n.localize("DRAGONBANE_ACTION_RULES.disarm.noDamage")}</li>
                 <li>${game.i18n.localize("DRAGONBANE_ACTION_RULES.disarm.skillRoll")}</li>
                 <li>${game.i18n.localize("DRAGONBANE_ACTION_RULES.disarm.cannotDefend")}</li>
@@ -368,6 +363,7 @@ export class DragonbaneRulesDisplay {
 
         let chatContent = `<div class="dragonbane-action-rules"><ul>${content}</ul>`;
         
+        // Add weapon broken button for parry with weapon
         if (action === 'parry' && weapon && speaker && !weapon.system?.broken) {
             chatContent += this._buildWeaponBrokenButton(weapon, speaker);
         }
@@ -450,6 +446,19 @@ export class DragonbaneRulesDisplay {
             </div>`;
     }
 
+    _buildShowParryRulesButton(weapon, actor, dragonRolled) {
+        const buttonText = game.i18n.localize("DRAGONBANE_ACTION_RULES.parry.showRulesButton");
+        return `
+            <div class="weapon-actions" style="margin-top: 8px; text-align: center;">
+                <button class="chat-button show-parry-rules" 
+                        data-weapon-id="${weapon?.id || ''}" 
+                        data-actor-id="${actor?.uuid || ''}"
+                        data-dragon-rolled="${dragonRolled}">
+                    ${buttonText}
+                </button>
+            </div>`;
+    }
+
     async markWeaponBroken(weaponId, actorId, sceneId = null, tokenId = null) {
         try {
             const speakerData = {
@@ -512,5 +521,72 @@ export class DragonbaneRulesDisplay {
             console.error(`${this.moduleId} | Error marking weapon broken:`, error);
             ui.notifications.error(game.i18n.localize("DRAGONBANE_ACTION_RULES.weaponBroken.errors.updateFailed"));
         }
+    }
+
+    async showFullParryRules(weaponId, actorId, dragonRolled) {
+        try {
+            const actor = fromUuidSync(actorId);
+            
+            if (!actor) {
+                ui.notifications.error("Actor not found");
+                return;
+            }
+
+            const weapon = weaponId ? actor.items.get(weaponId) : null;
+            
+            // Get full parry rules bypassing monster check
+            const parryResult = this._getFullParryRules(weapon, dragonRolled === 'true', actor);
+            
+            if (parryResult.content) {
+                const speakerName = game.i18n.localize("DRAGONBANE_ACTION_RULES.speakers.generic").replace("{action}", game.i18n.localize("DRAGONBANE_ACTION_RULES.actions.parry"));
+                
+                let chatContent = `<div class="dragonbane-action-rules"><ul>${parryResult.content}</ul>`;
+                
+                if (parryResult.weapon && !parryResult.weapon.system?.broken) {
+                    const speakerData = {
+                        actor: actorId,
+                        scene: null,
+                        token: null
+                    };
+                    chatContent += this._buildWeaponBrokenButton(parryResult.weapon, speakerData);
+                }
+                
+                chatContent += `</div>`;
+
+                await ChatMessage.create({
+                    content: chatContent,
+                    speaker: { alias: speakerName },
+                    flags: { 
+                        [this.moduleId]: { 
+                            dragonbaneRulesMessage: true 
+                        } 
+                    }
+                });
+            }
+
+        } catch (error) {
+            console.error(`${this.moduleId} | Error showing full parry rules:`, error);
+            ui.notifications.error("Failed to show parry rules");
+        }
+    }
+
+    _getFullParryRules(weapon, dragonRolled = false, actor = null) {
+        // This method provides full parry rules without the monster check
+        const showDurability = DragonbaneUtils.getSetting(this.moduleId, 'showParryDurability', true);
+        const isMonster = DragonbaneUtils.isMonsterActor(actor);
+        let content = "";
+        
+        if (showDurability && !isMonster) {
+            if (weapon) {
+                const durability = weapon.system?.durability || 0;
+                const weaponName = weapon.name || game.i18n.localize("DRAGONBANE_ACTION_RULES.unknownWeapon");
+                content += `<li><strong>${weaponName} ${game.i18n.localize("DRAGONBANE_ACTION_RULES.durability")}:</strong> ${durability}</li>`;
+            } else {
+                content += `<li class="weapon-warning">${game.i18n.localize("DRAGONBANE_ACTION_RULES.parry.noWeaponFound")}</li>`;
+            }
+        }
+        
+        content += this._getParryRulesList(dragonRolled, isMonster);
+        return { content, weapon: isMonster ? null : weapon };
     }
 }
