@@ -1,301 +1,194 @@
-# Changelog
+# Dragonbane Combat Assistant
 
-All notable changes to the Dragonbane Combat Assistant module will be documented here.
+![Version](https://img.shields.io/badge/version-1.3.5-blue)
+![Foundry Version](https://img.shields.io/badge/foundry-v12%20%7C%20v13-green)
+![System](https://img.shields.io/badge/system-dragonbane-orange)
 
-## [1.3.6] - 2025-08-20
-### Bug Fixes  
-- Fixed installation issues with The Forge Module Bazaar where scripts failed to load
-- No functional changes - version bump to resolve Forge infrastructure issue
+## What This Module Does
+
+**Dragonbane Combat Assistant** enhances melee/ranged combat and character management in six powerful ways:
+
+### 🎯 **Attack Validation (Before Roll)**
+- **Enforces target selection** - No more accidental attacks into empty space
+- **Smart weapon range validation** - Prevents impossible attacks before they happen
+- **Contextual thrown weapon support** - Thrown weapons work in melee (up to 2m/4m) AND at range (up to 2x weapon range)
+- **Smart distance calculation** - Handles multi-grid tokens and diagonal movement correctly
+- **Melee range enforcement** - Standard melee weapons require adjacency, long weapons can reach 1 square away
+- **Ranged range enforcement** - Ranged weapons can target up x2 their base range
+- **Quick bypass controls** - Temporarily disable validation rules with keyboard shortcuts
+  - **Individual toggles** - Override target selection (Alt+T) or range checking (Alt+R) separately
+  - **Complete override** - Disable all validation rules at once (Alt+A)
+  - **Easy reset** - Clear all overrides instantly (Alt+X)
+  - **Per-user control** - Each player manages their own override state independently
+  - **Foundry integration** - Fully customizable through Configure Controls menu
+
+### 📖 **Automatic Rule Display** 
+- **Shows combat rules when you need them** - Only on successful special attacks
+- **Covers all special actions** - Parry, Topple, Disarm, and Find Weak Spot
+- **Weapon durability when parrying** - Shows weapon durability in chat for easy comparison
+- **Weapon feature bonuses** - Displays topple weapon bonuses (+1 Boon) automatically
+- **Mark Weapon Broken button** - Appears on parry rules for easy weapon damage tracking, updates character sheet directly from chat
+
+### 🛡️ **Monster Action Prevention**
+- **Pre-roll confirmation dialogs** - Intercepts Parry and Disarm attempts against monsters before the roll happens
+- **Educational approach** - Informs players about rules with clear dialog messages before they attempt invalid actions
+- **Prevents invalid advancement** - Blocks the roll entirely when user cancels, avoiding skill advancement on impossible actions
+- **Smart bypass for edge cases** - Allows exceptions when user clicks "Proceed" for rare situations where rules permit
+
+### ⚖️ **Encumbrance Monitoring**
+- **Event-driven monitoring** - Instantly detects when characters become over-encumbered
+- **Automatic status effects** - Applies configurable status effects when carrying too many items
+- **Smart status effect creation** - Automatically creates custom status effects if they don't exist in the game
+- **Folder-based filtering** - Monitor specific actor folders (default: "Party") or all characters
+- **Smart notifications** - UI notifications with optional chat reminders about STR roll requirements
+
+### 🎲 **Year Zero Engine Combat Integration**
+- **Single action tracking** - Seamless integration with YZE Combat module for action management
+- **Automatic detection** - Monitors chat for combat actions using intelligent pattern matching
+- **Contextual notifications** - Different messages for Player Characters vs NPCs/Monsters
+- **Token-specific tracking** - Each combatant tracked independently with action numbering
+- **Smart exclusions** - Ignores damage rolls, healing, and other non-action activities
+- **Override control** - Alt+Y shortcut for manual control when automatic detection needs adjustment
+
+### 🃏 **Optional Rule Reminders**
+- **Shove mechanics** - Contextual reminders when STR damage bonus allows shoving targets 2m during damage-dealing attacks
+- **Parry movement** - Optional reminders about the 2m movement option on successful parries
+- **Dodge movement** - Helpful reminders about dodge movement options on successful EVADE rolls
+- **Intelligent conditions** - Only shows when rules actually apply (right weapon types, STR advantages, etc.)
 
 ---
 
-## [1.3.5] - 2025-08-19
+## Installation
 
-### Major New Features
-- **Monster Action Prevention System**
-  - **Pre-roll confirmation dialogs** for Parry and Disarm attempts against monsters
-  - **Educational approach** - informs players about rules before they attempt invalid actions
-  - **Prevents invalid advancement** - blocks the roll entirely when user cancels, avoiding skill advancement on impossible actions
-  - **Smart bypass for edge cases** - allows exceptions when user clicks "Proceed" for rare situations where rules permit
-
-- **Enhanced YZE Integration**
-  - **Contextual notifications** - different messages for Player Characters vs NPCs/Monsters
-  - **Improved user experience** - clearer messaging that acknowledges push roll uncertainty for PCs
-
-### Technical Details
-- **Prevention Logic**: Uses `preCreateChatMessage` hook to intercept actions before they create chat messages
-- **Pattern Integration**: Leverages existing pattern manager for reliable action detection across languages
+1. In Foundry VTT, go to **Add-on Modules** and click **Install Module**
+2. Use this manifest URL: `https://github.com/kergalli/dragonbane-action-rules/releases/latest/download/module.json`
+3. Enable the module in your world's **Manage Modules** screen
 
 ---
 
-## [1.3.3] and [1.3.4] - 2025-08-17
+## Configuration
 
-### Bug Fixes
-- **Fixed Non-Combat Token YZE Messages**
-  - Resolved issue where tokens not in combat were incorrectly showing "An action has already been performed by..." messages
-  - YZE integration now properly distinguishes between combatants and non-combatants
-  - Non-combat tokens are silently ignored by action tracking system
+Access settings through **Configure Settings → Module Settings → Dragonbane Combat Assistant**:
 
-- **Fixed Damage Roll Double Action Detection**
-  - Resolved issue where damage rolls (from "Roll Damage" buttons) were incorrectly detected as separate actions
-  - Damage and healing rolls are now properly excluded from YZE action tracking
-  - Prevents double action status effects when following attack → damage workflow
-  - Uses reliable CSS class and data attribute detection for all damage/healing roll types
+### Attack Validation
+- **Enable Target Selection Enforcement** - Requires target selection for all attacks
+- **Enable Range Checking** - Validates weapon ranges before allowing attacks
 
-### Technical Improvements
-- **Enhanced YZE Integration Logic**
-  - Added `isActorInCurrentCombat()` method for proper combatant verification
-  - Added `_isDamageRoll()` method for reliable damage/healing roll detection
-  - Improved action detection priority to check damage rolls before pattern matching
-  - Better separation of concerns between combat and non-combat scenarios
+### Rules Display  
+- **Display Delay** - How long rules stay visible (0-10 seconds)
+- **Show Weapon Durability on Parry** - Displays weapon durability for parrying weapons
+
+### Optional Rule Reminders
+- **Enable Shove Reminders** - Shows shove opportunities when conditions are met
+- **Enable Parry Movement Reminders** - Shows movement options on successful parries  
+- **Enable Dodge Movement Reminders** - Shows movement options on successful EVADE rolls
+
+### Encumbrance Monitoring
+- **Enable Encumbrance Monitoring** - Automatically detects over-encumbered characters
+- **Target Actor Folders** - Which folders to monitor (default: "Party")
+- **Status Effect Settings** - Customize name, icon, and behavior of encumbrance status effects
+- **Enable Chat Notifications** - Optional chat reminders about STR roll requirements
+
+### YZE Integration
+- **Enable YZE Integration** - Automatic action tracking with Year Zero Engine Combat module
+- **Status Effect Settings** - Customize single/multiple action status effect names and icons
+
+### Advanced
+- **Debug Mode** - Enable detailed console logging for troubleshooting
 
 ---
 
-## [1.3.2] - 2025-08-17
+## Keyboard Shortcuts
 
-### New Features
-- **YZE Action Tracking Override (Alt+Y)**
-  - New keyboard shortcut to temporarily disable Year Zero Engine action status effect application
-  - Useful for handling edge cases where rolls are incorrectly detected as actions
-  - Allows manual action management when automatic tracking isn't desired
-  - Follows the same pattern as existing validation overrides
+The module provides convenient keyboard shortcuts for temporarily overriding validation rules during gameplay:
 
-- **Override Status Display (Alt+S)**
-  - New keyboard shortcut to show personal override status via notification
-  - Displays currently active overrides or "All validation rules active" if none
-  - Personal notifications that don't clutter chat or affect other players
-  - Localized support for English and Swedish
-
-### Bug Fixes
-- **Fixed "Mark Weapon Broken" Button**
-  - Resolved "Cannot read properties of null (reading 'markWeaponBroken')" error
-  - Button now works correctly again after module initialization timing issues
-  - Improved error handling and logging for weapon marking functionality
-
-### Enhanced Override System
-- **Updated "All Overrides" (Alt+A)**
-  - Now includes YZE action tracking in addition to validation rules
-  - Updated localization to reflect expanded scope
-  - Reset function (Alt+X) now clears all override types including YZE
-
-### Updated Keyboard Shortcuts
 | Shortcut | Function | Description |
 |----------|----------|-------------|
 | **Alt + T** | Toggle Target Override | Temporarily disable/enable target selection enforcement |
 | **Alt + R** | Toggle Range Override | Temporarily disable/enable weapon range validation |
-| **Alt + Y** | Toggle YZE Override | Temporarily disable/enable YZE action tracking |
+| **Alt + Y** | Toggle YZE Override | Temporarily disable/enable automatic YZE action tracking |
 | **Alt + S** | Show Override Status | Display current override status via personal notification |
-| **Alt + A** | Override All | Temporarily disable/enable all validation and tracking |
+| **Alt + A** | Override All | Temporarily disable/enable all validation rules and action tracking |
 | **Alt + X** | Reset All | Clear all temporary overrides |
 
----
-
-## [1.3.1] - 2025-08-13
-
-### Major New Features
-- **Keyboard Shortcuts for Validation Overrides**
-  - Quick bypass controls for temporarily disabling validation rules during gameplay
-  - **Alt + T** - Toggle target selection enforcement on/off
-  - **Alt + R** - Toggle weapon range checking on/off  
-  - **Alt + A** - Override all validation rules at once
-  - **Alt + X** - Reset all overrides to default state
-  - Per-user control - each player manages their own override state independently
-  - Session-only overrides - automatically clear when Foundry reloads
-  - Fully customizable keybinds through Foundry's Configure Controls menu
-  - Localized notifications provide clear feedback when overrides are toggled
+All shortcuts can be customized through **Configure Controls** in Foundry.
 
 ---
 
-## [1.3.0] - 2025-08-12
+## Usage Examples
 
-### Major New Features
-- **Year Zero Engine Combat Integration**
-  - Seamless integration with YZE Combat module for single action tracking
-  - Automatic action detection from chat messages (weapon attacks, spells, skills, monster attacks)
-  - Smart exclusion of reaction spells from action tracking
-  - Configurable custom exclusions for specific dice roll patterns
-  - Multi-action support for characters with multiple action slots per round
-  - User-friendly notifications when all actions have been used
+### Attack Validation
+- **Target Required**: Attempting to attack without a target shows warning and prevents the roll
+- **Range Checking**: Attacking beyond weapon range shows distance violation and suggests valid targets
+- **Thrown Weapons**: Automatically detects context - uses melee range when adjacent, thrown range when distant
 
-### Major Code Refactoring & Optimization
-- **Consolidated Pattern Management**
-  - All localization and pattern matching logic centralized to `pattern-manager.js`
-  - Language-agnostic pattern compilation using Dragonbane's core localization keys
-  - Improved pattern accuracy and performance optimization
+### Rules Display
+When you successfully parry, topple, disarm, or find a weak spot, the relevant rules appear automatically with:
+- Clear rule descriptions and mechanical effects
+- Weapon durability (for parries) to compare against attacker's damage
+- "Mark Weapon Broken" button for easy weapon damage tracking
+- Weapon feature bonuses (e.g., "+1 Boon for Toppling weapons")
 
-- **Streamlined Architecture**
-  - Consolidated message processing across all components
-  - Simplified hook management system for better reliability
-  - Merged duplicate methods from `rules-display.js` into centralized `utils.js`
-  - Enhanced code organization and maintainability
+### Monster Action Prevention
+- **Attempting Disarm on Monster**: Dialog appears explaining "Monsters cannot be disarmed. Are you sure you want to attempt this disarm against [Monster Name]?"
+- **User Options**: Click "Cancel" to prevent the roll entirely, or "Proceed" to allow the action for edge cases
+- **Clean Flow**: Single dialog → decision → complete action without additional interruptions
 
-- **Performance Improvements**
-  - Greatly simplified token distance calculation algorithm
-  - Optimized pattern matching and chat message analysis
-  - Removed unnecessary fallback methods and cleaned up abandoned code
-  - Reduced memory footprint and improved execution speed
+### Encumbrance Monitoring
+- Automatically applies customizable status effects when characters exceed carry capacity
+- Provides immediate notifications when encumbrance status changes
+- Optional chat reminders about required STR rolls for over-encumbered characters
 
-### Enhanced Localization Support
-- **Complete Language Coverage**
-  - Additional localization strings for comprehensive coverage
-  - Fixed "weakspot/weakpoint" terminology confusion between display and localization keys
-  - Cleaned up unused language keys for leaner translation files
-  - Improved language-agnostic operation across all features
+### YZE Integration  
+- **First Action**: Character makes an attack → automatically applies "Single Action" status effect
+- **Subsequent Actions**: Additional attacks show contextual notifications and apply "Multiple Actions" effect
+- **Smart Detection**: Ignores damage rolls, healing, and advancement - only tracks actual combat actions
 
-### Technical Improvements
-- **Foundry v14 Compatibility Preparation**
-  - Updated several (but not all) items that will be deprecated in Foundry v14
-  - Improved compatibility with current and future Foundry versions
-  - Enhanced status effect handling with v12+ compatible properties
+## Special Cases & Tips
 
-- **Code Quality & Maintenance**
-  - Removed abandoned development code and unused console commands
-  - Consolidated redundant utility methods
-  - Improved error handling and fallback mechanisms
-  - Enhanced debug logging and troubleshooting capabilities
+**Parrying Ranged Attacks with a Weapon:** Target yourself when parrying a ranged attack with a weapon (not shield). The range validation will understand you're defending at your position.
 
-### Bug Fixes
-- Fixed pattern detection accuracy for special attack types
-- Improved reliability of thrown weapon contextual validation
-- Enhanced actor and message processing error handling
-- Resolved edge cases in encumbrance monitoring
+**Parrying Ranged Attacks with a Shield:** When using a shield to parry a ranged attack, simply target yourself when parrying. The range validation will understand you're defending at your position.
 
-### Known Issues
-- **Thrown Weapons vs Large Tokens**: In the core Dragonbane module, thrown weapons measure distance to a single reference grid square (upper left) instead of using token bounds. This causes attacks with thrown weapons against large and huge tokens to default to the Throw dialog when attacking from anywhere not adjacent to the upper left grid square of the enemy. This is a limitation of the core system's distance calculation and is outside the scope of this module to fix.
+**Marking Weapons Broken:** The "Mark Weapon Broken" button only appears on parry rules when:
+- A valid weapon was detected for the parry
+- The weapon is not already broken
+- You have permission to modify the weapon
 
----
+**Shove Conditions:** Shove reminders only appear when:
+- Using a melee weapon or thrown weapon in melee range
+- Attack deals damage (excludes Topple/Disarm)
+- Attacker is not a monster
+- Target is not a monster  
+- Attacker's STR damage bonus ≥ target's STR damage bonus
 
-## [1.2.4] - 2025-08-06
+**Monster Action Prevention:** Prevention dialogs only appear for Parry and Disarm attempts against monsters. All other actions proceed normally.
 
-### Major New Features
-- **Thrown Weapon Support**
-  - Contextual range validation for weapons with "Thrown" feature
-  - Thrown weapons work in melee (≤2m normal, ≤4m long) AND at range (up to 2x weapon range)
+## Known Issues
 
-### Technical Improvements
-- **Pattern-Based Attack Detection System**
-  - Complete rewrite of shove detection using chat message content analysis
-  - Uses Dragonbane's own localization keys for language-agnostic operation
+**Thrown Weapons vs Large Tokens:** In the core Dragonbane module, thrown weapons measure distance to a single reference grid square (upper left) instead of using token bounds. This causes attacks with thrown weapons against large and huge tokens to default to the Throw dialog when attacking from anywhere not adjacent to the upper left grid square of the enemy. This is a limitation of the core system's distance calculation and is outside the scope of this module to fix. **NOTE: This should be fixed in the next version of the core Dragonbane system.**
 
-- **Enhanced Language Support**
-  - Fully language-agnostic shove detection
-  - Dynamic pattern building from Dragonbane system translation keys
-  - All weapon feature detection now uses core Dragonbane system keys (`DoD.weaponFeatureTypes.*`)
+## Technical Details
 
-- **Shove Rules Detection**
-  - **Allowed for Shove:** Normal attacks, Stab, Slash, Find Weak Spot (damage-dealing melee)
-  - **Excluded from Shove:** Topple, Disarm (no damage), Parry (defensive), Ranged attacks, Spells
+**Compatible With:**
+- Foundry VTT v12 and v13
+- Dragonbane system only
+- Token Action HUD
+- Argon - Combat HUD (DRAGONBANE)
+- Year Zero Engine Combat module
+- Dragonbane Character Sheet
 
-### Code Optimization & Performance
-- **Streamlined Codebase**
-  - Simplified CSS (removed dark mode support)
+**Localization:**
+- Full support for English and Swedish
+- Dynamic pattern generation based on current Dragonbane system language
+- Language-agnostic operation using official Dragonbane translation keys
 
-### Bug Fixes
-- Thrown weapons no longer incorrectly blocked at valid throwing distances
-- Shove reminders now appear for thrown weapons used in melee combat
-- Range validation messages properly distinguish weapon types
-- Pattern-based detection eliminates false positives from spells and non-damage attacks
-- Now correctly targeting NPCs in scene when marking weapons broken
+## Support & Issues
 
----
+- **Issues**: Report bugs at [GitHub Issues](https://github.com/kergalli/dragonbane-action-rules/issues)
+- **Documentation**: Full documentation in [README.md](https://github.com/kergalli/dragonbane-action-rules/blob/main/README.md)
+- **Changelog**: Version history in [CHANGELOG.md](https://github.com/kergalli/dragonbane-action-rules/blob/main/CHANGELOG.md)
 
-## [1.2.3] - 2025-08-05
+## License
 
-### Major New Features
-- **Optional Shove Rule Integration**
-  - Automatic reminders for the optional shove rule when STR damage bonus ≥ opponent's
-  - Smart conditional display - only appears for damage-dealing attacks
-  - Excludes monsters (cannot shove or be shoved per rules)
-
-- **Dodge Movement Reminders**
-  - Automatic movement reminders for successful EVADE rolls
-
-- **Enhanced Optional Rule System**
-  - Optional parry movement reminders with dedicated setting
-  - Granular control over each optional rule type
-  - Clear "OPTIONAL RULE:" prefixes in settings for better organization
-
-### Localization
-- **Swedish Translation**
-  - Complete localization for all new shove and movement features
-
----
-
-## [1.2.2] - 2025-07-30
-- **Encumbrance Monitoring System**
-
-- Smart status effect creation - automatically creates custom status effects with anchor icon if they don't exist
-
-## [1.2.1] - 2025-07-29
-- **Special Attack Detection and Language Localization**
-
-- Fixed detection methods for chat messages when detecting special attack action in different languages
-
-## [1.2.0] - 2025-07-29
-
-### Major New Features
-- **Encumbrance Monitoring System**
-  - Automatic status effect application when characters become over-encumbered
-  - Configurable actor folder monitoring (default: "Party" folder)
-  - Instant response to inventory changes, item additions/removals, and strength modifications
-  - Optional chat notifications with STR roll rule reminders for over-encumbered movement
-
-- **Full Internationalization Support**
-  - Dynamic pattern generation based on current Dragonbane system language
-  - Automatic detection of combat actions in any supported language (English, Swedish)
-  - Localized success/failure detection using official Dragonbane translation keys
-  - English fallback for unsupported languages or missing translations
-
----
-
-## [1.1.0] - 2025-07-28
-
-### Major New Features
-- **Interactive Weapon Management**
-  - Added "Mark Weapon Broken" button to parry rules display
-  - One-click weapon breaking with confirmation dialog
-  - Updates character sheet directly from chat interface
-  - Permission-safe: only weapon owners and GMs can mark weapons broken
-  - Prevents accidental weapon damage with confirmation dialog
-
-- **Enhanced Weapon Feature Display**
-  - Topple attacks now show weapon feature bonuses automatically
-  - Displays "Staff Topple Feature: +1 Boon" for weapons with toppling ability
-  - Automatically detects weapons with "Toppling" feature
-
----
-
-## [1.0.0] - 2025-07-26
-
-### Initial Release
-Tactical enhancement module for Dragonbane combat.
-
-### Features
-- **Attack Validation System**
-  - Target selection enforcement for all melee and ranged attacks
-  - Weapon range validation (melee: adjacent, long melee: adjacent + 1 grid square, ranged: up to 2x base range)
-  - Smart distance calculation handling multi-grid tokens and diagonal movement
-  
-- **Automatic Combat Rule Display**
-  - Detects successful special attacks: Parry, Topple, Disarm, Find Weak Spot
-  - Shows relevant rules automatically with configurable delay
-  - Weapon durability display when parrying
-  - Smart success detection - only shows rules on successful attacks
-  
-- **Multi-Platform Integration**
-  - Works with Token Action HUD and Argon - Combat HUD (DRAGONBANE)
-  - Character sheet compatibility
-
-- **Configuration Options**
-  - Enable/disable attack validation independently
-  - Configurable display timing
-  - Optional weapon durability display
-  - Debug mode for troubleshooting
-
-### Technical
-- **Compatibility**: Foundry VTT v12 and v13
-- **System**: Dragonbane only
-- **Performance**: Minimal resource usage with efficient regex patterns
-- **Localization**: Complete i18n support for future translations
-
----
+This module is licensed under the MIT License. See [LICENSE](LICENSE) for details.
