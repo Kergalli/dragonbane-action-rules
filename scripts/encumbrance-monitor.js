@@ -50,7 +50,7 @@ export class DragonbaneEncumbranceMonitor {
     async onItemUpdate(item, updateData, options, userId) {
         try {
             if (!this.getSetting('enableEncumbranceMonitoring', true)) return;
-            
+
             const actor = item.parent;
             if (!actor || !this.shouldMonitorActor(actor)) return;
 
@@ -70,7 +70,7 @@ export class DragonbaneEncumbranceMonitor {
     async onItemChange(item, options, userId) {
         try {
             if (!this.getSetting('enableEncumbranceMonitoring', true)) return;
-            
+
             const actor = item.parent;
             if (!actor || !this.shouldMonitorActor(actor)) return;
 
@@ -82,13 +82,24 @@ export class DragonbaneEncumbranceMonitor {
     }
 
     /**
+     * Handle actor deletion to prevent memory leaks
+     */
+    onActorDelete(actor, options, userId) {
+        // Clean up the cached state for deleted actor
+        if (this.previousStates.has(actor.id)) {
+            this.previousStates.delete(actor.id);
+            this.debugLog(`Cleaned up cached state for deleted actor: ${actor.name}`);
+        }
+    }
+
+    /**
      * Check if actor should be monitored based on settings
      */
     shouldMonitorActor(actor) {
         if (!actor || actor.type !== 'character') return false;
 
         const monitoredFolder = this.getSetting('encumbranceMonitorFolder', 'Party');
-        
+
         // If no folder specified, monitor all characters
         if (!monitoredFolder) return true;
 
@@ -99,9 +110,9 @@ export class DragonbaneEncumbranceMonitor {
      * Check if update data is relevant to encumbrance
      */
     isEncumbranceRelevant(updateData) {
-        return updateData.system?.encumbrance !== undefined || 
-               updateData.system?.maxEncumbrance !== undefined ||
-               updateData.system?.abilities?.str !== undefined; // STR changes affect max encumbrance
+        return updateData.system?.encumbrance !== undefined ||
+            updateData.system?.maxEncumbrance !== undefined ||
+            updateData.system?.abilities?.str !== undefined; // STR changes affect max encumbrance
     }
 
     /**
@@ -109,9 +120,9 @@ export class DragonbaneEncumbranceMonitor {
      */
     isItemEncumbranceRelevant(updateData) {
         return updateData.system?.quantity !== undefined ||
-               updateData.system?.worn !== undefined ||
-               updateData.system?.equipped !== undefined ||
-               updateData.system?.weight !== undefined;
+            updateData.system?.worn !== undefined ||
+            updateData.system?.equipped !== undefined ||
+            updateData.system?.weight !== undefined;
     }
 
     /**
@@ -122,7 +133,7 @@ export class DragonbaneEncumbranceMonitor {
             const currentEnc = actor.system?.encumbrance?.value || 0;
             const maxEnc = actor.system?.maxEncumbrance?.value || 0;
             const isOverEncumbered = currentEnc > maxEnc;
-            
+
             // Get previous state
             const wasOverEncumbered = this.previousStates.get(actor.id) || false;
 
@@ -144,7 +155,7 @@ export class DragonbaneEncumbranceMonitor {
      */
     ensureStatusEffectExists() {
         const statusEffectName = this.getSetting('encumbranceStatusEffect', 'Encumbered');
-        
+
         if (DragonbaneUtils.ensureStatusEffectExists(statusEffectName, "icons/svg/anchor.svg")) {
             this.debugLog(`Status effect "${statusEffectName}" ensured`);
         } else {
@@ -173,7 +184,7 @@ export class DragonbaneEncumbranceMonitor {
      */
     async toggleEncumbranceStatusEffect(actor, isOverEncumbered) {
         const statusEffectName = this.getSetting('encumbranceStatusEffect', 'Encumbered');
-        
+
         // Check current state using centralized utility
         const hasEffect = DragonbaneUtils.hasStatusEffect(actor, statusEffectName);
 
@@ -196,10 +207,10 @@ export class DragonbaneEncumbranceMonitor {
      */
     initializePreviousStates() {
         this.previousStates.clear();
-        
+
         const monitoredFolder = this.getSetting('encumbranceMonitorFolder', 'Party');
         const actors = game.actors.filter(actor => this.shouldMonitorActor(actor));
-        
+
         this.debugLog(`Monitoring ${actors.length} characters in folder: ${monitoredFolder || 'All'}`);
 
         // Initialize cache with current over-encumbered status
@@ -207,7 +218,7 @@ export class DragonbaneEncumbranceMonitor {
             const currentEnc = actor.system?.encumbrance?.value || 0;
             const maxEnc = actor.system?.maxEncumbrance?.value || 0;
             const isOverEncumbered = currentEnc > maxEnc;
-            
+
             this.previousStates.set(actor.id, isOverEncumbered);
         });
     }
@@ -216,11 +227,11 @@ export class DragonbaneEncumbranceMonitor {
      * Show encumbrance notification
      */
     showEncumbranceNotification(actor, isOverEncumbered, currentEnc, maxEnc) {
-        const messageKey = isOverEncumbered ? 
-            'DRAGONBANE_ACTION_RULES.encumbrance.nowOverEncumbered' : 
+        const messageKey = isOverEncumbered ?
+            'DRAGONBANE_ACTION_RULES.encumbrance.nowOverEncumbered' :
             'DRAGONBANE_ACTION_RULES.encumbrance.noLongerOverEncumbered';
 
-        const message = game.i18n.format(messageKey, { 
+        const message = game.i18n.format(messageKey, {
             actorName: actor.name,
             currentEnc: currentEnc,
             maxEnc: maxEnc
@@ -239,17 +250,17 @@ export class DragonbaneEncumbranceMonitor {
      */
     async createEncumbranceChatMessage(actor, isOverEncumbered, currentEnc, maxEnc) {
         try {
-            const messageKey = isOverEncumbered ? 
-                'DRAGONBANE_ACTION_RULES.encumbrance.chatOverEncumbered' : 
+            const messageKey = isOverEncumbered ?
+                'DRAGONBANE_ACTION_RULES.encumbrance.chatOverEncumbered' :
                 'DRAGONBANE_ACTION_RULES.encumbrance.chatNoLongerOverEncumbered';
 
             let content = `<div class="dragonbane-encumbrance-notice">
                 <strong>${game.i18n.format(messageKey, { actorName: actor.name })}</strong>
                 <div class="encumbrance-details">
-                    ${game.i18n.format('DRAGONBANE_ACTION_RULES.encumbrance.carryingItems', { 
-                        currentEnc: currentEnc, 
-                        maxEnc: maxEnc 
-                    })}
+                    ${game.i18n.format('DRAGONBANE_ACTION_RULES.encumbrance.carryingItems', {
+                currentEnc: currentEnc,
+                maxEnc: maxEnc
+            })}
                 </div>`;
 
             // Add rule reminder for over-encumbered
@@ -264,10 +275,10 @@ export class DragonbaneEncumbranceMonitor {
             await ChatMessage.create({
                 content: content,
                 speaker: { alias: game.i18n.localize('DRAGONBANE_ACTION_RULES.encumbrance.systemMessage') },
-                flags: { 
-                    [this.moduleId]: { 
-                        encumbranceNotice: true 
-                    } 
+                flags: {
+                    [this.moduleId]: {
+                        encumbranceNotice: true
+                    }
                 }
             });
 
