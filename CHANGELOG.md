@@ -2,6 +2,26 @@
 
 All notable changes to the Dragonbane Combat Assistant module will be documented here.
 
+## [1.3.5] - 2025-08-18
+
+### Major New Features
+- **Monster Action Prevention System**
+  - **Pre-roll confirmation dialogs** for Parry and Disarm attempts against monsters
+  - **Educational approach** - informs players about rules before they attempt invalid actions
+  - **Prevents invalid advancement** - blocks the roll entirely when user cancels, avoiding skill advancement on impossible actions
+  - **Smart bypass for edge cases** - allows exceptions when user clicks "Proceed" for rare situations where rules permit
+
+- **Enhanced YZE Integration**
+  - **Contextual notifications** - different messages for Player Characters vs NPCs/Monsters
+  - **Improved user experience** - clearer messaging that acknowledges push roll uncertainty for PCs
+
+### Technical Details
+- **Prevention Logic**: Uses `preCreateChatMessage` hook to intercept actions before they create chat messages
+- **Pattern Integration**: Leverages existing pattern manager for reliable action detection across languages
+- **Bypass Mechanism**: 5-second window allows all related messages (roll, damage, rules) to proceed after user confirmation
+
+---
+
 ## [1.3.3] and [1.3.4] - 2025-08-17
 
 ### Bug Fixes
