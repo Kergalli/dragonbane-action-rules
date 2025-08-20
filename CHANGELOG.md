@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.3.8] - 2025-08-20
+### Bug Fixes (Attempt 2)
+- **Fixed The Forge Module Bazaar compatibility**
+  - Eliminated circular import in debug logging system
+  - Added window object timing safeguards for monster prevention
+  - Fixed Swedish localization issues (many thanks to xdy!)
+- **Enhanced error handling** for better debugging
+- **We Are 138, We Are 138** - We Are 138!
+
+---
+
 ## [1.3.7] - 2025-08-20
 
 ### Bug Fixes (Attempted)
