@@ -65,63 +65,60 @@ export class DragonbaneYZEIntegration {
             if (!actionType) return;
 
             DragonbaneUtils.debugLog(this.moduleId, 'YZEIntegration', `Detected ${actionType} action from chat for ${actor.name}${tokenInfo.tokenId ? ` (Token: ${tokenInfo.tokenId})` : ''}`);
+
             await this.onActionTaken(actor, actionType, tokenInfo);
 
         } catch (error) {
-            console.error(`${this.moduleId} | Error processing chat message for YZE:`, error);
+            console.error(`${this.moduleId} | Error in YZE chat message processing:`, error);
         }
     }
 
     /**
-     * Extract token information from chat message speaker
+     * Extract token information from message speaker
      */
     extractTokenInfo(message) {
-        const speaker = message?.speaker;
+        const speaker = message.speaker;
         return {
             tokenId: speaker?.token || null,
-            sceneId: speaker?.scene || null,
-            actorId: speaker?.actor || null
+            sceneId: speaker?.scene || null
         };
     }
 
     /**
-     * Check if this is a damage or healing roll
+     * Get YZE Combat setting
      */
-    _isDamageRoll(message) {
-        if (!message?.content) return false;
-        const content = message.content.toLowerCase();
-        
-        // Check for damage/healing roll CSS classes (most reliable)
-        return content.includes('class="damage-roll"') || 
-               content.includes('class="healing-roll"') ||
-               // Backup: check for data attributes
-               content.includes('data-damage=') || 
-               content.includes('data-healing=');
+    getYZESetting(setting, defaultValue) {
+        try {
+            return game.settings.get(this.yzeModuleId, setting);
+        } catch (error) {
+            DragonbaneUtils.debugLog(this.moduleId, 'YZEIntegration', `Could not read YZE setting '${setting}': ${error.message}`);
+            return defaultValue;
+        }
     }
 
     /**
-     * Simplified action type determination using pattern manager with HTML monster attack detection
+     * Determine action type from chat message
      */
     determineActionType(message) {
-        if (!message?.content) return null;
-        
-        const content = message.content.toLowerCase();
-        
-        // Check for damage rolls first (before any other detection)
-        if (this._isDamageRoll(message)) return null;
-        
-        // Quick exclusion check
-        if (this.patternManager.isExcludedRoll(content)) return null;
-        
-        // Check reaction spells
-        if (this._isReactionSpell(message)) return null;
-        
-        // Check for HTML monster attack structure (table draws)
-        if (content.includes('table-draw') && content.includes('monster-attack.webp')) {
-            return 'monsterAttack';
+        // Skip damage/healing rolls - these are follow-ups, not actions
+        if (this._isDamageRoll(message)) {
+            DragonbaneUtils.debugLog(this.moduleId, 'YZEIntegration', "Skipping damage/healing roll");
+            return null;
         }
-        
-        // Direct pattern detection - simplified
+
+        // Skip reaction spells
+        if (this._isReactionSpell(message)) {
+            DragonbaneUtils.debugLog(this.moduleId, 'YZEIntegration', "Skipping reaction spell");
+            return null;
+        }
+
+        // Skip messages that match custom exclusions
+        if (this._matchesCustomExclusions(message)) {
+            DragonbaneUtils.debugLog(this.moduleId, 'YZEIntegration', "Skipping due to custom exclusions");
+            return null;
+        }
+
+        const content = message.content;
         if (this.patternManager.isMonsterAttack(content)) return 'monsterAttack';
         if (this.patternManager.isWeaponAttack(content)) return 'weaponAttack';
         if (this.patternManager.isSpellCast(content)) return 'spellCast';
@@ -142,6 +139,34 @@ export class DragonbaneYZEIntegration {
             DragonbaneUtils.debugLog(this.moduleId, 'YZEIntegration', `Error checking reaction spell: ${error.message}`);
             return false;
         }
+    }
+
+    /**
+     * Check if message matches custom exclusions
+     */
+    _matchesCustomExclusions(message) {
+        const exclusions = DragonbaneUtils.getSetting(this.moduleId, 'yzeCustomExclusions', '');
+        if (!exclusions.trim()) return false;
+
+        const exclusionPatterns = exclusions.split(',').map(e => e.trim().toLowerCase()).filter(e => e);
+        const content = message.content.toLowerCase();
+
+        return exclusionPatterns.some(pattern => content.includes(pattern));
+    }
+
+    /**
+     * Check if this is a damage or healing roll
+     */
+    _isDamageRoll(message) {
+        if (!message?.content) return false;
+        const content = message.content.toLowerCase();
+        
+        // Check for damage/healing roll CSS classes (most reliable)
+        return content.includes('class="damage-roll"') || 
+               content.includes('class="healing-roll"') ||
+               // Backup: check for data attributes
+               content.includes('data-damage=') || 
+               content.includes('data-healing=');
     }
 
     /**
@@ -188,9 +213,15 @@ export class DragonbaneYZEIntegration {
             const nextCombatant = this.getNextAvailableCombatantForToken(actor, tokenInfo.tokenId);
             if (!nextCombatant) {
                 // Only show notification if they're actually in combat but used all actions
-                const message = game.i18n.format("DRAGONBANE_ACTION_RULES.yze.actionAlreadyPerformed", { 
-                    actorName: actor.name 
-                });
+                // Use contextual message based on actor type
+                let messageKey;
+                if (actor.type === 'character') {
+                    messageKey = "DRAGONBANE_ACTION_RULES.yze.actionAlreadyPerformedOrPushing";
+                } else {
+                    messageKey = "DRAGONBANE_ACTION_RULES.yze.actionAlreadyPerformedNPC";
+                }
+                
+                const message = game.i18n.format(messageKey, { actorName: actor.name });
                 ui.notifications.info(message, { permanent: false });
                 DragonbaneUtils.debugLog(this.moduleId, 'YZEIntegration', `Action attempted by ${actor.name} (Token: ${tokenInfo.tokenId}) but all action slots used`);
                 return; // Don't block the action, just notify and return
