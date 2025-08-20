@@ -18,7 +18,6 @@ All notable changes to the Dragonbane Combat Assistant module will be documented
 ### Technical Details
 - **Prevention Logic**: Uses `preCreateChatMessage` hook to intercept actions before they create chat messages
 - **Pattern Integration**: Leverages existing pattern manager for reliable action detection across languages
-- **Bypass Mechanism**: 5-second window allows all related messages (roll, damage, rules) to proceed after user confirmation
 
 ---
 
