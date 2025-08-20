@@ -181,11 +181,11 @@
     "monsterPrevention": {
       "disarm": {
         "title": "Disarm Monster",
-        "content": "Monsters cannot be disarmed. Are you sure you want to attempt this disarm against {targetName}?"
+        "content": "Monsters cannot be disarmed. Are you sure you want to attempt this disarm against the {targetName}?"
       },
       "parry": {
         "title": "Parry Monster Attack", 
-        "content": "Monster attacks generally cannot be parried (unless the attack specifically allows it). Are you sure you want to attempt this parry against {targetName}?"
+        "content": "Monster attacks generally cannot be parried (unless the attack specifically allows it). Are you sure you want to attempt this parry against the {targetName}?"
       },
       "proceed": "Proceed",
       "cancel": "Cancel"
