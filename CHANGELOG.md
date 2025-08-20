@@ -2,7 +2,14 @@
 
 All notable changes to the Dragonbane Combat Assistant module will be documented here.
 
-## [1.3.5] - 2025-08-18
+## [1.3.6] - 2025-08-20
+### Bug Fixes  
+- Fixed installation issues with The Forge Module Bazaar where scripts failed to load
+- No functional changes - version bump to resolve Forge infrastructure issue
+
+---
+
+## [1.3.5] - 2025-08-19
 
 ### Major New Features
 - **Monster Action Prevention System**
