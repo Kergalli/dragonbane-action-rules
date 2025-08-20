@@ -6,14 +6,6 @@
       "moduleEnabled": "Module enabled",
       "moduleDisabled": "Module disabled"
     },
-    "debug": {
-      "header": "=== Dragonbane Combat Assistant Debug Info ===",
-      "moduleEnabled": "Module enabled",
-      "controlledTokens": "Controlled tokens",
-      "targetedTokens": "Targeted tokens",
-      "rangeRules": "Range rules: Standard melee=2m, Long melee=4m, Ranged=weapon range",
-      "footer": "=== End Debug Info ==="
-    },
     "settings": {
       "enabled": {
         "name": "Enable Combat Assistant",
@@ -85,19 +77,10 @@
     "speakers": {
       "generic": "{action} Rules",
       "shove": "Shove Available",
-      "evade": "Evade Movement",
-      "dodgeAndParry": "Dodge and Parry Rules"
+      "evade": "Evade Movement"
     },
     "durability": "Durability",
     "unknownWeapon": "Unknown Weapon",
-    "weaponTypes": {
-      "melee": "melee weapon",
-      "longMelee": "long melee weapon"
-    },
-    "range": {
-      "upToTwoMeters": "within 2m of",
-      "upToFourMeters": "within 4m of"
-    },
     "validation": {
       "selectToken": "Please select your token before attacking with {weapon}.",
       "noWeapon": "You do not have the weapon {weapon}!",
@@ -132,8 +115,7 @@
       "cannotDefend": "Cannot be dodged or parried",
       "twoHanded": "Two-handed weapon = you get bane",
       "success": "Success = weapon lands D6 meters away (your choice of direction)",
-      "limitations": "Cannot disarm shields or natural weapons",
-      "monstersCannotBeDisarmed": "<strong>Monster:</strong> Cannot be disarmed"
+      "limitations": "Cannot disarm shields or natural weapons"
     },
     "weakspot": {
       "piercing": "Piercing weapons only: Target gaps in armor",
@@ -193,7 +175,20 @@
       }
     },
     "yze": {
-      "actionAlreadyPerformed": "An action has already been performed by {actorName}."
+      "actionAlreadyPerformedOrPushing": "An action has already been performed by {actorName} or they are pushing a roll.",
+      "actionAlreadyPerformedNPC": "{actorName} has used all of their available actions."
+    },
+    "monsterPrevention": {
+      "disarm": {
+        "title": "Disarm Monster",
+        "content": "Monsters cannot be disarmed. Are you sure you want to attempt this disarm against {targetName}?"
+      },
+      "parry": {
+        "title": "Parry Monster Attack", 
+        "content": "Monster attacks generally cannot be parried (unless the attack specifically allows it). Are you sure you want to attempt this parry against {targetName}?"
+      },
+      "proceed": "Proceed",
+      "cancel": "Cancel"
     }
   }
 }
