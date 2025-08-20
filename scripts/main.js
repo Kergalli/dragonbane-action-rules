@@ -3,18 +3,18 @@
  * Core initialization and module management
  */
 
-import { DragonbaneSettings } from './settings.js';
-import { DragonbaneHooks } from './hooks.js';
-import { DragonbaneValidator } from './validation.js';
-import { DragonbaneRulesDisplay } from './rules-display.js';
-import { DragonbaneEncumbranceMonitor } from './encumbrance-monitor.js';
-import { DragonbaneYZEIntegration } from './yze-integration.js';
-import { DragonbanePatternManager } from './pattern-manager.js';
-import { DragonbaneUtils } from './utils.js';
+import { DragonbaneSettings } from '/modules/dragonbane-action-rules/scripts/settings.js';
+import { DragonbaneHooks } from '/modules/dragonbane-action-rules/scripts/hooks.js';
+import { DragonbaneValidator } from '/modules/dragonbane-action-rules/scripts/validation.js';
+import { DragonbaneRulesDisplay } from '/modules/dragonbane-action-rules/scripts/rules-display.js';
+import { DragonbaneEncumbranceMonitor } from '/modules/dragonbane-action-rules/scripts/encumbrance-monitor.js';
+import { DragonbaneYZEIntegration } from '/modules/dragonbane-action-rules/scripts/yze-integration.js';
+import { DragonbanePatternManager } from '/modules/dragonbane-action-rules/scripts/pattern-manager.js';
+import { DragonbaneUtils } from '/modules/dragonbane-action-rules/scripts/utils.js';
 
 class DragonbaneActionRules {
     static ID = 'dragonbane-action-rules';
-    static VERSION = '1.3.6';
+    static VERSION = '1.3.7';
     
     static FLAGS = {
         RULES_MESSAGE: 'dragonbaneRulesMessage'
