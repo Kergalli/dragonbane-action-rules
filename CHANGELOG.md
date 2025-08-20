@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.3.7] - 2025-08-20
+
+### Bug Fixes (Attempted)
+- **Fixed The Forge Module Bazaar compatibility**
+  - Changed relative imports to absolute paths to resolve Forge's ES6 module loading issues
+  - Monster action prevention system now works correctly when installed via Forge Bazaar
+  - No functional changes for other installation methods
+
+---
+
 All notable changes to the Dragonbane Combat Assistant module will be documented here.
 
 ## [1.3.6] - 2025-08-20
