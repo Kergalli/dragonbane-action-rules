@@ -81,6 +81,10 @@
     },
     "durability": "Durability",
     "unknownWeapon": "Unknown Weapon",
+    "range": {
+      "upToTwoMeters": "within 2m of",
+      "upToFourMeters": "within 4m of"
+    },
     "validation": {
       "selectToken": "Please select your token before attacking with {weapon}.",
       "noWeapon": "You do not have the weapon {weapon}!",
