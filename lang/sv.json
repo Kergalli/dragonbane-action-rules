@@ -81,6 +81,10 @@
     },
     "durability": "Brytvärde",
     "unknownWeapon": "Okänt Vapen",
+    "range": {
+      "upToTwoMeters": "inom 2m från",
+      "upToFourMeters": "inom 4m från"
+    },
     "validation": {
       "selectToken": "Välj din spelfigur innan du attackerar med {weapon}.",
       "noWeapon": "Du har inte vapnet {weapon}!",
