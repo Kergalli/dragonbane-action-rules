@@ -283,69 +283,85 @@ export class DragonbaneHooks {
     enableMonsterActionPrevention() {
         if (this.activeHooks.has('monsterActionPrevention')) return;
 
-        // Main prevention hook
-        const hookId = Hooks.on('preCreateChatMessage', (document, data, options, userId) => {
-            // Only process for current user to avoid duplicate dialogs
-            if (userId !== game.user.id) return;
+        try {
+            // Main prevention hook
+            const hookId = Hooks.on('preCreateChatMessage', (document, data, options, userId) => {
+                // Only process for current user to avoid duplicate dialogs
+                if (userId !== game.user.id) return;
 
-            // Check for active bypass
-            if (this._bypassActive) {
-                this.debugLog("Bypassing prevention due to active bypass");
-                return; // Allow this message to proceed
-            }
+                // Check for active bypass
+                if (this._bypassActive) {
+                    this.debugLog("Bypassing prevention due to active bypass");
+                    return; // Allow this message to proceed
+                }
 
-            try {
-                // Check if this message contains a Disarm or Parry action
-                const actionMatch = this._getActionMatch(document.content);
-                if (!actionMatch) return;
+                try {
+                    // Check if this message contains a Disarm or Parry action
+                    const actionMatch = this._getActionMatch(document.content);
+                    if (!actionMatch) return;
 
-                const action = actionMatch[1].toLowerCase();
-                const normalizedAction = this._normalizeAction(action);
+                    const action = actionMatch[1].toLowerCase();
+                    const normalizedAction = this._normalizeAction(action);
 
-                if (!['disarm', 'parry'].includes(normalizedAction)) return;
+                    if (!['disarm', 'parry'].includes(normalizedAction)) return;
 
-                // Check if targeting a monster
-                const target = window.DragonbaneActionRules?.utils?.getCurrentTarget();
-                if (!target || !window.DragonbaneActionRules?.utils?.isMonsterActor(target)) return;
+                    // Check if targeting a monster - with Forge compatibility
+                    if (!window.DragonbaneActionRules?.utils) {
+                        console.warn(`${this.moduleId} | DragonbaneActionRules.utils not ready, skipping monster check`);
+                        return;
+                    }
 
-                // Prevent the message and show dialog
-                this._handleMonsterActionPrevention(document, normalizedAction, target.name);
-                return false; // Always prevent initial message
+                    const target = window.DragonbaneActionRules.utils.getCurrentTarget();
+                    if (!target || !window.DragonbaneActionRules.utils.isMonsterActor(target)) return;
 
-            } catch (error) {
-                console.error(`${this.moduleId} | Error in monster action prevention:`, error);
-                this._clearBypass();
-            }
-        });
+                    // Prevent the message and show dialog
+                    this._handleMonsterActionPrevention(document, normalizedAction, target.name);
+                    return false; // Always prevent initial message
 
-        // Watch for rules messages to clear bypass
-        const rulesWatcherId = Hooks.on('createChatMessage', (message) => {
-            // Only check if bypass is active
-            if (!this._bypassActive || !this._bypassAction) return;
+                } catch (error) {
+                    console.error(`${this.moduleId} | Error in monster action prevention:`, error);
+                    // Allow message to proceed on error to avoid breaking gameplay
+                    return;
+                }
+            });
 
-            // Check if this is a rules message for the action we're bypassing
-            const content = message.content;
-            if (!content) return;
+            // Watch for rules messages to clear bypass
+            const rulesWatcherId = Hooks.on('createChatMessage', (message) => {
+                try {
+                    // Only check if bypass is active
+                    if (!this._bypassActive || !this._bypassAction) return;
 
-            // Get localized "Parry Rules" or "Disarm Rules" text
-            const actionKey = this._bypassAction === 'parry' ? 
-                'DRAGONBANE_ACTION_RULES.actions.parry' : 
-                'DRAGONBANE_ACTION_RULES.actions.disarm';
-            
-            const actionName = game.i18n.localize(actionKey);
-            const rulesText = game.i18n.format('DRAGONBANE_ACTION_RULES.speakers.generic', { action: actionName });
-            
-            // Check if message contains the rules text (in speaker alias or content)
-            const speaker = message.speaker?.alias || '';
-            if (speaker.includes(rulesText) || content.includes(rulesText)) {
-                this.debugLog(`Detected ${this._bypassAction} rules message, clearing bypass`);
-                this._clearBypass();
-            }
-        });
+                    // Check if this is a rules message for the action we're bypassing
+                    const content = message.content;
+                    if (!content) return;
 
-        this.activeHooks.set('monsterActionPrevention', hookId);
-        this.activeHooks.set('monsterActionRulesWatcher', rulesWatcherId);
-        this.debugLog("Monster action prevention hooks enabled");
+                    // Get localized "Parry Rules" or "Disarm Rules" text
+                    const actionKey = this._bypassAction === 'parry' ?
+                        'DRAGONBANE_ACTION_RULES.actions.parry' :
+                        'DRAGONBANE_ACTION_RULES.actions.disarm';
+
+                    const actionName = game.i18n.localize(actionKey);
+                    const rulesText = game.i18n.format('DRAGONBANE_ACTION_RULES.speakers.generic', { action: actionName });
+
+                    // Check if message contains the rules text (in speaker alias or content)
+                    const speaker = message.speaker?.alias || '';
+                    if (speaker.includes(rulesText) || content.includes(rulesText)) {
+                        this.debugLog(`Detected ${this._bypassAction} rules message, clearing bypass`);
+                        this._clearBypass();
+                    }
+                } catch (error) {
+                    console.error(`${this.moduleId} | Error in rules watcher:`, error);
+                }
+            });
+
+            this.activeHooks.set('monsterActionPrevention', hookId);
+            this.activeHooks.set('monsterActionRulesWatcher', rulesWatcherId);
+            this.debugLog("Monster action prevention hooks enabled");
+
+        } catch (error) {
+            console.error(`${this.moduleId} | Failed to enable monster action prevention:`, error);
+            ui.notifications.warn("Monster action prevention disabled due to initialization error");
+        }
     }
 
     /**
@@ -355,12 +371,12 @@ export class DragonbaneHooks {
         this._showMonsterActionConfirmation(action, targetName).then(proceed => {
             if (proceed) {
                 this.debugLog(`User confirmed ${action} action against monster ${targetName}, proceeding with roll`);
-                
+
                 // Set bypass with the specific action we're waiting for
                 this._bypassAction = action; // Store which action we're bypassing for
                 this._bypassActive = true;
                 this.debugLog(`Monster action bypass activated for ${action}`);
-                
+
                 // Set a fallback timeout (in case rules never appear)
                 this._bypassTimeout = setTimeout(() => {
                     if (this._bypassActive) {
@@ -369,7 +385,7 @@ export class DragonbaneHooks {
                         this.debugLog("Monster action bypass cleared by timeout (fallback)");
                     }
                 }, 5000); // 5 second fallback just in case
-                
+
                 // Recreate the chat message
                 ChatMessage.create(document.toObject()).catch(error => {
                     console.error(`${this.moduleId} | Error recreating chat message:`, error);
@@ -480,15 +496,15 @@ export class DragonbaneHooks {
         }
     }
 
-    /**
-     * Debug logging
-     */
     debugLog(message) {
-        // Import settings dynamically to avoid circular imports
-        import('/modules/dragonbane-action-rules/scripts/main.js').then(({ DragonbaneActionRules }) => {
-            if (DragonbaneActionRules.settings?.isDebugMode()) {
+        try {
+            const debugEnabled = game.settings.get(this.moduleId, 'debugMode') || false;
+            if (debugEnabled) {
                 console.log(`${this.moduleId} | Hooks: ${message}`);
             }
-        });
+        } catch (error) {
+            // Fallback if settings not ready
+            console.log(`${this.moduleId} | Hooks: ${message}`);
+        }
     }
 }
