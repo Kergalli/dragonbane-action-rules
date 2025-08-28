@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.3.9] - 2025-08-28
+### Enhanced Compatibility
+- **Updated encumbrance status effect default name** from "Encumbered" to "Over-Encumbered" to align with core Dragonbane terms and Dragonbane Status Effects module
+- **Improved localization** for encumbrance status effect names
+- **Better integration** with Dragonbane Status Effects module - automatically uses existing "Over-Encumbered" effect if available
+- **Maintained backward compatibility** - existing custom status effect names remain unchanged
+
+### Documentation Updates
+- **Added Token Action HUD integration tips** for YZE Action Exclusions to improve action tracking accuracy
+
+---
+
 ## [1.3.8] - 2025-08-20
 ### Bug Fixes (Attempt 2)
 - **Fixed The Forge Module Bazaar compatibility**
