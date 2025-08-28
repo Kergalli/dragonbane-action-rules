@@ -185,7 +185,7 @@ export class DragonbaneSettings {
             scope: 'world',
             config: true,
             type: String,
-            default: 'Encumbered',
+            default: '', // Will be set to localized default when first accessed
             onChange: () => {
                 // Ensure the new status effect exists when setting changes
                 import('/modules/dragonbane-action-rules/scripts/main.js').then(({ DragonbaneActionRules }) => {
