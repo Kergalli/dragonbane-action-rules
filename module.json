@@ -16,9 +16,6 @@
   ],
   "license": "MIT",
   "bugs": "https://github.com/Kergalli/dragonbane-action-rules/issues",
-  "systems": [
-    "dragonbane"
-  ],
   "esmodules": [
     "scripts/main.js",
     "scripts/utils.js"
