@@ -1,6 +1,6 @@
 # Dragonbane Combat Assistant
 
-![Version](https://img.shields.io/badge/version-1.3.8-blue)
+![Version](https://img.shields.io/badge/version-1.3.9-blue)
 ![Foundry Version](https://img.shields.io/badge/foundry-v12%20%7C%20v13-green)
 ![System](https://img.shields.io/badge/system-dragonbane-orange)
 
@@ -39,6 +39,7 @@
 - **Event-driven monitoring** - Instantly detects when characters become over-encumbered
 - **Automatic status effects** - Applies configurable status effects when carrying too many items
 - **Smart status effect creation** - Automatically creates custom status effects if they don't exist in the game
+- **Enhanced compatibility** - Works seamlessly with the Dragonbane Status Effects module (uses existing "Over-Encumbered" effect if available)
 - **Folder-based filtering** - Monitor specific actor folders (default: "Party") or all characters
 - **Smart notifications** - UI notifications with optional chat reminders about STR roll requirements
 
@@ -91,7 +92,7 @@ Access settings through **Configure Settings → Module Settings → Dragonbane 
 
 ### YZE Integration
 - **Enable YZE Integration** - Automatic action tracking with Year Zero Engine Combat module
-- **Status Effect Settings** - Customize single/multiple action status effect names and icons
+- **YZE Action Exclusions** - Configure rolls to exclude from action tracking (see tips below)
 
 ### Advanced
 - **Debug Mode** - Enable detailed console logging for troubleshooting
@@ -138,6 +139,7 @@ When you successfully parry, topple, disarm, or find a weak spot, the relevant r
 - Automatically applies customizable status effects when characters exceed carry capacity
 - Provides immediate notifications when encumbrance status changes
 - Optional chat reminders about required STR rolls for over-encumbered characters
+- Works seamlessly with Dragonbane Status Effects module if installed
 
 ### YZE Integration  
 - **First Action**: Character makes an attack → automatically applies "Single Action" status effect
@@ -164,6 +166,11 @@ When you successfully parry, topple, disarm, or find a weak spot, the relevant r
 
 **Monster Action Prevention:** Prevention dialogs only appear for Parry and Disarm attempts against monsters. All other actions proceed normally.
 
+**Token Action HUD + YZE Integration:** If using the Token Action HUD Dragonbane module, consider adding these exclusions to **YZE Action Exclusions** setting for better action tracking accuracy:
+```
+Death Roll, Light Test, Lantern Test, Oil Lamp Test, Candle Test, Torch Test, Severe Injury Test
+```
+
 ## Known Issues
 
 **Thrown Weapons vs Large Tokens:** In the core Dragonbane module, thrown weapons measure distance to a single reference grid square (upper left) instead of using token bounds. This causes attacks with thrown weapons against large and huge tokens to default to the Throw dialog when attacking from anywhere not adjacent to the upper left grid square of the enemy. This is a limitation of the core system's distance calculation and is outside the scope of this module to fix. **NOTE: This should be fixed in the next version of the core Dragonbane system.**
@@ -177,6 +184,7 @@ When you successfully parry, topple, disarm, or find a weak spot, the relevant r
 - Argon - Combat HUD (DRAGONBANE)
 - Year Zero Engine Combat module
 - Dragonbane Character Sheet
+- Dragonbane Status Effects module
 
 **Localization:**
 - Full support for English and Swedish
