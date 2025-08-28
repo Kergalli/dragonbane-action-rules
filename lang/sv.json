@@ -65,7 +65,7 @@
       },
       "yzeCustomExclusions": {
         "name": "YZE Handlings-undantag",
-        "hint": "Ytterligare ord/fraser att utesluta från handlingsspårning (kommaseparerade). Dessa tärningskast kommer inte att utlösa handlings-statuseffekter. Exempel: 'omslag,bonus,extra'. Obs: Reaktions-trollformler undantas automatiskt genom att kontrollera deras kasttid."
+        "hint": "Ytterligare ord/fraser att utesluta från handlingsspårning (kommaseparerade). Dessa tärningskast kommer inte att utlösa handlings-statuseffekter. Se README.md för några exempel. Obs: Reaktions-trollformler undantas automatiskt genom att kontrollera deras kasttid."
       }
     },
     "actions": {
@@ -155,6 +155,7 @@
       "success": "{weaponName} har markerats som trasigt"
     },
     "encumbrance": {
+      "statusEffectName": "Överbelastad",
       "nowOverEncumbered": "{actorName} är nu överbelastad ({currentEnc}/{maxEnc} föremål)",
       "noLongerOverEncumbered": "{actorName} är inte längre överbelastad ({currentEnc}/{maxEnc} föremål)",
       "chatOverEncumbered": "{actorName} är nu överbelastad!",
