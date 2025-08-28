@@ -65,7 +65,7 @@
       },
       "yzeCustomExclusions": {
         "name": "YZE Action Exclusions",
-        "hint": "Additional words/phrases to exclude from action tracking (comma-separated). These dice rolls will not trigger action status effects. Example: 'reroll,bonus,extra'. Note: Reaction spells are automatically excluded by checking their casting time."
+        "hint": "Additional words/phrases to exclude from action tracking (comma-separated). These dice rolls will not trigger action status effects. See README.md for some examples. Note: Reaction spells are automatically excluded by checking their casting time."
       }
     },
     "actions": {
@@ -155,6 +155,7 @@
       "success": "{weaponName} has been marked as broken"
     },
     "encumbrance": {
+      "statusEffectName": "Over-Encumbered",
       "nowOverEncumbered": "{actorName} is now over-encumbered ({currentEnc}/{maxEnc} items)",
       "noLongerOverEncumbered": "{actorName} is no longer over-encumbered ({currentEnc}/{maxEnc} items)",
       "chatOverEncumbered": "{actorName} is now over-encumbered!",
