@@ -154,7 +154,7 @@ export class DragonbaneEncumbranceMonitor {
      * Ensure the configured status effect exists in the game (using centralized utility)
      */
     ensureStatusEffectExists() {
-        const statusEffectName = this.getSetting('encumbranceStatusEffect', 'Encumbered');
+        const statusEffectName = this.getEncumbranceStatusEffectName();
 
         if (DragonbaneUtils.ensureStatusEffectExists(statusEffectName, "icons/svg/anchor.svg")) {
             this.debugLog(`Status effect "${statusEffectName}" ensured`);
@@ -183,7 +183,7 @@ export class DragonbaneEncumbranceMonitor {
      * Toggle encumbrance status effect (using centralized utilities)
      */
     async toggleEncumbranceStatusEffect(actor, isOverEncumbered) {
-        const statusEffectName = this.getSetting('encumbranceStatusEffect', 'Encumbered');
+        const statusEffectName = this.getEncumbranceStatusEffectName();
 
         // Check current state using centralized utility
         const hasEffect = DragonbaneUtils.hasStatusEffect(actor, statusEffectName);
@@ -285,6 +285,20 @@ export class DragonbaneEncumbranceMonitor {
         } catch (error) {
             console.error(`${this.moduleId} | Error creating chat message:`, error);
         }
+    }
+
+    /**
+     * Get the localized encumbrance status effect name
+     */
+    getEncumbranceStatusEffectName() {
+        const settingValue = this.getSetting('encumbranceStatusEffect', '');
+        
+        // If setting is empty or not set, use localized default
+        if (!settingValue) {
+            return game.i18n.localize('DRAGONBANE_ACTION_RULES.encumbrance.statusEffectName');
+        }
+        
+        return settingValue;
     }
 
     /**
