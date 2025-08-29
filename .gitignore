@@ -1,0 +1,14 @@
+# Dependencies - DON'T commit these  
+node_modules/
+
+# Development environment - personal preferences
+.vscode/
+*.log
+npm-debug.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Development scripts (optional)
+scripts/link-module.js

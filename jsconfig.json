@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "types": ["fvtt-types"],
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM"],
+    "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true,
+    "strict": false
+  },
+  "include": ["scripts/**/*", "src/**/*"],
+  "exclude": ["node_modules"]
+}
