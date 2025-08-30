@@ -233,24 +233,27 @@ export class DragonbaneEncumbranceMonitor {
 
   /**
    * Ensure the encumbrance status effect exists
+   * Fixed to use existing "Over-Encumbered" effect if available from Dragonbane Status Effects module
    */
   async ensureStatusEffectExists() {
     const statusEffectName = this.getEncumbranceStatusEffectName();
 
-    const existingEffect = CONFIG.statusEffects?.find(
-      (e) => e.label === statusEffectName
-    );
+    // First check if the status effect already exists (from Dragonbane Status Effects module or elsewhere)
+    const existingEffect = DragonbaneUtils.findStatusEffect(statusEffectName);
     if (existingEffect) {
-      this.debugLog(`Status effect '${statusEffectName}' already exists`);
+      this.debugLog(
+        `Status effect '${statusEffectName}' already exists (using existing effect)`
+      );
       return;
     }
 
-    // Create the status effect
-    const statusEffectId = `encumbered-${this.moduleId}`;
+    // If not found, create a basic status effect with fallback icon
+    // Use the Foundry default anchor icon instead of a non-existent file
+    const statusEffectId = statusEffectName.toLowerCase().replace(/\s+/g, "-");
     const newEffect = {
       id: statusEffectId,
       label: statusEffectName,
-      icon: "modules/dragonbane-action-rules/assets/icons/encumbrance.svg",
+      icon: "icons/svg/anchor.svg", // Use Foundry's built-in anchor icon instead of missing file
       description: game.i18n.localize(
         "DRAGONBANE_ACTION_RULES.encumbrance.statusEffectDescription"
       ),
@@ -265,7 +268,9 @@ export class DragonbaneEncumbranceMonitor {
     if (!CONFIG.statusEffects) CONFIG.statusEffects = [];
     CONFIG.statusEffects.push(newEffect);
 
-    this.debugLog(`Created encumbrance status effect: '${statusEffectName}'`);
+    this.debugLog(
+      `Created encumbrance status effect: '${statusEffectName}' with fallback icon`
+    );
   }
 
   /**

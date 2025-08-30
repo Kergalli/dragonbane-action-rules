@@ -105,7 +105,7 @@ export class DragonbaneValidator {
    * Get validation settings with override checking
    */
   getValidationSettings() {
-    // Get base settings from module configuration using new settings system
+    // Get base settings from module configuration
     let enforceTarget = getSetting(
       this.moduleId,
       SETTINGS.ENFORCE_TARGET_SELECTION,
@@ -152,17 +152,12 @@ export class DragonbaneValidator {
 
   /**
    * Validate weapon range with thrown weapon support
+   * Fixed to use correct Dragonbane system property names and methods
    */
   validateRange(attackerToken, targetToken, weapon, weaponName) {
     try {
       if (!attackerToken || !targetToken || !weapon) {
         return { success: true }; // Skip validation if missing data
-      }
-
-      // Get weapon data
-      const weaponData = weapon.system;
-      if (!weaponData) {
-        return { success: true }; // Skip if no weapon data
       }
 
       // Calculate distance using standard Foundry method
@@ -171,33 +166,59 @@ export class DragonbaneValidator {
         targetToken,
       ]).distance;
 
-      // Get weapon range based on type
+      // Use core Dragonbane system methods for weapon detection
+      const isThrownWeapon =
+        weapon.hasWeaponFeature && weapon.hasWeaponFeature("thrown");
+      const isRangedWeapon = weapon.isRangedWeapon;
+      const isLongWeapon =
+        weapon.hasWeaponFeature && weapon.hasWeaponFeature("long");
+      const isMeleeWeapon = !isThrownWeapon && !isRangedWeapon;
+
       let maxRange;
       let weaponType;
 
-      if (weaponData.ranged) {
-        // Ranged weapon
-        maxRange = parseInt(weaponData.range) || 0;
-      } else if (weaponData.throwable && weaponData.thrownRange) {
-        // Thrown weapon
-        maxRange = parseInt(weaponData.thrownRange) || 0;
+      if (isRangedWeapon) {
+        // Ranged weapon - use calculated range
+        maxRange = weapon.system.calculatedRange || 0;
+        weaponType = "ranged weapon";
+      } else if (isThrownWeapon) {
+        // Thrown weapon - contextual range (melee range or thrown range)
+        const meleeMaxRange = isLongWeapon ? 4 : 2;
+
+        if (distance <= meleeMaxRange) {
+          // In melee range - use melee range rules
+          maxRange = meleeMaxRange;
+          weaponType = "thrown weapon (melee range)";
+        } else {
+          // Beyond melee range - use thrown range (2x calculated range)
+          maxRange = (weapon.system.calculatedRange || 0) * 2;
+          weaponType = "thrown weapon (thrown range)";
+        }
       } else {
-        // Melee weapon - use short range
-        maxRange = 1; // Short range in Dragonbane
+        // Melee weapon - use calculated range with appropriate fallback
+        if (
+          weapon.system.calculatedRange &&
+          weapon.system.calculatedRange > 0
+        ) {
+          maxRange = weapon.system.calculatedRange;
+        } else {
+          // Fallback: long weapons can reach 4m, regular melee weapons 2m (adjacent in Dragonbane)
+          maxRange = isLongWeapon ? 4 : 2;
+        }
         weaponType = "melee weapon";
       }
 
       DragonbaneUtils.debugLog(
         this.moduleId,
         "Validator",
-        `Range check: ${weaponName} - Distance: ${distance}m, Max: ${maxRange}m`
+        `Range check: ${weaponName} (${weaponType}) - Distance: ${distance}m, Max: ${maxRange}m`
       );
 
       if (distance > maxRange) {
         // Use existing localization keys based on weapon type
         if (
-          weaponData.ranged ||
-          (weaponData.throwable && weaponData.thrownRange)
+          isRangedWeapon ||
+          (isThrownWeapon && distance > (isLongWeapon ? 4 : 2))
         ) {
           // Ranged or thrown weapon - use rangedOutOfRange
           return {
@@ -214,7 +235,7 @@ export class DragonbaneValidator {
         } else {
           // Melee weapon - use meleeOutOfRange
           const maxRangeText =
-            maxRange === 1 ? "adjacent to" : `within ${maxRange}m of`;
+            maxRange <= 2 ? "adjacent to" : `within ${maxRange}m of`;
           return {
             success: false,
             message: game.i18n.format(
