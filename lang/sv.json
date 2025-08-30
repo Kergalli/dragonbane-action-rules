@@ -66,6 +66,10 @@
       "yzeCustomExclusions": {
         "name": "YZE Handlings-undantag",
         "hint": "Ytterligare ord/fraser att utesluta från handlingsspårning (kommaseparerade). Dessa tärningskast kommer inte att utlösa handlings-statuseffekter. Se README.md för några exempel. Obs: Reaktions-trollformler undantas automatiskt genom att kontrollera deras kasttid."
+      },
+      "enableGrudgeTracking": {
+        "name": "Aktivera Obarmhärtighetsspårare",
+        "hint": "Spåra automatiskt skada som tillfogats dvärgkaraktärer med Obarmhärtig släktförmåga. Skapar journaler för grudglistor."
       }
     },
     "actions": {
@@ -198,6 +202,27 @@
       },
       "proceed": "Fortsätt",
       "cancel": "Avbryt"
+    },
+    "grudgeTracker": {
+      "speakerName": "Obarmhärtighetsspårare",
+      "damageReceived": "{actorName} har tagit {damage} skada från {attackerName}",
+      "addToGrudgeList": "Lägg till i Grudglista",
+      "buttonTextCompleted": "Tillagt i Grudglista",
+      "journalName": "{actorName}'s Agg",
+      "folderName": "Oförlåtande Spårare",
+      "pageTitle": "Oförlåtande Spårare",
+      "dateColumn": "Datum",
+      "enemyColumn": "Fiende",
+      "damageColumn": "Skada",
+      "locationColumn": "Plats",
+      "unknownLocation": "Okänd Plats",
+      "addedToGrudgeList": "{attackerName} tillagd i {actorName}s grudglista",
+      "errors": {
+        "actorNotFound": "Aktör hittades inte",
+        "noPermission": "Du har inte behörighet att ändra denna karaktärs grudglista",
+        "addFailed": "Misslyckades med att lägga till post i grudglistan",
+        "journalCreateFailed": "Misslyckades med att skapa grudglista-journal"
+      }
     }
   }
 }

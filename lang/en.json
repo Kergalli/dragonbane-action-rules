@@ -66,6 +66,10 @@
       "yzeCustomExclusions": {
         "name": "YZE Action Exclusions",
         "hint": "Additional words/phrases to exclude from action tracking (comma-separated). These dice rolls will not trigger action status effects. See README.md for some examples. Note: Reaction spells are automatically excluded by checking their casting time."
+      },
+      "enableGrudgeTracking": {
+        "name": "Enable Unforgiving Tracker",
+        "hint": "Automatically track damage dealt to Dwarf characters with Unforgiving kin ability. Creates journals for grudge lists."
       }
     },
     "actions": {
@@ -198,6 +202,27 @@
       },
       "proceed": "Proceed",
       "cancel": "Cancel"
+    },
+    "grudgeTracker": {
+      "speakerName": "Unforgiving Tracker",
+      "damageReceived": "{actorName} has taken {damage} damage from {attackerName}",
+      "addToGrudgeList": "Add to Grudge List",
+      "buttonTextCompleted": "Added to Grudge List",
+      "journalName": "{actorName}'s Grudges",
+      "folderName": "Unforgiving Tracker",
+      "pageTitle": "Unforgiving Tracker",
+      "dateColumn": "Date",
+      "enemyColumn": "Enemy",
+      "damageColumn": "Damage",
+      "locationColumn": "Location",
+      "unknownLocation": "Unknown Location",
+      "addedToGrudgeList": "{attackerName} added to {actorName}'s grudge list",
+      "errors": {
+        "actorNotFound": "Actor not found",
+        "noPermission": "You don't have permission to modify this character's grudge list",
+        "addFailed": "Failed to add entry to grudge list",
+        "journalCreateFailed": "Failed to create grudge list journal"
+      }
     }
   }
 }
