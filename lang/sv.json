@@ -208,6 +208,8 @@
       "damageReceived": "{actorName} har tagit {damage} skada från {attackerName}",
       "addToGrudgeList": "Lägg till i Grudglista",
       "buttonTextCompleted": "Tillagt i Grudglista",
+      "deleteEntry": "Ta bort denna agg-post",
+      "entryDeleted": "Agg-post borttagen",
       "journalName": "{actorName}'s Agg",
       "folderName": "Oförlåtande Spårare",
       "pageTitle": "Oförlåtande Spårare",
@@ -217,11 +219,19 @@
       "locationColumn": "Plats",
       "unknownLocation": "Okänd Plats",
       "addedToGrudgeList": "{attackerName} tillagd i {actorName}s grudglista",
+      "confirmDelete": {
+        "title": "Ta bort Agg-post",
+        "content": "Är du säker på att du vill ta bort denna agg-post? Denna åtgärd kan inte ångras.",
+        "confirm": "Ta bort",
+        "cancel": "Avbryt"
+      },
       "errors": {
         "actorNotFound": "Aktör hittades inte",
         "noPermission": "Du har inte behörighet att ändra denna karaktärs grudglista",
         "addFailed": "Misslyckades med att lägga till post i grudglistan",
-        "journalCreateFailed": "Misslyckades med att skapa grudglista-journal"
+        "journalCreateFailed": "Misslyckades med att skapa grudglista-journal",
+        "journalNotFound": "Agg-journal hittades inte",
+        "deleteFailed": "Misslyckades med att ta bort agg-post"
       }
     }
   }

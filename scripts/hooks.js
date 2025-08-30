@@ -20,6 +20,7 @@ export class DragonbaneHooks {
 
     this.enableChatHook();
     this.enableChatButtonHook(rulesDisplay, grudgeTracker);
+    this.enableJournalHook(grudgeTracker);
     this.enableMonsterActionPrevention();
     this.enableTokenActionHUD();
     this.enableCharacterSheets();
@@ -34,6 +35,7 @@ export class DragonbaneHooks {
   disableAll() {
     this.disableChatHook();
     this.disableChatButtonHook();
+    this.disableJournalHook();
     this.disableMonsterActionPrevention();
     this.disableTokenActionHUD();
     this.disableCharacterSheets();
@@ -144,13 +146,15 @@ export class DragonbaneHooks {
           const attackerName = button.dataset.attackerName;
           const damage = button.dataset.damage;
           const location = button.dataset.location;
+          const isCritical = button.dataset.critical === "true";
 
           if (actorId && attackerName && grudgeTracker) {
             await grudgeTracker.addToGrudgeList(
               actorId,
               attackerName,
               damage,
-              location
+              location,
+              isCritical
             );
 
             // Disable the button to prevent multiple clicks
@@ -167,6 +171,7 @@ export class DragonbaneHooks {
                 attackerName,
                 damage,
                 location,
+                isCritical,
                 grudgeTracker: !!grudgeTracker,
               }
             );
@@ -183,6 +188,100 @@ export class DragonbaneHooks {
    */
   disableChatButtonHook() {
     this.removeHook("chatButton", "renderChatMessage");
+  }
+
+  /**
+   * Enable journal interaction hook for grudge delete buttons
+   */
+  enableJournalHook(grudgeTracker) {
+    if (this.activeHooks.has("journal")) return;
+
+    const hookId = Hooks.on("renderJournalSheet", (journal, html, data) => {
+      // Only handle grudge list journals
+      const folderName = game.i18n.localize(
+        "DRAGONBANE_ACTION_RULES.grudgeTracker.folderName"
+      );
+      if (journal.object.folder?.name !== folderName) return;
+
+      // Use event delegation for delete buttons (handles dynamically added buttons)
+      html
+        .off("click", ".grudge-delete-btn")
+        .on("click", ".grudge-delete-btn", async (event) => {
+          event.preventDefault();
+          event.stopPropagation();
+
+          const button = event.currentTarget;
+          const rowId = button.dataset.rowId;
+          const journalId = button.dataset.journalId;
+
+          if (rowId && journalId && grudgeTracker) {
+            // Show confirmation dialog
+            const confirmed = await new Promise((resolve) => {
+              new Dialog({
+                title: game.i18n.localize(
+                  "DRAGONBANE_ACTION_RULES.grudgeTracker.confirmDelete.title"
+                ),
+                content: `<p>${game.i18n.localize(
+                  "DRAGONBANE_ACTION_RULES.grudgeTracker.confirmDelete.content"
+                )}</p>`,
+                buttons: {
+                  yes: {
+                    icon: '<i class="fas fa-check"></i>',
+                    label: game.i18n.localize(
+                      "DRAGONBANE_ACTION_RULES.grudgeTracker.confirmDelete.confirm"
+                    ),
+                    callback: () => resolve(true),
+                  },
+                  no: {
+                    icon: '<i class="fas fa-times"></i>',
+                    label: game.i18n.localize(
+                      "DRAGONBANE_ACTION_RULES.grudgeTracker.confirmDelete.cancel"
+                    ),
+                    callback: () => resolve(false),
+                  },
+                },
+                default: "no",
+                close: () => resolve(false),
+              }).render(true);
+            });
+
+            if (confirmed) {
+              await grudgeTracker.deleteGrudgeEntry(journalId, rowId);
+            }
+          } else {
+            console.error(
+              `${this.moduleId} | Missing data for grudge delete button:`,
+              {
+                rowId,
+                journalId,
+                grudgeTracker: !!grudgeTracker,
+              }
+            );
+          }
+        });
+
+      // Use event delegation for hover effects too
+      html
+        .off("mouseenter mouseleave", ".grudge-delete-btn")
+        .on("mouseenter", ".grudge-delete-btn", function () {
+          $(this).css("background-color", "#a82d42");
+        })
+        .on("mouseleave", ".grudge-delete-btn", function () {
+          $(this).css("background-color", "#8b2635");
+        });
+
+      this.debugLog("Grudge journal event handlers attached with delegation");
+    });
+
+    this.activeHooks.set("journal", hookId);
+    this.debugLog("Journal hook enabled");
+  }
+
+  /**
+   * Disable journal hook
+   */
+  disableJournalHook() {
+    this.removeHook("journal", "renderJournalSheet");
   }
 
   /**

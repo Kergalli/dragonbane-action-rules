@@ -290,7 +290,7 @@ class DragonbaneActionRules {
         },
         DragonbaneActionRules.rulesDisplay,
         DragonbaneActionRules.grudgeTracker
-      ); // Pass component instances
+      );
 
       DragonbaneUtils.debugLog(
         DragonbaneActionRules.ID,
