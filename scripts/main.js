@@ -8,7 +8,7 @@ import { DragonbaneGrudgeTracker } from "./grudge-tracker.js";
 import { DragonbaneHooks } from "./hooks.js";
 import { DragonbanePatternManager } from "./pattern-manager.js";
 import { DragonbaneRulesDisplay } from "./rules-display.js";
-import { DragonbaneSettings } from "./settings.js";
+import { isDebugMode, registerSettings, SETTINGS } from "./settings.js";
 import { DragonbaneUtils } from "./utils.js";
 import { DragonbaneValidator } from "./validation.js";
 import { DragonbaneYZEIntegration } from "./yze-integration.js";
@@ -22,7 +22,6 @@ class DragonbaneActionRules {
   };
 
   // Module components
-  static settings = null;
   static hooks = null;
   static validator = null;
   static rulesDisplay = null;
@@ -54,10 +53,10 @@ class DragonbaneActionRules {
         return;
       }
 
+      // Register settings using the new simplified function
+      registerSettings(DragonbaneActionRules.ID);
+
       // Initialize core components first
-      DragonbaneActionRules.settings = new DragonbaneSettings(
-        DragonbaneActionRules.ID
-      );
       DragonbaneActionRules.patternManager = new DragonbanePatternManager(
         DragonbaneActionRules.ID
       );
@@ -83,14 +82,13 @@ class DragonbaneActionRules {
         DragonbaneActionRules.ID
       );
 
-      // Register settings and hooks
-      DragonbaneActionRules.settings.register();
+      // Register hooks and keybinds
       DragonbaneActionRules.registerMainHooks();
       DragonbaneActionRules.registerKeybinds();
 
-      // Conditional initialization logging
+      // Conditional initialization logging using the new convenience function
       setTimeout(() => {
-        if (DragonbaneActionRules.settings?.isDebugMode()) {
+        if (isDebugMode(DragonbaneActionRules.ID)) {
           console.log(
             `${DragonbaneActionRules.ID} | ${game.i18n.localize(
               "DRAGONBANE_ACTION_RULES.console.initializing"
@@ -106,50 +104,24 @@ class DragonbaneActionRules {
       ui.notifications.error(
         "Dragonbane Combat Assistant failed to initialize. Check console for details."
       );
-
-      // Set components to null to prevent further errors
-      DragonbaneActionRules.hooks = null;
-      DragonbaneActionRules.settings = null;
-      DragonbaneActionRules.validator = null;
-      DragonbaneActionRules.rulesDisplay = null;
-      DragonbaneActionRules.encumbranceMonitor = null;
-      DragonbaneActionRules.yzeIntegration = null;
-      DragonbaneActionRules.patternManager = null;
-      DragonbaneActionRules.grudgeTracker = null;
     }
   }
 
   /**
-   * Register main module hooks
+   * Register main hooks that should always be active
    */
   static registerMainHooks() {
     try {
+      // Main initialization hook
       Hooks.once("ready", () => {
-        try {
-          if (DragonbaneActionRules.settings?.isEnabled()) {
-            DragonbaneActionRules.enableModule();
-          }
-
-          // Initialize encumbrance monitoring if enabled
-          if (
-            DragonbaneActionRules.settings?.isEncumbranceMonitoringEnabled()
-          ) {
-            DragonbaneActionRules.encumbranceMonitor?.initialize();
-          }
-
-          // Initialize YZE integration if enabled
-          if (DragonbaneActionRules.settings?.isYZEIntegrationEnabled()) {
-            DragonbaneActionRules.yzeIntegration?.initialize();
-          }
-        } catch (error) {
-          console.error(
-            `${DragonbaneActionRules.ID} | Error in ready hook:`,
-            error
-          );
-          ui.notifications.warn(
-            "Some Dragonbane Combat Assistant features may not be working"
-          );
+        // Enable module if it's set to enabled in settings
+        if (game.settings.get(DragonbaneActionRules.ID, SETTINGS.ENABLED)) {
+          DragonbaneActionRules.enableModule();
         }
+
+        // Additional ready-state initialization
+        DragonbaneActionRules.encumbranceMonitor?.initialize();
+        DragonbaneActionRules.yzeIntegration?.initialize();
       });
     } catch (error) {
       console.error(
@@ -160,7 +132,7 @@ class DragonbaneActionRules {
   }
 
   /**
-   * Register keyboard shortcuts for validation overrides
+   * Register keyboard shortcuts
    */
   static registerKeybinds() {
     try {
@@ -169,7 +141,7 @@ class DragonbaneActionRules {
         DragonbaneActionRules.ID,
         "toggleTargetOverride",
         {
-          name: "Toggle Target Selection Override",
+          name: "Toggle Target Override",
           hint: "Temporarily disable/enable target selection enforcement",
           editable: [{ key: "KeyT", modifiers: ["Alt"] }],
           onDown: () => DragonbaneActionRules.toggleTargetOverride(),
@@ -181,17 +153,17 @@ class DragonbaneActionRules {
         DragonbaneActionRules.ID,
         "toggleRangeOverride",
         {
-          name: "Toggle Range Checking Override",
+          name: "Toggle Range Override",
           hint: "Temporarily disable/enable weapon range validation",
           editable: [{ key: "KeyR", modifiers: ["Alt"] }],
           onDown: () => DragonbaneActionRules.toggleRangeOverride(),
         }
       );
 
-      // Toggle YZE Action Tracking Override
+      // Toggle YZE Integration Override
       game.keybindings.register(DragonbaneActionRules.ID, "toggleYZEOverride", {
-        name: "Toggle YZE Action Tracking Override",
-        hint: "Temporarily disable/enable YZE action tracking",
+        name: "Toggle YZE Override",
+        hint: "Temporarily disable/enable automatic YZE action tracking",
         editable: [{ key: "KeyY", modifiers: ["Alt"] }],
         onDown: () => DragonbaneActionRules.toggleYZEOverride(),
       });
@@ -202,23 +174,19 @@ class DragonbaneActionRules {
         "showOverrideStatus",
         {
           name: "Show Override Status",
-          hint: "Display current override status via notification",
+          hint: "Display current override status",
           editable: [{ key: "KeyS", modifiers: ["Alt"] }],
           onDown: () => DragonbaneActionRules.showOverrideStatus(),
         }
       );
 
-      // Toggle All Validations Override
-      game.keybindings.register(
-        DragonbaneActionRules.ID,
-        "toggleAllOverrides",
-        {
-          name: "Toggle All Overrides",
-          hint: "Temporarily disable/enable all validation and tracking",
-          editable: [{ key: "KeyA", modifiers: ["Alt"] }],
-          onDown: () => DragonbaneActionRules.toggleAllOverrides(),
-        }
-      );
+      // Override All Validations
+      game.keybindings.register(DragonbaneActionRules.ID, "overrideAll", {
+        name: "Override All",
+        hint: "Temporarily disable/enable all validation rules and action tracking",
+        editable: [{ key: "KeyA", modifiers: ["Alt"] }],
+        onDown: () => DragonbaneActionRules.toggleAllOverrides(),
+      });
 
       // Reset All Overrides
       game.keybindings.register(DragonbaneActionRules.ID, "resetAllOverrides", {
@@ -277,32 +245,49 @@ class DragonbaneActionRules {
             DragonbaneActionRules.encumbranceMonitor?.onActorDelete?.bind(
               DragonbaneActionRules.encumbranceMonitor
             ),
-          // YZE integration callback (post-roll via chat detection)
-          onChatMessageAction:
-            DragonbaneActionRules.yzeIntegration?.onChatMessageAction?.bind(
+          // YZE integration callbacks
+          onCombatTurn:
+            DragonbaneActionRules.yzeIntegration?.onCombatTurn?.bind(
               DragonbaneActionRules.yzeIntegration
             ),
-          // Grudge tracking callback
-          onGrudgeTracking:
-            DragonbaneActionRules.grudgeTracker?.onChatMessage?.bind(
+          onCombatRound:
+            DragonbaneActionRules.yzeIntegration?.onCombatRound?.bind(
+              DragonbaneActionRules.yzeIntegration
+            ),
+          // Grudge tracking callbacks
+          onCombatCreate:
+            DragonbaneActionRules.grudgeTracker?.onCombatCreate?.bind(
+              DragonbaneActionRules.grudgeTracker
+            ),
+          onCombatDelete:
+            DragonbaneActionRules.grudgeTracker?.onCombatDelete?.bind(
               DragonbaneActionRules.grudgeTracker
             ),
         },
-        DragonbaneActionRules.rulesDisplay,
-        DragonbaneActionRules.grudgeTracker
+        {
+          validator: DragonbaneActionRules.validator,
+          rulesDisplay: DragonbaneActionRules.rulesDisplay,
+          encumbranceMonitor: DragonbaneActionRules.encumbranceMonitor,
+          yzeIntegration: DragonbaneActionRules.yzeIntegration,
+          grudgeTracker: DragonbaneActionRules.grudgeTracker,
+        }
       );
 
-      DragonbaneUtils.debugLog(
-        DragonbaneActionRules.ID,
-        "Main",
-        game.i18n.localize("DRAGONBANE_ACTION_RULES.console.moduleEnabled")
+      ui.notifications.info(
+        game.i18n.localize("DRAGONBANE_ACTION_RULES.notifications.enabled"),
+        { permanent: false }
+      );
+
+      console.log(
+        `${DragonbaneActionRules.ID} | ${game.i18n.localize(
+          "DRAGONBANE_ACTION_RULES.console.enabled"
+        )}`
       );
     } catch (error) {
       console.error(
         `${DragonbaneActionRules.ID} | Failed to enable module:`,
         error
       );
-      ui.notifications.error("Failed to enable Dragonbane Combat Assistant");
     }
   }
 
@@ -311,21 +296,36 @@ class DragonbaneActionRules {
    */
   static disableModule() {
     try {
-      if (DragonbaneActionRules.hooks) {
-        DragonbaneActionRules.hooks.disableAll();
+      if (!DragonbaneActionRules.hooks) {
+        console.warn(
+          `${DragonbaneActionRules.ID} | Cannot disable module - hooks not initialized`
+        );
+        return;
       }
-      DragonbaneUtils.debugLog(
-        DragonbaneActionRules.ID,
-        "Main",
-        game.i18n.localize("DRAGONBANE_ACTION_RULES.console.moduleDisabled")
+
+      if (!DragonbaneActionRules.hooks.isEnabled()) return;
+
+      DragonbaneActionRules.hooks.disableAll();
+
+      ui.notifications.info(
+        game.i18n.localize("DRAGONBANE_ACTION_RULES.notifications.disabled"),
+        { permanent: false }
+      );
+
+      console.log(
+        `${DragonbaneActionRules.ID} | ${game.i18n.localize(
+          "DRAGONBANE_ACTION_RULES.console.disabled"
+        )}`
       );
     } catch (error) {
       console.error(
-        `${DragonbaneActionRules.ID} | Error disabling module:`,
+        `${DragonbaneActionRules.ID} | Failed to disable module:`,
         error
       );
     }
   }
+
+  // Override toggle methods (keyboard shortcuts)
 
   /**
    * Toggle target selection override
@@ -334,12 +334,14 @@ class DragonbaneActionRules {
     try {
       DragonbaneActionRules.overrides.targetSelection =
         !DragonbaneActionRules.overrides.targetSelection;
-      const messageKey = DragonbaneActionRules.overrides.targetSelection
-        ? "DRAGONBANE_ACTION_RULES.overrides.targetEnforcementDisabled"
-        : "DRAGONBANE_ACTION_RULES.overrides.targetEnforcementEnabled";
-      ui.notifications.info(game.i18n.localize(messageKey), {
-        permanent: false,
-      });
+      const status = DragonbaneActionRules.overrides.targetSelection
+        ? game.i18n.localize(
+            "DRAGONBANE_ACTION_RULES.overrides.targetSelection.disabled"
+          )
+        : game.i18n.localize(
+            "DRAGONBANE_ACTION_RULES.overrides.targetSelection.enabled"
+          );
+      ui.notifications.info(status, { permanent: false });
       DragonbaneUtils.debugLog(
         DragonbaneActionRules.ID,
         "Main",
@@ -360,12 +362,14 @@ class DragonbaneActionRules {
     try {
       DragonbaneActionRules.overrides.rangeChecking =
         !DragonbaneActionRules.overrides.rangeChecking;
-      const messageKey = DragonbaneActionRules.overrides.rangeChecking
-        ? "DRAGONBANE_ACTION_RULES.overrides.rangeCheckingDisabled"
-        : "DRAGONBANE_ACTION_RULES.overrides.rangeCheckingEnabled";
-      ui.notifications.info(game.i18n.localize(messageKey), {
-        permanent: false,
-      });
+      const status = DragonbaneActionRules.overrides.rangeChecking
+        ? game.i18n.localize(
+            "DRAGONBANE_ACTION_RULES.overrides.rangeChecking.disabled"
+          )
+        : game.i18n.localize(
+            "DRAGONBANE_ACTION_RULES.overrides.rangeChecking.enabled"
+          );
+      ui.notifications.info(status, { permanent: false });
       DragonbaneUtils.debugLog(
         DragonbaneActionRules.ID,
         "Main",
@@ -380,18 +384,20 @@ class DragonbaneActionRules {
   }
 
   /**
-   * Toggle YZE action tracking override
+   * Toggle YZE integration override
    */
   static toggleYZEOverride() {
     try {
       DragonbaneActionRules.overrides.yzeActionTracking =
         !DragonbaneActionRules.overrides.yzeActionTracking;
-      const messageKey = DragonbaneActionRules.overrides.yzeActionTracking
-        ? "DRAGONBANE_ACTION_RULES.overrides.yzeActionTrackingDisabled"
-        : "DRAGONBANE_ACTION_RULES.overrides.yzeActionTrackingEnabled";
-      ui.notifications.info(game.i18n.localize(messageKey), {
-        permanent: false,
-      });
+      const status = DragonbaneActionRules.overrides.yzeActionTracking
+        ? game.i18n.localize(
+            "DRAGONBANE_ACTION_RULES.overrides.yzeActionTracking.disabled"
+          )
+        : game.i18n.localize(
+            "DRAGONBANE_ACTION_RULES.overrides.yzeActionTracking.enabled"
+          );
+      ui.notifications.info(status, { permanent: false });
       DragonbaneUtils.debugLog(
         DragonbaneActionRules.ID,
         "Main",
@@ -412,12 +418,15 @@ class DragonbaneActionRules {
     try {
       DragonbaneActionRules.overrides.allValidations =
         !DragonbaneActionRules.overrides.allValidations;
-      const messageKey = DragonbaneActionRules.overrides.allValidations
-        ? "DRAGONBANE_ACTION_RULES.overrides.allValidationDisabled"
-        : "DRAGONBANE_ACTION_RULES.overrides.allValidationEnabled";
-      ui.notifications.warn(game.i18n.localize(messageKey), {
-        permanent: false,
-      });
+
+      const status = DragonbaneActionRules.overrides.allValidations
+        ? game.i18n.localize(
+            "DRAGONBANE_ACTION_RULES.overrides.allValidations.disabled"
+          )
+        : game.i18n.localize(
+            "DRAGONBANE_ACTION_RULES.overrides.allValidations.enabled"
+          );
+      ui.notifications.info(status, { permanent: false });
       DragonbaneUtils.debugLog(
         DragonbaneActionRules.ID,
         "Main",
@@ -432,7 +441,7 @@ class DragonbaneActionRules {
   }
 
   /**
-   * Show override status to the current user
+   * Show current override status
    */
   static showOverrideStatus() {
     try {
