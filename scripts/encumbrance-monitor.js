@@ -39,7 +39,12 @@ export class DragonbaneEncumbranceMonitor {
       // Check encumbrance immediately
       this.checkActorEncumbrance(actor);
     } catch (error) {
-      console.error(`${this.moduleId} | Error in actor update:`, error);
+      // CHANGED: Use DoD_Utility.WARNING instead of console.error
+      if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
+        DoD_Utility.WARNING(`Error in actor update: ${error.message}`);
+      } else {
+        console.error(`${this.moduleId} | Error in actor update:`, error);
+      }
     }
   }
 
@@ -58,7 +63,12 @@ export class DragonbaneEncumbranceMonitor {
         this.checkActorEncumbrance(actor);
       }
     } catch (error) {
-      console.error(`${this.moduleId} | Error in item update:`, error);
+      // CHANGED: Use DoD_Utility.WARNING instead of console.error
+      if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
+        DoD_Utility.WARNING(`Error in item update: ${error.message}`);
+      } else {
+        console.error(`${this.moduleId} | Error in item update:`, error);
+      }
     }
   }
 
@@ -74,7 +84,12 @@ export class DragonbaneEncumbranceMonitor {
 
       this.checkActorEncumbrance(actor);
     } catch (error) {
-      console.error(`${this.moduleId} | Error in item change:`, error);
+      // CHANGED: Use DoD_Utility.WARNING instead of console.error
+      if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
+        DoD_Utility.WARNING(`Error in item change: ${error.message}`);
+      } else {
+        console.error(`${this.moduleId} | Error in item change:`, error);
+      }
     }
   }
 
@@ -86,7 +101,12 @@ export class DragonbaneEncumbranceMonitor {
       this.previousStates.delete(actor.id);
       this.debugLog(`Removed tracking for deleted actor: ${actor.name}`);
     } catch (error) {
-      console.error(`${this.moduleId} | Error in actor deletion:`, error);
+      // CHANGED: Use DoD_Utility.WARNING instead of console.error
+      if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
+        DoD_Utility.WARNING(`Error in actor deletion: ${error.message}`);
+      } else {
+        console.error(`${this.moduleId} | Error in actor deletion:`, error);
+      }
     }
   }
 
@@ -164,22 +184,40 @@ export class DragonbaneEncumbranceMonitor {
 
       // Check if state changed
       if (previousState !== isOverEncumbered) {
-        // Update status effect
-        const hasEffect = DragonbaneUtils.hasStatusEffect(
-          actor,
-          statusEffectName
-        );
-
-        if (isOverEncumbered && !hasEffect) {
-          await this.addEncumbranceStatusEffect(actor, statusEffectName);
-        } else if (!isOverEncumbered && hasEffect) {
-          await DragonbaneUtils.toggleStatusEffect(
+        // Handle status effects based on state transition
+        if (isOverEncumbered) {
+          // Character became over-encumbered - add status effect if not present
+          const hasEffect = DragonbaneUtils.hasStatusEffect(
             actor,
-            statusEffectName,
-            false
+            statusEffectName
           );
 
-          // Send UI notification for removal
+          if (!hasEffect) {
+            await this.addEncumbranceStatusEffect(actor, statusEffectName);
+          }
+        } else {
+          // Character is no longer over-encumbered - force remove status effect
+          try {
+            // Use direct Foundry API call to ensure removal regardless of detection issues
+            const effect = DragonbaneUtils.findStatusEffect(statusEffectName);
+            const effectId =
+              effect?.id || statusEffectName.toLowerCase().replace(/\s+/g, "-");
+            await actor.toggleStatusEffect(effectId, { active: false });
+          } catch (toggleError) {
+            // CHANGED: Use DoD_Utility.WARNING instead of console.error
+            if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
+              DoD_Utility.WARNING(
+                `Error removing status effect: ${toggleError.message}`
+              );
+            } else {
+              console.error(
+                `${this.moduleId} | Error removing status effect:`,
+                toggleError
+              );
+            }
+          }
+
+          // Always show UI notification when becoming un-encumbered
           ui.notifications.info(
             game.i18n.format(
               "DRAGONBANE_ACTION_RULES.encumbrance.noLongerOverEncumbered",
@@ -207,10 +245,17 @@ export class DragonbaneEncumbranceMonitor {
         this.previousStates.set(actor.id, isOverEncumbered);
       }
     } catch (error) {
-      console.error(
-        `${this.moduleId} | Error checking encumbrance for ${actor.name}:`,
-        error
-      );
+      // CHANGED: Use DoD_Utility.WARNING instead of console.error
+      if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
+        DoD_Utility.WARNING(
+          `Error checking encumbrance for ${actor.name}: ${error.message}`
+        );
+      } else {
+        console.error(
+          `${this.moduleId} | Error checking encumbrance for ${actor.name}:`,
+          error
+        );
+      }
     }
   }
 
@@ -256,9 +301,16 @@ export class DragonbaneEncumbranceMonitor {
     ) {
       this.debugLog(`Status effect "${statusEffectName}" ensured`);
     } else {
-      console.warn(
-        `${this.moduleId} | Failed to ensure status effect: ${statusEffectName}`
-      );
+      // CHANGED: Use DoD_Utility.WARNING instead of console.warn
+      if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
+        DoD_Utility.WARNING(
+          `Failed to ensure status effect: ${statusEffectName}`
+        );
+      } else {
+        console.warn(
+          `${this.moduleId} | Failed to ensure status effect: ${statusEffectName}`
+        );
+      }
     }
   }
 
@@ -286,10 +338,17 @@ export class DragonbaneEncumbranceMonitor {
         );
       }
     } catch (error) {
-      console.error(
-        `${this.moduleId} | Error adding encumbrance status effect:`,
-        error
-      );
+      // CHANGED: Use DoD_Utility.WARNING instead of console.error
+      if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
+        DoD_Utility.WARNING(
+          `Error adding encumbrance status effect: ${error.message}`
+        );
+      } else {
+        console.error(
+          `${this.moduleId} | Error adding encumbrance status effect:`,
+          error
+        );
+      }
     }
   }
 
@@ -346,10 +405,17 @@ export class DragonbaneEncumbranceMonitor {
         },
       });
     } catch (error) {
-      console.error(
-        `${this.moduleId} | Error sending encumbrance notification:`,
-        error
-      );
+      // CHANGED: Use DoD_Utility.WARNING instead of console.error
+      if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
+        DoD_Utility.WARNING(
+          `Error sending encumbrance notification: ${error.message}`
+        );
+      } else {
+        console.error(
+          `${this.moduleId} | Error sending encumbrance notification:`,
+          error
+        );
+      }
     }
   }
 

@@ -30,7 +30,15 @@ export class DragonbaneRulesDisplay {
       this._handleEvadeSkillRoll(message);
       this._handleActionMessage(message, content);
     } catch (error) {
-      console.error(`${this.moduleId} | Error processing chat message:`, error);
+      // CHANGED: Use DoD_Utility.WARNING instead of console.error
+      if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
+        DoD_Utility.WARNING(`Error processing chat message: ${error.message}`);
+      } else {
+        console.error(
+          `${this.moduleId} | Error processing chat message:`,
+          error
+        );
+      }
     }
   }
 
@@ -169,10 +177,17 @@ export class DragonbaneRulesDisplay {
         await this._displayShoveRule(shoveRule);
       }
     } catch (error) {
-      console.error(
-        `${this.moduleId} | Error processing regular melee attack:`,
-        error
-      );
+      // CHANGED: Use DoD_Utility.WARNING instead of console.error
+      if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
+        DoD_Utility.WARNING(
+          `Error processing regular melee attack: ${error.message}`
+        );
+      } else {
+        console.error(
+          `${this.moduleId} | Error processing regular melee attack:`,
+          error
+        );
+      }
     }
   }
 
@@ -207,10 +222,17 @@ export class DragonbaneRulesDisplay {
 
       await this._displayEvadeMovementRule();
     } catch (error) {
-      console.error(
-        `${this.moduleId} | Error handling EVADE skill roll:`,
-        error
-      );
+      // CHANGED: Use DoD_Utility.WARNING instead of console.error
+      if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
+        DoD_Utility.WARNING(
+          `Error handling EVADE skill roll: ${error.message}`
+        );
+      } else {
+        console.error(
+          `${this.moduleId} | Error handling EVADE skill roll:`,
+          error
+        );
+      }
     }
   }
 
@@ -493,7 +515,15 @@ export class DragonbaneRulesDisplay {
           },
         });
       } catch (error) {
-        console.error(`${this.moduleId} | Error creating chat message:`, error);
+        // CHANGED: Use DoD_Utility.WARNING instead of console.error
+        if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
+          DoD_Utility.WARNING(`Error creating chat message: ${error.message}`);
+        } else {
+          console.error(
+            `${this.moduleId} | Error creating chat message:`,
+            error
+          );
+        }
       }
     }, delay);
   }
@@ -520,10 +550,17 @@ export class DragonbaneRulesDisplay {
           },
         });
       } catch (error) {
-        console.error(
-          `${this.moduleId} | Error creating evade movement chat message:`,
-          error
-        );
+        // CHANGED: Use DoD_Utility.WARNING instead of console.error
+        if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
+          DoD_Utility.WARNING(
+            `Error creating evade movement chat message: ${error.message}`
+          );
+        } else {
+          console.error(
+            `${this.moduleId} | Error creating evade movement chat message:`,
+            error
+          );
+        }
       }
     }, delay);
   }
@@ -547,10 +584,17 @@ export class DragonbaneRulesDisplay {
           },
         });
       } catch (error) {
-        console.error(
-          `${this.moduleId} | Error creating shove chat message:`,
-          error
-        );
+        // CHANGED: Use DoD_Utility.WARNING instead of console.error
+        if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
+          DoD_Utility.WARNING(
+            `Error creating shove chat message: ${error.message}`
+          );
+        } else {
+          console.error(
+            `${this.moduleId} | Error creating shove chat message:`,
+            error
+          );
+        }
       }
     }, delay);
   }
@@ -680,7 +724,12 @@ export class DragonbaneRulesDisplay {
         `Weapon ${weapon.name} marked as broken by ${game.user.name}`
       );
     } catch (error) {
-      console.error(`${this.moduleId} | Error marking weapon broken:`, error);
+      // CHANGED: Use DoD_Utility.WARNING instead of console.error
+      if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
+        DoD_Utility.WARNING(`Error marking weapon broken: ${error.message}`);
+      } else {
+        console.error(`${this.moduleId} | Error marking weapon broken:`, error);
+      }
       ui.notifications.error(
         game.i18n.localize(
           "DRAGONBANE_ACTION_RULES.weaponBroken.errors.updateFailed"
@@ -742,10 +791,15 @@ export class DragonbaneRulesDisplay {
         });
       }
     } catch (error) {
-      console.error(
-        `${this.moduleId} | Error showing full parry rules:`,
-        error
-      );
+      // CHANGED: Use DoD_Utility.WARNING instead of console.error
+      if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
+        DoD_Utility.WARNING(`Error showing full parry rules: ${error.message}`);
+      } else {
+        console.error(
+          `${this.moduleId} | Error showing full parry rules:`,
+          error
+        );
+      }
       ui.notifications.error("Failed to show parry rules");
     }
   }
