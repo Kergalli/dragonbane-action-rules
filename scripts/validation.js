@@ -165,55 +165,69 @@ export class DragonbaneValidator {
         return { success: true }; // Skip if no weapon data
       }
 
-      // Calculate distance
-      const distance = DragonbaneUtils.calculateDistance(
+      // Calculate distance using standard Foundry method
+      const distance = canvas.grid.measurePath([
         attackerToken,
-        targetToken
-      );
+        targetToken,
+      ]).distance;
 
       // Get weapon range based on type
       let maxRange;
-      let rangeName;
+      let weaponType;
 
       if (weaponData.ranged) {
         // Ranged weapon
         maxRange = parseInt(weaponData.range) || 0;
-        rangeName = game.i18n.localize(
-          "DRAGONBANE_ACTION_RULES.validation.rangedRange"
-        );
       } else if (weaponData.throwable && weaponData.thrownRange) {
         // Thrown weapon
         maxRange = parseInt(weaponData.thrownRange) || 0;
-        rangeName = game.i18n.localize(
-          "DRAGONBANE_ACTION_RULES.validation.thrownRange"
-        );
       } else {
         // Melee weapon - use short range
         maxRange = 1; // Short range in Dragonbane
-        rangeName = game.i18n.localize(
-          "DRAGONBANE_ACTION_RULES.validation.meleeRange"
-        );
+        weaponType = "melee weapon";
       }
 
       DragonbaneUtils.debugLog(
         this.moduleId,
         "Validator",
-        `Range check: ${weaponName} - Distance: ${distance}m, Max: ${maxRange}m (${rangeName})`
+        `Range check: ${weaponName} - Distance: ${distance}m, Max: ${maxRange}m`
       );
 
       if (distance > maxRange) {
-        return {
-          success: false,
-          message: game.i18n.format(
-            "DRAGONBANE_ACTION_RULES.validation.outOfRange",
-            {
-              weapon: weaponName,
-              distance: distance,
-              maxRange: maxRange,
-              rangeName: rangeName,
-            }
-          ),
-        };
+        // Use existing localization keys based on weapon type
+        if (
+          weaponData.ranged ||
+          (weaponData.throwable && weaponData.thrownRange)
+        ) {
+          // Ranged or thrown weapon - use rangedOutOfRange
+          return {
+            success: false,
+            message: game.i18n.format(
+              "DRAGONBANE_ACTION_RULES.validation.rangedOutOfRange",
+              {
+                weapon: weaponName,
+                maxRange: maxRange,
+                distance: distance,
+              }
+            ),
+          };
+        } else {
+          // Melee weapon - use meleeOutOfRange
+          const maxRangeText =
+            maxRange === 1 ? "adjacent to" : `within ${maxRange}m of`;
+          return {
+            success: false,
+            message: game.i18n.format(
+              "DRAGONBANE_ACTION_RULES.validation.meleeOutOfRange",
+              {
+                weapon: weaponName,
+                weaponType: weaponType,
+                maxRange: maxRangeText,
+                distance: distance,
+              }
+            ),
+          };
+        }
       }
 
       return { success: true };

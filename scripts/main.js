@@ -274,13 +274,13 @@ class DragonbaneActionRules {
       );
 
       ui.notifications.info(
-        game.i18n.localize("DRAGONBANE_ACTION_RULES.notifications.enabled"),
+        game.i18n.localize("DRAGONBANE_ACTION_RULES.console.moduleEnabled"),
         { permanent: false }
       );
 
       console.log(
         `${DragonbaneActionRules.ID} | ${game.i18n.localize(
-          "DRAGONBANE_ACTION_RULES.console.enabled"
+          "DRAGONBANE_ACTION_RULES.console.moduleEnabled"
         )}`
       );
     } catch (error) {
@@ -308,13 +308,13 @@ class DragonbaneActionRules {
       DragonbaneActionRules.hooks.disableAll();
 
       ui.notifications.info(
-        game.i18n.localize("DRAGONBANE_ACTION_RULES.notifications.disabled"),
+        game.i18n.localize("DRAGONBANE_ACTION_RULES.console.moduleDisabled"),
         { permanent: false }
       );
 
       console.log(
         `${DragonbaneActionRules.ID} | ${game.i18n.localize(
-          "DRAGONBANE_ACTION_RULES.console.disabled"
+          "DRAGONBANE_ACTION_RULES.console.moduleDisabled"
         )}`
       );
     } catch (error) {
@@ -336,10 +336,10 @@ class DragonbaneActionRules {
         !DragonbaneActionRules.overrides.targetSelection;
       const status = DragonbaneActionRules.overrides.targetSelection
         ? game.i18n.localize(
-            "DRAGONBANE_ACTION_RULES.overrides.targetSelection.disabled"
+            "DRAGONBANE_ACTION_RULES.overrides.targetEnforcementDisabled"
           )
         : game.i18n.localize(
-            "DRAGONBANE_ACTION_RULES.overrides.targetSelection.enabled"
+            "DRAGONBANE_ACTION_RULES.overrides.targetEnforcementEnabled"
           );
       ui.notifications.info(status, { permanent: false });
       DragonbaneUtils.debugLog(
@@ -364,10 +364,10 @@ class DragonbaneActionRules {
         !DragonbaneActionRules.overrides.rangeChecking;
       const status = DragonbaneActionRules.overrides.rangeChecking
         ? game.i18n.localize(
-            "DRAGONBANE_ACTION_RULES.overrides.rangeChecking.disabled"
+            "DRAGONBANE_ACTION_RULES.overrides.rangeCheckingDisabled"
           )
         : game.i18n.localize(
-            "DRAGONBANE_ACTION_RULES.overrides.rangeChecking.enabled"
+            "DRAGONBANE_ACTION_RULES.overrides.rangeCheckingEnabled"
           );
       ui.notifications.info(status, { permanent: false });
       DragonbaneUtils.debugLog(
@@ -392,10 +392,10 @@ class DragonbaneActionRules {
         !DragonbaneActionRules.overrides.yzeActionTracking;
       const status = DragonbaneActionRules.overrides.yzeActionTracking
         ? game.i18n.localize(
-            "DRAGONBANE_ACTION_RULES.overrides.yzeActionTracking.disabled"
+            "DRAGONBANE_ACTION_RULES.overrides.yzeActionTrackingDisabled"
           )
         : game.i18n.localize(
-            "DRAGONBANE_ACTION_RULES.overrides.yzeActionTracking.enabled"
+            "DRAGONBANE_ACTION_RULES.overrides.yzeActionTrackingEnabled"
           );
       ui.notifications.info(status, { permanent: false });
       DragonbaneUtils.debugLog(
@@ -421,10 +421,10 @@ class DragonbaneActionRules {
 
       const status = DragonbaneActionRules.overrides.allValidations
         ? game.i18n.localize(
-            "DRAGONBANE_ACTION_RULES.overrides.allValidations.disabled"
+            "DRAGONBANE_ACTION_RULES.overrides.allValidationDisabled"
           )
         : game.i18n.localize(
-            "DRAGONBANE_ACTION_RULES.overrides.allValidations.enabled"
+            "DRAGONBANE_ACTION_RULES.overrides.allValidationEnabled"
           );
       ui.notifications.info(status, { permanent: false });
       DragonbaneUtils.debugLog(
