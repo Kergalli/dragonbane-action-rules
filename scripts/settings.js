@@ -10,6 +10,7 @@ export const SETTINGS = {
   SHOW_PARRY_DURABILITY: "showParryDurability",
   ENFORCE_TARGET_SELECTION: "enforceTargetSelection",
   ENFORCE_RANGE_CHECKING: "enforceRangeChecking",
+  ENFORCE_MONSTER_ACTION_PREVENTION: "enforceMonsterActionPrevention",
   // Parry movement settings
   ENABLE_PARRY_MOVEMENT_REMINDERS: "enableParryMovementReminders",
   DEBUG_MODE: "debugMode",
@@ -77,6 +78,15 @@ export function registerSettings(moduleId) {
     hint: game.i18n.localize(
       "DRAGONBANE_ACTION_RULES.settings.enforceRangeChecking.hint"
     ),
+    scope: "world",
+    config: true,
+    type: Boolean,
+    default: true,
+  });
+
+  game.settings.register(moduleId, SETTINGS.ENFORCE_MONSTER_ACTION_PREVENTION, {
+    name: "Enforce Monster Action Prevention",
+    hint: "Show confirmation dialogs when attempting Parry or Disarm actions against monsters",
     scope: "world",
     config: true,
     type: Boolean,

@@ -1,209 +1,240 @@
 /**
- * Dragonbane Combat Assistant - Hook Management
+ * Dragonbane Combat Assistant - Simplified Hook Registration
+ * Aligned with core Dragonbane system patterns
  */
 
 import { DragonbaneUtils } from "./utils.js";
 
-export class DragonbaneHooks {
-  constructor(moduleId) {
-    this.moduleId = moduleId;
-    this.activeHooks = new Map();
-    this.originalMethods = new Map();
-    this.callbacks = {};
-  }
+// Store original methods for Token Action HUD override
+const originalMethods = new Map();
 
-  /**
-   * Enable all hook systems
-   */
-  enableAll(callbacks, rulesDisplay, grudgeTracker) {
-    this.callbacks = callbacks;
+/**
+ * Register all module hooks - direct registration like core Dragonbane system
+ */
+export function registerHooks(moduleId) {
+  // Main chat message processing hook
+  Hooks.on("createChatMessage", async (message) => {
+    if (!DragonbaneUtils.getSetting(moduleId, "enabled")) return;
 
-    this.enableChatHook();
-    this.enableChatButtonHook(rulesDisplay, grudgeTracker);
-    this.enableJournalHook(grudgeTracker);
-    this.enableMonsterActionPrevention();
-    this.enableTokenActionHUD();
-    this.enableCharacterSheets();
-    this.enableEncumbranceHooks();
-
-    this.debugLog("All hooks enabled");
-  }
-
-  /**
-   * Disable all hook systems
-   */
-  disableAll() {
-    this.disableChatHook();
-    this.disableChatButtonHook();
-    this.disableJournalHook();
-    this.disableMonsterActionPrevention();
-    this.disableTokenActionHUD();
-    this.disableCharacterSheets();
-    this.disableEncumbranceHooks();
-
-    this.debugLog("All hooks disabled");
-  }
-
-  /**
-   * Check if hooks are enabled
-   */
-  isEnabled() {
-    return this.activeHooks.size > 0;
-  }
-
-  /**
-   * Enhanced chat message hook for rules display and YZE integration
-   */
-  enableChatHook() {
-    if (this.activeHooks.has("chat")) return;
-
-    const hookId = Hooks.on("createChatMessage", async (message) => {
-      // Call the original rules display callback
-      if (this.callbacks.onChatMessage) {
-        this.callbacks.onChatMessage(message);
+    try {
+      // Rules display processing
+      if (DragonbaneActionRules.rulesDisplay?.onChatMessage) {
+        DragonbaneActionRules.rulesDisplay.onChatMessage(message);
       }
 
-      // Call YZE integration for post-roll action detection
-      if (this.callbacks.onChatMessageAction) {
-        await this.callbacks.onChatMessageAction(message);
+      // YZE integration action detection
+      if (DragonbaneActionRules.yzeIntegration?.onChatMessageAction) {
+        await DragonbaneActionRules.yzeIntegration.onChatMessageAction(message);
       }
 
-      // Call grudge tracker for damage tracking
-      if (this.callbacks.onGrudgeTracking) {
-        this.callbacks.onGrudgeTracking(message);
+      // FIXED: Grudge tracker processing (was onGrudgeTracking, now onChatMessage)
+      if (DragonbaneActionRules.grudgeTracker?.onChatMessage) {
+        DragonbaneActionRules.grudgeTracker.onChatMessage(message);
       }
-    });
+    } catch (error) {
+      console.error(`${moduleId} | Error in chat message processing:`, error);
+    }
+  });
 
-    this.activeHooks.set("chat", hookId);
-    this.debugLog("Enhanced chat hook enabled");
-  }
+  // Chat button interaction processing
+  Hooks.on("renderChatMessage", (message, html, data) => {
+    if (!DragonbaneUtils.getSetting(moduleId, "enabled")) return;
+    if (!message.getFlag(moduleId, "dragonbaneRulesMessage")) return;
 
-  /**
-   * Disable chat message hook
-   */
-  disableChatHook() {
-    this.removeHook("chat", "createChatMessage");
-  }
+    try {
+      // Show Parry Rules button
+      html.find(".show-parry-rules").click(async (event) => {
+        event.preventDefault();
+        const button = event.currentTarget;
+        const weaponId = button.dataset.weaponId;
+        const actorId = button.dataset.actorId;
+        const dragonRolled = button.dataset.dragonRolled === "true";
 
-  /**
-   * Enable chat button interaction hook
-   */
-  enableChatButtonHook(rulesDisplay, grudgeTracker) {
-    if (this.activeHooks.has("chatButton")) return;
+        if (DragonbaneActionRules.rulesDisplay?.showFullParryRules) {
+          await DragonbaneActionRules.rulesDisplay.showFullParryRules(
+            weaponId,
+            actorId,
+            dragonRolled
+          );
+        }
+      });
 
-    const hookId = Hooks.on("renderChatMessage", (message, html, data) => {
-      // Only handle our own rules messages
-      if (!message.getFlag(this.moduleId, "dragonbaneRulesMessage")) return;
+      // FIXED: Mark weapon broken button - handle UUID properly
+      html.find(".mark-weapon-broken").click(async (event) => {
+        event.preventDefault();
+        event.stopPropagation(); // Prevent core system from also processing this click
+        const button = event.currentTarget;
+        const weaponId = button.dataset.weaponId;
+        const actorId = button.dataset.actorId; // This is a UUID
+        const sceneId = button.dataset.sceneId;
+        const tokenId = button.dataset.tokenId;
 
-      // Add click handler for weapon broken buttons
-      html
-        .find(".mark-weapon-broken")
-        .off("click")
-        .on("click", async (event) => {
-          event.preventDefault();
-          event.stopPropagation();
+        try {
+          // Debug: Log what we're getting
+          console.log(
+            `${moduleId} | Mark weapon broken - Actor ID received:`,
+            actorId
+          );
 
-          const button = event.currentTarget;
-          const weaponId = button.dataset.weaponId;
-          const actorId = button.dataset.actorId;
-          const sceneId = button.dataset.sceneId;
-          const tokenId = button.dataset.tokenId;
+          // Try different resolution methods (DoD_Utility not available in our context)
+          let actor;
 
-          if (weaponId && actorId && rulesDisplay) {
-            // Use the passed rulesDisplay instance directly
-            rulesDisplay.markWeaponBroken(weaponId, actorId, sceneId, tokenId);
-
-            // Disable the button to prevent multiple clicks
-            button.disabled = true;
-            button.style.opacity = "0.5";
-            button.textContent = game.i18n.localize(
-              "DRAGONBANE_ACTION_RULES.weaponBroken.buttonTextCompleted"
-            );
-          } else {
-            console.error(
-              `${this.moduleId} | Missing data for weapon broken button:`,
-              {
-                weaponId,
-                actorId,
-                sceneId,
-                tokenId,
-                rulesDisplay: !!rulesDisplay,
-              }
-            );
+          // Method 1: Direct lookup if it's a raw actor ID
+          if (actorId && !actorId.includes(".")) {
+            console.log(`${moduleId} | Trying direct actor lookup`);
+            actor = game.actors.get(actorId);
           }
-        });
 
-      // Add click handler for grudge list buttons
-      html
-        .find(".add-to-grudge-list")
-        .off("click")
-        .on("click", async (event) => {
-          event.preventDefault();
-          event.stopPropagation();
-
-          const button = event.currentTarget;
-          const actorId = button.dataset.actorId;
-          const attackerName = button.dataset.attackerName;
-          const damage = button.dataset.damage;
-          const location = button.dataset.location;
-          const isCritical = button.dataset.critical === "true";
-
-          if (actorId && attackerName && grudgeTracker) {
-            await grudgeTracker.addToGrudgeList(
-              actorId,
-              attackerName,
-              damage,
-              location,
-              isCritical
-            );
-
-            // Disable the button to prevent multiple clicks
-            button.disabled = true;
-            button.style.opacity = "0.5";
-            button.textContent = game.i18n.localize(
-              "DRAGONBANE_ACTION_RULES.grudgeTracker.buttonTextCompleted"
-            );
-          } else {
-            console.error(
-              `${this.moduleId} | Missing data for grudge list button:`,
-              {
-                actorId,
-                attackerName,
-                damage,
-                location,
-                isCritical,
-                grudgeTracker: !!grudgeTracker,
-              }
-            );
+          // Method 2: If it looks like a UUID, use fromUuidSync
+          if (!actor && actorId) {
+            console.log(`${moduleId} | Trying UUID resolution`);
+            if (actorId.startsWith("Actor.")) {
+              actor = fromUuidSync(actorId);
+            } else {
+              // Construct proper UUID
+              actor = fromUuidSync(`Actor.${actorId}`);
+            }
           }
-        });
-    });
 
-    this.activeHooks.set("chatButton", hookId);
-    this.debugLog("Chat button hook enabled");
-  }
+          if (!actor) {
+            console.error(
+              `${moduleId} | Failed to find actor with any method. ID was:`,
+              actorId
+            );
+            ui.notifications.error(
+              game.i18n.localize(
+                "DRAGONBANE_ACTION_RULES.weaponBroken.errors.actorNotFound"
+              )
+            );
+            return;
+          }
 
-  /**
-   * Disable chat button hook
-   */
-  disableChatButtonHook() {
-    this.removeHook("chatButton", "renderChatMessage");
-  }
+          console.log(`${moduleId} | Successfully found actor:`, actor.name);
 
-  /**
-   * Enable journal interaction hook for grudge delete buttons
-   */
-  enableJournalHook(grudgeTracker) {
-    if (this.activeHooks.has("journal")) return;
+          const weapon = actor.items.get(weaponId);
+          if (!weapon) {
+            ui.notifications.error("Weapon not found");
+            return;
+          }
 
-    const hookId = Hooks.on("renderJournalSheet", (journal, html, data) => {
-      // Only handle grudge list journals
-      const folderName = game.i18n.localize(
-        "DRAGONBANE_ACTION_RULES.grudgeTracker.folderName"
-      );
-      if (journal.object.folder?.name !== folderName) return;
+          if (!actor.isOwner && !game.user.isGM) {
+            ui.notifications.warn(
+              "You don't have permission to modify this weapon"
+            );
+            return;
+          }
 
-      // Use event delegation for delete buttons (handles dynamically added buttons)
+          if (weapon.system.broken) {
+            ui.notifications.info(`${weapon.name} is already broken`);
+            return;
+          }
+
+          // Show confirmation dialog
+          const confirmed = await new Promise((resolve) => {
+            new Dialog({
+              title: game.i18n.localize(
+                "DRAGONBANE_ACTION_RULES.weaponBroken.dialogTitle"
+              ),
+              content: `<p>${game.i18n.format(
+                "DRAGONBANE_ACTION_RULES.weaponBroken.dialogContent",
+                { weaponName: weapon.name }
+              )}</p>
+                        <p><em>${game.i18n.localize(
+                          "DRAGONBANE_ACTION_RULES.weaponBroken.dialogExplanation"
+                        )}</em></p>`,
+              buttons: {
+                yes: {
+                  icon: '<i class="fas fa-check"></i>',
+                  label: game.i18n.localize(
+                    "DRAGONBANE_ACTION_RULES.weaponBroken.confirmButton"
+                  ),
+                  callback: () => resolve(true),
+                },
+                no: {
+                  icon: '<i class="fas fa-times"></i>',
+                  label: game.i18n.localize(
+                    "DRAGONBANE_ACTION_RULES.weaponBroken.cancelButton"
+                  ),
+                  callback: () => resolve(false),
+                },
+              },
+              default: "no",
+              close: () => resolve(false),
+            }).render(true);
+          });
+
+          if (!confirmed) return;
+
+          // Mark weapon as broken
+          await weapon.update({ "system.broken": true });
+
+          ui.notifications.info(
+            game.i18n.format("DRAGONBANE_ACTION_RULES.weaponBroken.success", {
+              weaponName: weapon.name,
+            })
+          );
+
+          // Update button to show completion
+          $(button)
+            .text(
+              game.i18n.localize(
+                "DRAGONBANE_ACTION_RULES.weaponBroken.buttonTextCompleted"
+              )
+            )
+            .prop("disabled", true);
+        } catch (error) {
+          console.error(`${moduleId} | Error marking weapon broken:`, error);
+          ui.notifications.error("Failed to mark weapon broken");
+        }
+      });
+
+      // Add to grudge list button
+      html.find(".add-to-grudge-list").click(async (event) => {
+        event.preventDefault();
+        const button = event.currentTarget;
+        const actorId = button.dataset.actorId;
+        const attackerName = button.dataset.attackerName;
+        const damage = parseInt(button.dataset.damage);
+        const location = button.dataset.location;
+        const isCritical = button.dataset.critical === "true";
+
+        if (DragonbaneActionRules.grudgeTracker?.addToGrudgeList) {
+          await DragonbaneActionRules.grudgeTracker.addToGrudgeList(
+            actorId,
+            attackerName,
+            damage,
+            location,
+            isCritical
+          );
+
+          // Update button to show completion
+          $(button)
+            .text(
+              game.i18n.localize(
+                "DRAGONBANE_ACTION_RULES.grudgeTracker.buttonTextCompleted"
+              )
+            )
+            .prop("disabled", true);
+        }
+      });
+    } catch (error) {
+      console.error(`${moduleId} | Error in chat button processing:`, error);
+    }
+  });
+
+  // Journal interaction for grudge tracker delete buttons
+  Hooks.on("renderJournalSheet", (journal, html, data) => {
+    if (!DragonbaneUtils.getSetting(moduleId, "enabled")) return;
+    if (!DragonbaneUtils.getSetting(moduleId, "enableGrudgeTracking")) return;
+
+    // Only handle grudge list journals
+    const folderName = game.i18n.localize(
+      "DRAGONBANE_ACTION_RULES.grudgeTracker.folderName"
+    );
+    if (journal.object.folder?.name !== folderName) return;
+
+    try {
+      // Event delegation for delete buttons
       html
         .off("click", ".grudge-delete-btn")
         .on("click", ".grudge-delete-btn", async (event) => {
@@ -214,7 +245,11 @@ export class DragonbaneHooks {
           const rowId = button.dataset.rowId;
           const journalId = button.dataset.journalId;
 
-          if (rowId && journalId && grudgeTracker) {
+          if (
+            rowId &&
+            journalId &&
+            DragonbaneActionRules.grudgeTracker?.deleteGrudgeEntry
+          ) {
             // Show confirmation dialog
             const confirmed = await new Promise((resolve) => {
               new Dialog({
@@ -246,21 +281,15 @@ export class DragonbaneHooks {
             });
 
             if (confirmed) {
-              await grudgeTracker.deleteGrudgeEntry(journalId, rowId);
-            }
-          } else {
-            console.error(
-              `${this.moduleId} | Missing data for grudge delete button:`,
-              {
-                rowId,
+              await DragonbaneActionRules.grudgeTracker.deleteGrudgeEntry(
                 journalId,
-                grudgeTracker: !!grudgeTracker,
-              }
-            );
+                rowId
+              );
+            }
           }
         });
 
-      // Use event delegation for hover effects too
+      // Hover effects for delete buttons
       html
         .off("mouseenter mouseleave", ".grudge-delete-btn")
         .on("mouseenter", ".grudge-delete-btn", function () {
@@ -269,472 +298,137 @@ export class DragonbaneHooks {
         .on("mouseleave", ".grudge-delete-btn", function () {
           $(this).css("background-color", "#8b2635");
         });
-
-      this.debugLog("Grudge journal event handlers attached with delegation");
-    });
-
-    this.activeHooks.set("journal", hookId);
-    this.debugLog("Journal hook enabled");
-  }
-
-  /**
-   * Disable journal hook
-   */
-  disableJournalHook() {
-    this.removeHook("journal", "renderJournalSheet");
-  }
-
-  /**
-   * Enable Token Action HUD attack interception
-   */
-  enableTokenActionHUD() {
-    if (!game.dragonbane?.rollItem || this.originalMethods.has("rollItem"))
-      return;
-
-    this.originalMethods.set("rollItem", game.dragonbane.rollItem);
-
-    game.dragonbane.rollItem = async (itemName, ...args) => {
-      this.debugLog(`Token Action HUD rollItem called: ${itemName}`);
-
-      const selectedToken = canvas.tokens.controlled[0];
-      if (selectedToken?.actor) {
-        const item = selectedToken.actor.items.find(
-          (i) => i.name === itemName && i.type === "weapon"
-        );
-        if (item) {
-          this.debugLog(`Token Action HUD weapon found: ${item.name}`);
-
-          const validation = await this.callbacks.performWeaponAttack(
-            itemName,
-            selectedToken.actor
-          );
-          if (!validation.success) {
-            ui.notifications.warn(validation.message);
-            this.debugLog(`Token Action HUD blocked: ${validation.message}`);
-            return null;
-          }
-
-          this.debugLog(`Token Action HUD validation passed for ${itemName}`);
-        }
-      }
-      return this.originalMethods.get("rollItem").call(this, itemName, ...args);
-    };
-
-    this.debugLog("Token Action HUD hook enabled");
-  }
-
-  /**
-   * Disable Token Action HUD hook
-   */
-  disableTokenActionHUD() {
-    if (this.originalMethods.has("rollItem") && game.dragonbane) {
-      game.dragonbane.rollItem = this.originalMethods.get("rollItem");
-      this.originalMethods.delete("rollItem");
-      this.debugLog("Token Action HUD hook disabled");
+    } catch (error) {
+      console.error(`${moduleId} | Error in journal interaction:`, error);
     }
+  });
+
+  // Monster action prevention with bypass system (like original)
+  let bypassActive = false;
+  let bypassAction = null;
+  let bypassTimeout = null;
+
+  // Clear bypass state
+  function clearBypass(moduleId) {
+    bypassActive = false;
+    bypassAction = null;
+    if (bypassTimeout) {
+      clearTimeout(bypassTimeout);
+      bypassTimeout = null;
+    }
+    console.log(`${moduleId} | Monster action bypass cleared`);
   }
 
-  /**
-   * Enable character sheet attack interception
-   */
-  enableCharacterSheets() {
-    if (this.activeHooks.has("characterSheet")) return;
-
-    const hookId = Hooks.on("renderActorSheet", (sheet, html, data) => {
-      if (
-        sheet.constructor.name === "DoDCharacterSheet" &&
-        !sheet._dragonbaneHooked
-      ) {
-        this.hookCharacterSheet(sheet, html);
-      }
-    });
-
-    this.activeHooks.set("characterSheet", hookId);
-    this.debugLog("Character sheet hook enabled");
-  }
-
-  /**
-   * Disable character sheet hooks
-   */
-  disableCharacterSheets() {
-    this.removeHook("characterSheet", "renderActorSheet");
-
-    // Clean up existing hooked sheets
-    Object.values(ui.windows)
-      .filter(
-        (app) =>
-          app.constructor.name === "DoDCharacterSheet" && app._dragonbaneHooked
+  Hooks.on("preCreateChatMessage", (document, data, options, userId) => {
+    if (!DragonbaneUtils.getSetting(moduleId, "enabled")) return;
+    if (
+      !DragonbaneUtils.getSetting(
+        moduleId,
+        "enforceMonsterActionPrevention",
+        true
       )
-      .forEach((app) => delete app._dragonbaneHooked);
+    )
+      return;
+    if (userId !== game.user.id) return;
 
-    this.debugLog("Character sheet hooks disabled");
-  }
+    // Check for active bypass - KEY FIX!
+    if (bypassActive) {
+      console.log(`${moduleId} | Bypassing prevention due to active bypass`);
+      return; // Allow message to proceed
+    }
 
-  /**
-   * Hook individual character sheet
-   */
-  hookCharacterSheet(sheet, html) {
-    this.debugLog(`Hooking character sheet for ${sheet.actor.name}`);
-
-    sheet._dragonbaneHooked = true;
-
-    // Store original method
-    const originalOnSkillRoll = sheet._onSkillRoll;
-
-    // Capture callbacks in closure to maintain proper this context
-    const callbacks = this.callbacks;
-
-    // Override the _onSkillRoll method with validation
-    sheet._onSkillRoll = async function (event) {
-      const itemId =
-        event.currentTarget.closest(".sheet-table-data").dataset.itemId;
-      const item = this.actor.items.get(itemId);
-
-      if (item?.type === "weapon") {
-        DragonbaneUtils.debugLog(
-          "dragonbane-action-rules",
-          "CharacterSheet",
-          `Weapon attack detected: ${item.name}`
-        );
-
-        const validation = await callbacks.performWeaponAttack(
-          item.name,
-          this.actor
-        );
-        if (!validation.success) {
-          ui.notifications.warn(validation.message);
-          DragonbaneUtils.debugLog(
-            "dragonbane-action-rules",
-            "CharacterSheet",
-            `Attack blocked: ${validation.message}`
-          );
-          return;
-        }
-
-        DragonbaneUtils.debugLog(
-          "dragonbane-action-rules",
-          "CharacterSheet",
-          `Validation passed for ${item.name}`
-        );
-      }
-
-      // Proceed with original method
-      return originalOnSkillRoll.call(this, event);
-    };
-  }
-
-  /**
-   * Enable encumbrance monitoring hooks
-   */
-  enableEncumbranceHooks() {
-    if (this.activeHooks.has("encumbranceUpdate")) return;
-
-    // Hook for actor updates (needed for stat changes that affect carry capacity)
-    const actorUpdateHookId = Hooks.on(
-      "updateActor",
-      this.callbacks.onActorUpdate
-    );
-    this.activeHooks.set("encumbranceUpdate", actorUpdateHookId);
-
-    // Hook for item updates (needed for item weight changes, worn status, inventory changes)
-    const itemUpdateHookId = Hooks.on(
-      "updateItem",
-      this.callbacks.onItemUpdate
-    );
-    this.activeHooks.set("encumbranceItemUpdate", itemUpdateHookId);
-
-    // Hook for item creation/deletion (needed for when items are added/removed)
-    const itemCreateHookId = Hooks.on(
-      "createItem",
-      this.callbacks.onItemChange
-    );
-    this.activeHooks.set("encumbranceItemCreate", itemCreateHookId);
-
-    const itemDeleteHookId = Hooks.on(
-      "deleteItem",
-      this.callbacks.onItemChange
-    );
-    this.activeHooks.set("encumbranceItemDelete", itemDeleteHookId);
-
-    const actorDeleteHookId = Hooks.on(
-      "deleteActor",
-      this.callbacks.onActorDelete
-    );
-    this.activeHooks.set("encumbranceActorDelete", actorDeleteHookId);
-
-    this.debugLog("Encumbrance hooks enabled");
-  }
-
-  /**
-   * Disable encumbrance monitoring hooks
-   */
-  disableEncumbranceHooks() {
-    this.removeHook("encumbranceUpdate", "updateActor");
-    this.removeHook("encumbranceItemUpdate", "updateItem");
-    this.removeHook("encumbranceItemCreate", "createItem");
-    this.removeHook("encumbranceItemDelete", "deleteItem");
-    this.removeHook("encumbranceActorDelete", "deleteActor");
-
-    this.debugLog("Encumbrance hooks disabled");
-  }
-
-  /**
-   * Enable monster action prevention hooks
-   */
-  enableMonsterActionPrevention() {
-    if (this.activeHooks.has("monsterActionPrevention")) return;
+    // Check for active overrides
+    if (DragonbaneActionRules.overrides?.allValidations) return;
 
     try {
-      // Main prevention hook
-      const hookId = Hooks.on(
-        "preCreateChatMessage",
-        (document, data, options, userId) => {
-          // Only process for current user to avoid duplicate dialogs
-          if (userId !== game.user.id) return;
+      const actionMatch = getActionMatch(document.content);
+      if (!actionMatch) return;
 
-          // Check for active bypass
-          if (this._bypassActive) {
-            this.debugLog("Bypassing prevention due to active bypass");
-            return; // Allow this message to proceed
-          }
+      const action = actionMatch[1].toLowerCase();
+      const normalizedAction = normalizeAction(action);
 
-          try {
-            // Check if this message contains a Disarm or Parry action
-            const actionMatch = this._getActionMatch(document.content);
-            if (!actionMatch) return;
+      if (!["disarm", "parry"].includes(normalizedAction)) return;
 
-            const action = actionMatch[1].toLowerCase();
-            const normalizedAction = this._normalizeAction(action);
+      const targets = Array.from(game.user.targets);
+      if (targets.length !== 1) return;
 
-            if (!["disarm", "parry"].includes(normalizedAction)) return;
+      const targetToken = targets[0];
+      const targetActor = targetToken.actor;
 
-            // Check if targeting a monster - with Forge compatibility
-            if (!window.DragonbaneActionRules?.utils) {
-              console.warn(
-                `${this.moduleId} | DragonbaneActionRules.utils not ready, skipping monster check`
-              );
-              return;
-            }
+      if (!targetActor || targetActor.type !== "monster") return;
 
-            const target =
-              window.DragonbaneActionRules.utils.getCurrentTarget();
-            if (
-              !target ||
-              !window.DragonbaneActionRules.utils.isMonsterActor(target)
-            )
-              return;
-
-            // Prevent the message and show dialog
-            this._handleMonsterActionPrevention(
-              document,
-              normalizedAction,
-              target.name
-            );
-            return false; // Always prevent initial message
-          } catch (error) {
-            console.error(
-              `${this.moduleId} | Error in monster action prevention:`,
-              error
-            );
-            // Allow message to proceed on error to avoid breaking gameplay
-            return;
-          }
-        }
+      // Show dialog and handle result
+      showMonsterActionDialog(
+        normalizedAction,
+        targetActor.name,
+        document,
+        moduleId
       );
-
-      // Watch for rules messages to clear bypass
-      const rulesWatcherId = Hooks.on("createChatMessage", (message) => {
-        try {
-          // Only check if bypass is active
-          if (!this._bypassActive || !this._bypassAction) return;
-
-          // Check if this is a rules message for the action we're bypassing
-          const content = message.content;
-          if (!content) return;
-
-          // Get localized "Parry Rules" or "Disarm Rules" text
-          const actionKey =
-            this._bypassAction === "parry"
-              ? "DRAGONBANE_ACTION_RULES.actions.parry"
-              : "DRAGONBANE_ACTION_RULES.actions.disarm";
-
-          const actionName = game.i18n.localize(actionKey);
-          const rulesText = game.i18n.format(
-            "DRAGONBANE_ACTION_RULES.speakers.generic",
-            { action: actionName }
-          );
-
-          // Check if message contains the rules text (in speaker alias or content)
-          const speaker = message.speaker?.alias || "";
-          if (speaker.includes(rulesText) || content.includes(rulesText)) {
-            this.debugLog(
-              `Detected ${this._bypassAction} rules message, clearing bypass`
-            );
-            this._clearBypass();
-          }
-        } catch (error) {
-          console.error(`${this.moduleId} | Error in rules watcher:`, error);
-        }
-      });
-
-      this.activeHooks.set("monsterActionPrevention", hookId);
-      this.activeHooks.set("monsterActionRulesWatcher", rulesWatcherId);
-      this.debugLog("Monster action prevention hooks enabled");
+      return false; // Always prevent original message
     } catch (error) {
-      console.error(
-        `${this.moduleId} | Failed to enable monster action prevention:`,
-        error
+      console.error(`${moduleId} | Error in monster action prevention:`, error);
+    }
+  });
+
+  // Rules watcher - clears bypass when rules message detected
+  Hooks.on("createChatMessage", (message) => {
+    if (!bypassActive || !bypassAction) return;
+
+    try {
+      const content = message.content;
+      if (!content) return;
+
+      // Check if this is a rules message for the bypassed action
+      const actionKey =
+        bypassAction === "parry"
+          ? "DRAGONBANE_ACTION_RULES.actions.parry"
+          : "DRAGONBANE_ACTION_RULES.actions.disarm";
+
+      const actionName = game.i18n.localize(actionKey);
+      const rulesText = game.i18n.format(
+        "DRAGONBANE_ACTION_RULES.speakers.generic",
+        { action: actionName }
       );
-      ui.notifications.warn(
-        "Monster action prevention disabled due to initialization error"
-      );
-    }
-  }
 
-  /**
-   * Handle monster action prevention with dialog
-   */
-  _handleMonsterActionPrevention(document, action, targetName) {
-    this._showMonsterActionConfirmation(action, targetName)
-      .then((proceed) => {
-        if (proceed) {
-          this.debugLog(
-            `User confirmed ${action} action against monster ${targetName}, proceeding with roll`
-          );
-
-          // Set bypass with the specific action we're waiting for
-          this._bypassAction = action; // Store which action we're bypassing for
-          this._bypassActive = true;
-          this.debugLog(`Monster action bypass activated for ${action}`);
-
-          // Set a fallback timeout (in case rules never appear)
-          this._bypassTimeout = setTimeout(() => {
-            if (this._bypassActive) {
-              this._bypassActive = false;
-              this._bypassAction = null;
-              this.debugLog(
-                "Monster action bypass cleared by timeout (fallback)"
-              );
-            }
-          }, 5000); // 5 second fallback just in case
-
-          // Recreate the chat message
-          ChatMessage.create(document.toObject()).catch((error) => {
-            console.error(
-              `${this.moduleId} | Error recreating chat message:`,
-              error
-            );
-            this._clearBypass();
-          });
-        } else {
-          this.debugLog(
-            `Prevented ${action} action against monster ${targetName}`
-          );
-        }
-      })
-      .catch((error) => {
-        console.error(
-          `${this.moduleId} | Error in monster action confirmation:`,
-          error
+      const speaker = message.speaker?.alias || "";
+      if (speaker.includes(rulesText) || content.includes(rulesText)) {
+        console.log(
+          `${moduleId} | Detected ${bypassAction} rules message, clearing bypass`
         );
-      });
-  }
-
-  /**
-   * Clear the bypass state
-   */
-  _clearBypass() {
-    this._bypassActive = false;
-    this._bypassAction = null;
-    if (this._bypassTimeout) {
-      clearTimeout(this._bypassTimeout);
-      this._bypassTimeout = null;
-    }
-    this.debugLog("Monster action bypass cleared");
-  }
-
-  /**
-   * Disable monster action prevention hooks
-   */
-  disableMonsterActionPrevention() {
-    this.removeHook("monsterActionPrevention", "preCreateChatMessage");
-    this.removeHook("monsterActionRulesWatcher", "createChatMessage");
-    this._clearBypass(); // Clean up any active bypass
-  }
-
-  /**
-   * Get action match from message content
-   */
-  _getActionMatch(content) {
-    // Import pattern manager dynamically to avoid circular dependencies
-    return (
-      window.DragonbaneActionRules?.patternManager?.getActionMatch(content) ||
-      null
-    );
-  }
-
-  /**
-   * Normalize action name for consistent processing
-   */
-  _normalizeAction(action) {
-    const actionLower = action.toLowerCase();
-
-    // Get current localized terms for reverse mapping
-    const localizedTerms = {
-      parry: (
-        game.i18n.localize("DoD.attackTypes.parry") || "parry"
-      ).toLowerCase(),
-      disarm: (
-        game.i18n.localize("DoD.attackTypes.disarm") || "disarm"
-      ).toLowerCase(),
-    };
-
-    // Reverse map localized terms to English keys
-    for (const [englishKey, localizedTerm] of Object.entries(localizedTerms)) {
-      if (actionLower === localizedTerm) {
-        return englishKey;
+        clearBypass(moduleId);
       }
+    } catch (error) {
+      console.error(`${moduleId} | Error in rules watcher:`, error);
     }
+  });
 
-    return actionLower;
-  }
+  async function showMonsterActionDialog(
+    action,
+    targetName,
+    document,
+    moduleId
+  ) {
+    const dialogKey = action === "disarm" ? "disarm" : "parry";
 
-  /**
-   * Show confirmation dialog for monster actions
-   */
-  async _showMonsterActionConfirmation(action, targetName) {
-    return new Promise((resolve) => {
-      let title, content;
-
-      if (action === "disarm") {
-        title = game.i18n.localize(
-          "DRAGONBANE_ACTION_RULES.monsterPrevention.disarm.title"
-        );
-        content = game.i18n.format(
-          "DRAGONBANE_ACTION_RULES.monsterPrevention.disarm.content",
-          { targetName }
-        );
-      } else if (action === "parry") {
-        title = game.i18n.localize(
-          "DRAGONBANE_ACTION_RULES.monsterPrevention.parry.title"
-        );
-        content = game.i18n.format(
-          "DRAGONBANE_ACTION_RULES.monsterPrevention.parry.content",
-          { targetName }
-        );
-      }
-
+    const proceed = await new Promise((resolve) => {
       new Dialog({
-        title: title,
-        content: `<p>${content}</p>`,
+        title: game.i18n.localize(
+          `DRAGONBANE_ACTION_RULES.monsterPrevention.${dialogKey}.title`
+        ),
+        content: `<p>${game.i18n.format(
+          `DRAGONBANE_ACTION_RULES.monsterPrevention.${dialogKey}.content`,
+          { targetName }
+        )}</p>`,
         buttons: {
           proceed: {
+            icon: '<i class="fas fa-check"></i>',
             label: game.i18n.localize(
               "DRAGONBANE_ACTION_RULES.monsterPrevention.proceed"
             ),
             callback: () => resolve(true),
           },
           cancel: {
+            icon: '<i class="fas fa-times"></i>',
             label: game.i18n.localize(
               "DRAGONBANE_ACTION_RULES.monsterPrevention.cancel"
             ),
@@ -745,29 +439,332 @@ export class DragonbaneHooks {
         close: () => resolve(false),
       }).render(true);
     });
-  }
 
-  /**
-   * Helper method to remove a hook
-   */
-  removeHook(name, hookType) {
-    if (this.activeHooks.has(name)) {
-      Hooks.off(hookType, this.activeHooks.get(name));
-      this.activeHooks.delete(name);
-      this.debugLog(`${name} hook disabled`);
+    if (proceed) {
+      console.log(
+        `${moduleId} | User proceeded with ${action} - activating bypass`
+      );
+
+      // Activate bypass system
+      bypassAction = action;
+      bypassActive = true;
+
+      // 5-second fallback timeout
+      bypassTimeout = setTimeout(() => {
+        if (bypassActive) {
+          console.log(`${moduleId} | Bypass cleared by timeout (fallback)`);
+          clearBypass(moduleId);
+        }
+      }, 5000);
+
+      // Recreate the message (will pass through due to bypass)
+      await ChatMessage.create(document.toObject());
+    } else {
+      console.log(`${moduleId} | User cancelled ${action} against monster`);
     }
   }
 
-  debugLog(message) {
-    try {
-      const debugEnabled =
-        game.settings.get(this.moduleId, "debugMode") || false;
-      if (debugEnabled) {
-        console.log(`${this.moduleId} | Hooks: ${message}`);
+  // Token Action HUD integration
+  if (game.dragonbane?.rollItem && !originalMethods.has("rollItem")) {
+    originalMethods.set("rollItem", game.dragonbane.rollItem);
+
+    game.dragonbane.rollItem = async (itemName, ...args) => {
+      // Skip if module disabled or validation disabled
+      if (!DragonbaneUtils.getSetting(moduleId, "enabled")) {
+        return originalMethods.get("rollItem").call(this, itemName, ...args);
       }
-    } catch (error) {
-      // Fallback if settings not ready
-      console.log(`${this.moduleId} | Hooks: ${message}`);
-    }
+
+      if (
+        !DragonbaneUtils.getSetting(moduleId, "enforceTargetSelection") &&
+        !DragonbaneUtils.getSetting(moduleId, "enforceRangeChecking")
+      ) {
+        return originalMethods.get("rollItem").call(this, itemName, ...args);
+      }
+
+      // Skip if overrides active
+      if (DragonbaneActionRules.overrides?.allValidations) {
+        return originalMethods.get("rollItem").call(this, itemName, ...args);
+      }
+
+      try {
+        const selectedToken = canvas.tokens.controlled[0];
+        if (selectedToken?.actor) {
+          const item = selectedToken.actor.items.find(
+            (i) => i.name === itemName && i.type === "weapon"
+          );
+
+          if (item && DragonbaneActionRules.validator?.performWeaponAttack) {
+            const validation =
+              await DragonbaneActionRules.validator.performWeaponAttack(
+                itemName,
+                selectedToken.actor
+              );
+
+            if (!validation.success) {
+              ui.notifications.warn(validation.message);
+              return null;
+            }
+          }
+        }
+      } catch (error) {
+        console.error(
+          `${moduleId} | Error in Token Action HUD validation:`,
+          error
+        );
+      }
+
+      return originalMethods.get("rollItem").call(this, itemName, ...args);
+    };
   }
+
+  // Character sheet attack interception
+  Hooks.on("renderActorSheet", (sheet, html, data) => {
+    if (!DragonbaneUtils.getSetting(moduleId, "enabled")) return;
+    if (
+      !DragonbaneUtils.getSetting(moduleId, "enforceTargetSelection") &&
+      !DragonbaneUtils.getSetting(moduleId, "enforceRangeChecking")
+    )
+      return;
+
+    if (sheet.constructor.name !== "DoDCharacterSheet") return;
+    if (sheet._dragonbaneHooked) return; // Already hooked
+
+    try {
+      sheet._dragonbaneHooked = true;
+
+      // Store original method
+      const originalOnSkillRoll = sheet._onSkillRoll;
+
+      // Override the _onSkillRoll method with validation
+      sheet._onSkillRoll = async (event) => {
+        // Skip if overrides active
+        if (
+          DragonbaneActionRules.overrides?.allValidations ||
+          DragonbaneActionRules.overrides?.targetSelection ||
+          DragonbaneActionRules.overrides?.rangeChecking
+        ) {
+          return originalOnSkillRoll.call(sheet, event);
+        }
+
+        try {
+          const element = event.currentTarget;
+          const itemId = element.closest("[data-item-id]")?.dataset.itemId;
+
+          if (itemId) {
+            const item = sheet.actor.items.get(itemId);
+
+            if (
+              item?.type === "weapon" &&
+              DragonbaneActionRules.validator?.performWeaponAttack
+            ) {
+              const validation =
+                await DragonbaneActionRules.validator.performWeaponAttack(
+                  item.name,
+                  sheet.actor
+                );
+
+              if (!validation.success) {
+                ui.notifications.warn(validation.message);
+                return;
+              }
+            }
+          }
+        } catch (error) {
+          console.error(
+            `${moduleId} | Error in character sheet validation:`,
+            error
+          );
+        }
+
+        return originalOnSkillRoll.call(sheet, event);
+      };
+    } catch (error) {
+      console.error(`${moduleId} | Error hooking character sheet:`, error);
+    }
+  });
+
+  // Encumbrance monitoring hooks
+  Hooks.on("updateActor", (actor, changes, options, userId) => {
+    if (!DragonbaneUtils.getSetting(moduleId, "enabled")) return;
+    if (!DragonbaneUtils.getSetting(moduleId, "enableEncumbranceMonitoring"))
+      return;
+
+    if (DragonbaneActionRules.encumbranceMonitor?.onActorUpdate) {
+      DragonbaneActionRules.encumbranceMonitor.onActorUpdate(
+        actor,
+        changes,
+        options,
+        userId
+      );
+    }
+  });
+
+  Hooks.on("updateItem", (item, changes, options, userId) => {
+    if (!DragonbaneUtils.getSetting(moduleId, "enabled")) return;
+    if (!DragonbaneUtils.getSetting(moduleId, "enableEncumbranceMonitoring"))
+      return;
+
+    if (DragonbaneActionRules.encumbranceMonitor?.onItemUpdate) {
+      DragonbaneActionRules.encumbranceMonitor.onItemUpdate(
+        item,
+        changes,
+        options,
+        userId
+      );
+    }
+  });
+
+  Hooks.on("createItem", (item, options, userId) => {
+    if (!DragonbaneUtils.getSetting(moduleId, "enabled")) return;
+    if (!DragonbaneUtils.getSetting(moduleId, "enableEncumbranceMonitoring"))
+      return;
+
+    if (DragonbaneActionRules.encumbranceMonitor?.onItemChange) {
+      DragonbaneActionRules.encumbranceMonitor.onItemChange(
+        item,
+        options,
+        userId
+      );
+    }
+  });
+
+  Hooks.on("deleteItem", (item, options, userId) => {
+    if (!DragonbaneUtils.getSetting(moduleId, "enabled")) return;
+    if (!DragonbaneUtils.getSetting(moduleId, "enableEncumbranceMonitoring"))
+      return;
+
+    if (DragonbaneActionRules.encumbranceMonitor?.onItemChange) {
+      DragonbaneActionRules.encumbranceMonitor.onItemChange(
+        item,
+        options,
+        userId
+      );
+    }
+  });
+
+  Hooks.on("deleteActor", (actor, options, userId) => {
+    if (!DragonbaneUtils.getSetting(moduleId, "enabled")) return;
+    if (!DragonbaneUtils.getSetting(moduleId, "enableEncumbranceMonitoring"))
+      return;
+
+    if (DragonbaneActionRules.encumbranceMonitor?.onActorDelete) {
+      DragonbaneActionRules.encumbranceMonitor.onActorDelete(
+        actor,
+        options,
+        userId
+      );
+    }
+  });
+
+  console.log(`${moduleId} | Simplified hook system registered`);
+}
+
+/**
+ * Disable Token Action HUD integration (called on module disable)
+ */
+export function disableTokenActionHUD() {
+  if (originalMethods.has("rollItem") && game.dragonbane) {
+    game.dragonbane.rollItem = originalMethods.get("rollItem");
+    originalMethods.delete("rollItem");
+  }
+}
+
+/**
+ * Clean up character sheet hooks (called on module disable)
+ */
+export function cleanupCharacterSheets() {
+  Object.values(ui.windows)
+    .filter(
+      (app) =>
+        app.constructor.name === "DoDCharacterSheet" && app._dragonbaneHooked
+    )
+    .forEach((app) => delete app._dragonbaneHooked);
+}
+
+// Helper functions for monster action prevention
+function getActionMatch(content) {
+  // Get current localized action terms for pattern matching
+  const parryTerm = game.i18n.localize("DoD.attackTypes.parry") || "parry";
+  const disarmTerm = game.i18n.localize("DoD.attackTypes.disarm") || "disarm";
+
+  const actionPattern = new RegExp(
+    `(${parryTerm}|${disarmTerm}|parry|disarm)`,
+    "i"
+  );
+
+  return content.match(actionPattern);
+}
+
+function normalizeAction(action) {
+  const actionLower = action.toLowerCase();
+
+  // Map localized terms back to English keys
+  const parryTerm = (
+    game.i18n.localize("DoD.attackTypes.parry") || "parry"
+  ).toLowerCase();
+  const disarmTerm = (
+    game.i18n.localize("DoD.attackTypes.disarm") || "disarm"
+  ).toLowerCase();
+
+  if (actionLower === parryTerm || actionLower === "parry") return "parry";
+  if (actionLower === disarmTerm || actionLower === "disarm") return "disarm";
+
+  return actionLower;
+}
+
+async function showMonsterActionDialog(
+  action,
+  targetName,
+  data,
+  options,
+  moduleId
+) {
+  const dialogKey = action === "disarm" ? "disarm" : "parry";
+
+  const proceed = await new Promise((resolve) => {
+    new Dialog({
+      title: game.i18n.localize(
+        `DRAGONBANE_ACTION_RULES.monsterPrevention.${dialogKey}.title`
+      ),
+      content: `<p>${game.i18n.format(
+        `DRAGONBANE_ACTION_RULES.monsterPrevention.${dialogKey}.content`,
+        { targetName }
+      )}</p>`,
+      buttons: {
+        proceed: {
+          icon: '<i class="fas fa-check"></i>',
+          label: game.i18n.localize(
+            "DRAGONBANE_ACTION_RULES.monsterPrevention.proceed"
+          ),
+          callback: () => resolve(true),
+        },
+        cancel: {
+          icon: '<i class="fas fa-times"></i>',
+          label: game.i18n.localize(
+            "DRAGONBANE_ACTION_RULES.monsterPrevention.cancel"
+          ),
+          callback: () => resolve(false),
+        },
+      },
+      default: "cancel",
+      close: () => resolve(false),
+    }).render(true);
+  });
+
+  if (proceed) {
+    // Create approved message manually
+    const approvedData = {
+      ...data,
+      flags: {
+        ...data.flags,
+        [moduleId]: {
+          ...(data.flags?.[moduleId] || {}),
+          monsterActionApproved: true,
+        },
+      },
+    };
+
+    await ChatMessage.create(approvedData, options);
+  }
+  // If canceled, do nothing - message was already blocked
 }
