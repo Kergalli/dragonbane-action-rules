@@ -363,7 +363,7 @@ export class DragonbaneUtils {
   }
 
   /**
-   * Find a status effect by name or ID
+   * Find a status effect by name or ID - FIXED for Foundry v12+
    */
   static findStatusEffect(effectName) {
     if (!effectName) return null;
@@ -375,7 +375,9 @@ export class DragonbaneUtils {
         (effect) =>
           effect.id === statusEffectId ||
           effect.name === effectName ||
-          effect.id === effectName
+          effect.id === effectName ||
+          // Legacy support for v11 and earlier
+          effect.label === effectName
       ) || null
     );
   }
@@ -397,7 +399,7 @@ export class DragonbaneUtils {
   }
 
   /**
-   * Ensure a status effect exists in CONFIG.statusEffects
+   * Ensure a status effect exists in CONFIG.statusEffects - FIXED for v12+
    */
   static ensureStatusEffectExists(
     effectName,
@@ -416,8 +418,8 @@ export class DragonbaneUtils {
     // Create new status effect with v12+ compatible properties
     const newStatusEffect = {
       id: statusEffectId,
-      name: effectName,
-      img: iconPath, // Updated from "icon" to "img" for Foundry v12+ compatibility
+      name: effectName, // Use 'name' instead of deprecated 'label'
+      img: iconPath, // Also include 'img' for v12+ compatibility
     };
 
     if (!CONFIG.statusEffects) CONFIG.statusEffects = [];

@@ -3,7 +3,6 @@
  * Event-driven encumbrance monitoring with configurable status effects
  */
 
-import { SETTINGS, getSetting } from "./settings.js";
 import { DragonbaneUtils } from "./utils.js";
 
 export class DragonbaneEncumbranceMonitor {
@@ -16,9 +15,7 @@ export class DragonbaneEncumbranceMonitor {
    * Initialize encumbrance monitoring if enabled
    */
   initialize() {
-    if (
-      getSetting(this.moduleId, SETTINGS.ENABLE_ENCUMBRANCE_MONITORING, true)
-    ) {
+    if (this.getSetting("enableEncumbranceMonitoring", true)) {
       this.ensureStatusEffectExists();
       this.initializePreviousStates();
       this.debugLog("Encumbrance monitoring initialized");
@@ -31,10 +28,7 @@ export class DragonbaneEncumbranceMonitor {
   async onActorUpdate(actor, updateData, options, userId) {
     try {
       // Only process if encumbrance monitoring is enabled
-      if (
-        !getSetting(this.moduleId, SETTINGS.ENABLE_ENCUMBRANCE_MONITORING, true)
-      )
-        return;
+      if (!this.getSetting("enableEncumbranceMonitoring", true)) return;
 
       // Only monitor characters in the configured folder
       if (!this.shouldMonitorActor(actor)) return;
@@ -54,10 +48,7 @@ export class DragonbaneEncumbranceMonitor {
    */
   async onItemUpdate(item, updateData, options, userId) {
     try {
-      if (
-        !getSetting(this.moduleId, SETTINGS.ENABLE_ENCUMBRANCE_MONITORING, true)
-      )
-        return;
+      if (!this.getSetting("enableEncumbranceMonitoring", true)) return;
 
       const actor = item.parent;
       if (!actor || !this.shouldMonitorActor(actor)) return;
@@ -74,14 +65,12 @@ export class DragonbaneEncumbranceMonitor {
   /**
    * Handle item create/delete
    */
-  async onItemChange(actor, item, options, userId) {
+  async onItemChange(item, options, userId) {
     try {
-      if (
-        !getSetting(this.moduleId, SETTINGS.ENABLE_ENCUMBRANCE_MONITORING, true)
-      )
-        return;
+      if (!this.getSetting("enableEncumbranceMonitoring", true)) return;
 
-      if (!this.shouldMonitorActor(actor)) return;
+      const actor = item.parent;
+      if (!actor || !this.shouldMonitorActor(actor)) return;
 
       this.checkActorEncumbrance(actor);
     } catch (error) {
@@ -105,16 +94,32 @@ export class DragonbaneEncumbranceMonitor {
    * Check if an actor should be monitored based on folder configuration
    */
   shouldMonitorActor(actor) {
-    if (!actor || actor.type !== "character") return false;
+    if (!actor || actor.documentName !== "Actor") {
+      return false;
+    }
 
-    const targetFolder = getSetting(
-      this.moduleId,
-      SETTINGS.ENCUMBRANCE_MONITOR_FOLDER,
-      "Party"
-    );
+    if (actor.type !== "character") {
+      return false;
+    }
 
-    // Check if actor is in the target folder
-    const actorFolder = game.folders.get(actor.folder);
+    const targetFolder = this.getSetting("encumbranceMonitorFolder", "Party");
+
+    // Handle both folder object and folder ID cases
+    let actorFolder = null;
+    if (actor.folder) {
+      if (typeof actor.folder === "string") {
+        // It's an ID, look it up
+        actorFolder = game.folders.get(actor.folder);
+      } else if (
+        actor.folder &&
+        typeof actor.folder === "object" &&
+        actor.folder.name
+      ) {
+        // It's already a folder object
+        actorFolder = actor.folder;
+      }
+    }
+
     if (!actorFolder) {
       // No folder - only monitor if target is empty string
       return targetFolder === "";
@@ -150,8 +155,8 @@ export class DragonbaneEncumbranceMonitor {
    */
   async checkActorEncumbrance(actor) {
     try {
-      const currentEnc = actor.system?.encumbrance?.current || 0;
-      const maxEnc = actor.system?.encumbrance?.max || 0;
+      const currentEnc = actor.system?.encumbrance?.value || 0;
+      const maxEnc = actor.system?.maxEncumbrance?.value || 0;
       const isOverEncumbered = currentEnc > maxEnc;
 
       const previousState = this.previousStates.get(actor.id);
@@ -167,24 +172,29 @@ export class DragonbaneEncumbranceMonitor {
 
         if (isOverEncumbered && !hasEffect) {
           await this.addEncumbranceStatusEffect(actor, statusEffectName);
-          this.debugLog(`Applied encumbrance effect to ${actor.name}`);
         } else if (!isOverEncumbered && hasEffect) {
           await DragonbaneUtils.toggleStatusEffect(
             actor,
             statusEffectName,
             false
           );
-          this.debugLog(`Removed encumbrance effect from ${actor.name}`);
+
+          // Send UI notification for removal
+          ui.notifications.info(
+            game.i18n.format(
+              "DRAGONBANE_ACTION_RULES.encumbrance.noLongerOverEncumbered",
+              { actorName: actor.name, currentEnc: currentEnc, maxEnc: maxEnc }
+            )
+          );
         }
 
         // Send chat notification if enabled
-        if (
-          getSetting(
-            this.moduleId,
-            SETTINGS.ENCUMBRANCE_CHAT_NOTIFICATIONS,
-            false
-          )
-        ) {
+        const chatEnabled = this.getSetting(
+          "encumbranceChatNotifications",
+          false
+        );
+
+        if (chatEnabled) {
           await this.sendEncumbranceNotification(
             actor,
             isOverEncumbered,
@@ -210,67 +220,46 @@ export class DragonbaneEncumbranceMonitor {
   initializePreviousStates() {
     this.previousStates.clear();
 
-    const targetFolder = getSetting(
-      this.moduleId,
-      SETTINGS.ENCUMBRANCE_MONITOR_FOLDER,
-      "Party"
-    );
+    const targetFolder = this.getSetting("encumbranceMonitorFolder", "Party");
+    let monitoredCount = 0;
 
     for (const actor of game.actors) {
-      if (!this.shouldMonitorActor(actor)) continue;
+      if (!this.shouldMonitorActor(actor)) {
+        continue;
+      }
 
-      const currentEnc = actor.system?.encumbrance?.current || 0;
-      const maxEnc = actor.system?.encumbrance?.max || 0;
+      monitoredCount++;
+
+      const currentEnc = actor.system?.encumbrance?.value || 0;
+      const maxEnc = actor.system?.maxEncumbrance?.value || 0;
       const isOverEncumbered = currentEnc > maxEnc;
 
       this.previousStates.set(actor.id, isOverEncumbered);
     }
 
     this.debugLog(
-      `Initialized encumbrance states for ${this.previousStates.size} actors in folder: ${targetFolder}`
+      `Initialized encumbrance states for ${monitoredCount} actors in folder: ${targetFolder}`
     );
   }
 
   /**
    * Ensure the encumbrance status effect exists
-   * Fixed to use existing "Over-Encumbered" effect if available from Dragonbane Status Effects module
    */
-  async ensureStatusEffectExists() {
+  ensureStatusEffectExists() {
     const statusEffectName = this.getEncumbranceStatusEffectName();
 
-    // First check if the status effect already exists (from Dragonbane Status Effects module or elsewhere)
-    const existingEffect = DragonbaneUtils.findStatusEffect(statusEffectName);
-    if (existingEffect) {
-      this.debugLog(
-        `Status effect '${statusEffectName}' already exists (using existing effect)`
+    if (
+      DragonbaneUtils.ensureStatusEffectExists(
+        statusEffectName,
+        "icons/svg/anchor.svg"
+      )
+    ) {
+      this.debugLog(`Status effect "${statusEffectName}" ensured`);
+    } else {
+      console.warn(
+        `${this.moduleId} | Failed to ensure status effect: ${statusEffectName}`
       );
-      return;
     }
-
-    // If not found, create a basic status effect with fallback icon
-    // Use the Foundry default anchor icon instead of a non-existent file
-    const statusEffectId = statusEffectName.toLowerCase().replace(/\s+/g, "-");
-    const newEffect = {
-      id: statusEffectId,
-      label: statusEffectName,
-      icon: "icons/svg/anchor.svg", // Use Foundry's built-in anchor icon instead of missing file
-      description: game.i18n.localize(
-        "DRAGONBANE_ACTION_RULES.encumbrance.statusEffectDescription"
-      ),
-      flags: {
-        [this.moduleId]: {
-          encumbranceEffect: true,
-        },
-      },
-    };
-
-    // Add to CONFIG.statusEffects if it doesn't exist
-    if (!CONFIG.statusEffects) CONFIG.statusEffects = [];
-    CONFIG.statusEffects.push(newEffect);
-
-    this.debugLog(
-      `Created encumbrance status effect: '${statusEffectName}' with fallback icon`
-    );
   }
 
   /**
@@ -278,8 +267,24 @@ export class DragonbaneEncumbranceMonitor {
    */
   async addEncumbranceStatusEffect(actor, statusEffectName) {
     try {
-      const statusEffectId = `encumbered-${this.moduleId}`;
-      await DragonbaneUtils.toggleStatusEffect(actor, statusEffectName, true);
+      const success = await DragonbaneUtils.toggleStatusEffect(
+        actor,
+        statusEffectName,
+        true
+      );
+
+      if (success) {
+        // Send UI notification with proper values
+        const currentEnc = actor.system?.encumbrance?.value || 0;
+        const maxEnc = actor.system?.maxEncumbrance?.value || 0;
+
+        ui.notifications.warn(
+          game.i18n.format(
+            "DRAGONBANE_ACTION_RULES.encumbrance.nowOverEncumbered",
+            { actorName: actor.name, currentEnc: currentEnc, maxEnc: maxEnc }
+          )
+        );
+      }
     } catch (error) {
       console.error(
         `${this.moduleId} | Error adding encumbrance status effect:`,
@@ -341,7 +346,10 @@ export class DragonbaneEncumbranceMonitor {
         },
       });
     } catch (error) {
-      console.error(`${this.moduleId} | Error creating chat message:`, error);
+      console.error(
+        `${this.moduleId} | Error sending encumbrance notification:`,
+        error
+      );
     }
   }
 
@@ -349,11 +357,7 @@ export class DragonbaneEncumbranceMonitor {
    * Get the localized encumbrance status effect name
    */
   getEncumbranceStatusEffectName() {
-    const settingValue = getSetting(
-      this.moduleId,
-      SETTINGS.ENCUMBRANCE_STATUS_EFFECT,
-      ""
-    );
+    const settingValue = this.getSetting("encumbranceStatusEffect", "");
 
     // If setting is empty or not set, use localized default
     if (!settingValue) {
@@ -363,6 +367,13 @@ export class DragonbaneEncumbranceMonitor {
     }
 
     return settingValue;
+  }
+
+  /**
+   * Get setting value with fallback
+   */
+  getSetting(settingName, fallback) {
+    return DragonbaneUtils.getSetting(this.moduleId, settingName, fallback);
   }
 
   /**

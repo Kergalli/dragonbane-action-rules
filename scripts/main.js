@@ -246,12 +246,8 @@ class DragonbaneActionRules {
               DragonbaneActionRules.encumbranceMonitor
             ),
           // YZE integration callbacks
-          onCombatTurn:
-            DragonbaneActionRules.yzeIntegration?.onCombatTurn?.bind(
-              DragonbaneActionRules.yzeIntegration
-            ),
-          onCombatRound:
-            DragonbaneActionRules.yzeIntegration?.onCombatRound?.bind(
+          onChatMessageAction:
+            DragonbaneActionRules.yzeIntegration?.onChatMessageAction?.bind(
               DragonbaneActionRules.yzeIntegration
             ),
           // Grudge tracking callbacks
@@ -271,11 +267,6 @@ class DragonbaneActionRules {
           yzeIntegration: DragonbaneActionRules.yzeIntegration,
           grudgeTracker: DragonbaneActionRules.grudgeTracker,
         }
-      );
-
-      ui.notifications.info(
-        game.i18n.localize("DRAGONBANE_ACTION_RULES.console.moduleEnabled"),
-        { permanent: false }
       );
 
       console.log(
@@ -306,11 +297,6 @@ class DragonbaneActionRules {
       if (!DragonbaneActionRules.hooks.isEnabled()) return;
 
       DragonbaneActionRules.hooks.disableAll();
-
-      ui.notifications.info(
-        game.i18n.localize("DRAGONBANE_ACTION_RULES.console.moduleDisabled"),
-        { permanent: false }
-      );
 
       console.log(
         `${DragonbaneActionRules.ID} | ${game.i18n.localize(
