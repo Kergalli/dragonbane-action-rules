@@ -307,7 +307,12 @@ export function getSetting(moduleId, setting, fallback = null) {
   try {
     return game.settings.get(moduleId, setting);
   } catch (error) {
-    console.warn(`${moduleId} | Failed to get setting ${setting}:`, error);
+    // CHANGED: Use DoD_Utility.WARNING instead of console.warn
+    if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
+      DoD_Utility.WARNING(`Failed to get setting ${setting}: ${error.message}`);
+    } else {
+      console.warn(`${moduleId} | Failed to get setting ${setting}:`, error);
+    }
     return fallback;
   }
 }
