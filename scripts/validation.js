@@ -144,6 +144,17 @@ export class DragonbaneValidator {
         ),
       };
     }
+
+    if (game.user.targets.size > 1) {
+      return {
+        success: false,
+        message: game.i18n.format(
+          "DRAGONBANE_ACTION_RULES.validation.tooManyTargets",
+          { weapon: weaponName }
+        ),
+      };
+    }
+
     return { success: true };
   }
 

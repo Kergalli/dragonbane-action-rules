@@ -65,7 +65,7 @@
       },
       "yzeCustomExclusions": {
         "name": "YZE Action Exclusions",
-        "hint": "Additional words/phrases to exclude from action tracking (comma-separated). These dice rolls will not trigger action status effects. See README.md for some examples. Note: Reaction spells are automatically excluded by checking their casting time."
+        "hint": "Additional words/phrases/UUIDs to exclude from action tracking (comma-separated). These dice rolls will not trigger action status effects. See README.md for some examples. Note: Reaction spells are automatically excluded by checking their casting time."
       },
       "enableGrudgeTracking": {
         "name": "Enable Unforgiving Tracker",
