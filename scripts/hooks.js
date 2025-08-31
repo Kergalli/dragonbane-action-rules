@@ -83,25 +83,15 @@ export function registerHooks(moduleId) {
             actorId
           );
 
-          // Try different resolution methods (DoD_Utility not available in our context)
-          let actor;
+          // Use existing DragonbaneUtils.getActorFromSpeakerData() - handles token vs prototype correctly
+          const speakerData = {
+            actor: actorId,
+            scene: sceneId,
+            token: tokenId,
+          };
 
-          // Method 1: Direct lookup if it's a raw actor ID
-          if (actorId && !actorId.includes(".")) {
-            console.log(`${moduleId} | Trying direct actor lookup`);
-            actor = game.actors.get(actorId);
-          }
-
-          // Method 2: If it looks like a UUID, use fromUuidSync
-          if (!actor && actorId) {
-            console.log(`${moduleId} | Trying UUID resolution`);
-            if (actorId.startsWith("Actor.")) {
-              actor = fromUuidSync(actorId);
-            } else {
-              // Construct proper UUID
-              actor = fromUuidSync(`Actor.${actorId}`);
-            }
-          }
+          console.log(`${moduleId} | Using speaker data:`, speakerData);
+          const actor = DragonbaneUtils.getActorFromSpeakerData(speakerData);
 
           if (!actor) {
             // PHASE 6: Use DoD_Utility.WARNING() instead of console.error
