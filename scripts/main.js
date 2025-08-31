@@ -36,10 +36,7 @@ class DragonbaneActionRules {
 
   // Override state for keyboard shortcuts
   static overrides = {
-    targetSelection: false,
-    rangeChecking: false,
-    yzeActionTracking: false,
-    allValidations: false,
+    validationBypass: false,
   };
 
   /**
@@ -148,67 +145,15 @@ class DragonbaneActionRules {
    */
   static registerKeybinds() {
     try {
-      // Toggle Target Selection Override
+      // Toggle Combat Validation Bypass
       game.keybindings.register(
         DragonbaneActionRules.ID,
-        "toggleTargetOverride",
+        "toggleValidationBypass",
         {
-          name: "Toggle Target Override",
-          hint: "Temporarily disable/enable target selection enforcement",
-          editable: [{ key: "KeyT", modifiers: ["Alt"] }],
-          onDown: () => DragonbaneActionRules.toggleTargetOverride(),
-        }
-      );
-
-      // Toggle Range Checking Override
-      game.keybindings.register(
-        DragonbaneActionRules.ID,
-        "toggleRangeOverride",
-        {
-          name: "Toggle Range Override",
-          hint: "Temporarily disable/enable weapon range validation",
-          editable: [{ key: "KeyR", modifiers: ["Alt"] }],
-          onDown: () => DragonbaneActionRules.toggleRangeOverride(),
-        }
-      );
-
-      // Toggle YZE Integration Override
-      game.keybindings.register(DragonbaneActionRules.ID, "toggleYZEOverride", {
-        name: "Toggle YZE Override",
-        hint: "Temporarily disable/enable YZE action tracking",
-        editable: [{ key: "KeyY", modifiers: ["Alt"] }],
-        onDown: () => DragonbaneActionRules.toggleYZEOverride(),
-      });
-
-      // Toggle All Validations Override
-      game.keybindings.register(
-        DragonbaneActionRules.ID,
-        "toggleAllOverrides",
-        {
-          name: "Toggle All Overrides",
-          hint: "Temporarily disable/enable all module validations and tracking",
-          editable: [{ key: "KeyA", modifiers: ["Alt"] }],
-          onDown: () => DragonbaneActionRules.toggleAllOverrides(),
-        }
-      );
-
-      // Clear All Overrides
-      game.keybindings.register(DragonbaneActionRules.ID, "clearOverrides", {
-        name: "Clear All Overrides",
-        hint: "Clear all temporary validation overrides",
-        editable: [{ key: "KeyX", modifiers: ["Alt"] }],
-        onDown: () => DragonbaneActionRules.clearAllOverrides(),
-      });
-
-      // Show Override Status (Alt-S)
-      game.keybindings.register(
-        DragonbaneActionRules.ID,
-        "showOverrideStatus",
-        {
-          name: "Show Override Status",
-          hint: "Display current validation override status",
-          editable: [{ key: "KeyS", modifiers: ["Alt"] }],
-          onDown: () => DragonbaneActionRules.showOverrideStatus(),
+          name: "Toggle Combat Validation Bypass",
+          hint: "Temporarily disable/enable all combat validations and YZE tracking",
+          editable: [{ key: "KeyV", modifiers: ["Alt"] }],
+          onDown: () => DragonbaneActionRules.toggleValidationBypass(),
         }
       );
     } catch (error) {
@@ -281,74 +226,14 @@ class DragonbaneActionRules {
     }
   }
 
-  // Keyboard shortcut toggle methods (unchanged)
-  static toggleTargetOverride() {
-    DragonbaneActionRules.overrides.targetSelection =
-      !DragonbaneActionRules.overrides.targetSelection;
-    const status = DragonbaneActionRules.overrides.targetSelection
-      ? "disabled"
-      : "enabled";
-    ui.notifications.info(`Target selection validation ${status}`);
-  }
-
-  static toggleRangeOverride() {
-    DragonbaneActionRules.overrides.rangeChecking =
-      !DragonbaneActionRules.overrides.rangeChecking;
-    const status = DragonbaneActionRules.overrides.rangeChecking
-      ? "disabled"
-      : "enabled";
-    ui.notifications.info(`Range checking validation ${status}`);
-  }
-
-  static toggleYZEOverride() {
-    DragonbaneActionRules.overrides.yzeActionTracking =
-      !DragonbaneActionRules.overrides.yzeActionTracking;
-    const status = DragonbaneActionRules.overrides.yzeActionTracking
-      ? "disabled"
-      : "enabled";
-    ui.notifications.info(`YZE action tracking ${status}`);
-  }
-
-  static toggleAllOverrides() {
-    DragonbaneActionRules.overrides.allValidations =
-      !DragonbaneActionRules.overrides.allValidations;
-    const status = DragonbaneActionRules.overrides.allValidations
-      ? "disabled"
-      : "enabled";
-    ui.notifications.info(`All module validations ${status}`);
-  }
-
-  static clearAllOverrides() {
-    DragonbaneActionRules.overrides = {
-      targetSelection: false,
-      rangeChecking: false,
-      yzeActionTracking: false,
-      allValidations: false,
-    };
-    ui.notifications.info("All validation overrides cleared");
-  }
-  static showOverrideStatus() {
-    const overrides = DragonbaneActionRules.overrides || {};
-
-    // Check which overrides are active
-    const activeOverrides = [];
-    if (overrides.targetSelection) activeOverrides.push("Target Selection");
-    if (overrides.rangeChecking) activeOverrides.push("Range Checking");
-    if (overrides.yzeActionTracking)
-      activeOverrides.push("YZE Action Tracking");
-    if (overrides.allValidations) activeOverrides.push("All Validation Rules");
-
-    // Create status message
-    let message;
-    if (activeOverrides.length === 0) {
-      message = "All validation rules active";
-    } else {
-      message = `Active overrides: ${activeOverrides.join(", ")}`;
-    }
-
-    // Show personal notification (not in chat)
-    ui.notifications.info(message);
-    console.log(`${DragonbaneActionRules.ID} | Override Status: ${message}`);
+  // Keyboard shortcut toggle method
+  static toggleValidationBypass() {
+    DragonbaneActionRules.overrides.validationBypass =
+      !DragonbaneActionRules.overrides.validationBypass;
+    const status = DragonbaneActionRules.overrides.validationBypass
+      ? "bypassed"
+      : "active";
+    ui.notifications.info(`Combat validations ${status}`);
   }
 }
 

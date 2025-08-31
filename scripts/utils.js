@@ -411,6 +411,32 @@ export class DragonbaneUtils {
   }
 
   /**
+   * Check if spell has reaction casting time
+   */
+  static isSpellReactionCastingTime(spell) {
+    if (!spell || !spell.system) return false;
+
+    try {
+      const castingTime = spell.system.castingTime || "";
+      // Check for "Reaction" casting time (case-insensitive)
+      return castingTime.toLowerCase().includes("reaction");
+    } catch (error) {
+      // CHANGED: Use DoD_Utility.WARNING instead of console.error
+      if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
+        DoD_Utility.WARNING(
+          `Error checking spell casting time: ${error.message}`
+        );
+      } else {
+        console.error(
+          "DragonbaneUtils | Error checking spell casting time:",
+          error
+        );
+      }
+      return false;
+    }
+  }
+
+  /**
    * Determine if this client should create rules messages
    */
   static shouldCreateRules(message) {

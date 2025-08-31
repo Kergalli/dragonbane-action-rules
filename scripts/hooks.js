@@ -608,12 +608,8 @@ export function registerHooks(moduleId) {
 
       // Override the _onSkillRoll method with validation
       sheet._onSkillRoll = async (event) => {
-        // Skip if overrides active
-        if (
-          DragonbaneActionRules.overrides?.allValidations ||
-          DragonbaneActionRules.overrides?.targetSelection ||
-          DragonbaneActionRules.overrides?.rangeChecking
-        ) {
+        // Skip if validation bypass active
+        if (DragonbaneActionRules.overrides?.validationBypass) {
           return originalOnSkillRoll.call(sheet, event);
         }
 

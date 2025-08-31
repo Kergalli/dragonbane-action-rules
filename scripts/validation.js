@@ -105,28 +105,25 @@ export class DragonbaneValidator {
    * Get validation settings with override checking
    */
   getValidationSettings() {
+    // Check for validation bypass
+    if (window.DragonbaneActionRules?.overrides?.validationBypass) {
+      return {
+        enforceTarget: false,
+        enforceRange: false,
+      };
+    }
+
     // Get base settings from module configuration
-    let enforceTarget = getSetting(
+    const enforceTarget = getSetting(
       this.moduleId,
       SETTINGS.ENFORCE_TARGET_SELECTION,
       true
     );
-    let enforceRange = getSetting(
+    const enforceRange = getSetting(
       this.moduleId,
       SETTINGS.ENFORCE_RANGE_CHECKING,
       true
     );
-
-    // Check for keyboard shortcut overrides if the main class is available
-    if (window.DragonbaneActionRules?.overrides) {
-      const overrides = window.DragonbaneActionRules.overrides;
-      enforceTarget =
-        enforceTarget &&
-        !overrides.targetSelection &&
-        !overrides.allValidations;
-      enforceRange =
-        enforceRange && !overrides.rangeChecking && !overrides.allValidations;
-    }
 
     return {
       enforceTarget,
