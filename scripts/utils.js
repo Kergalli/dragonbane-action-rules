@@ -258,7 +258,7 @@ export class DragonbaneUtils {
   }
 
   /**
-   * Add status effect to actor
+   * FIXED: Toggle status effect using v12+ API to avoid deprecation warnings
    */
   static async toggleStatusEffect(actor, effectName, active = true) {
     if (!actor || !effectName) return false;
@@ -270,17 +270,30 @@ export class DragonbaneUtils {
       const hasEffect = DragonbaneUtils.hasStatusEffect(actor, effectName);
 
       if (active && !hasEffect) {
-        // Add the effect
-        await actor.toggleStatusEffect(effect.id || effectName, {
-          active: true,
-        });
+        // FIXED: Use Foundry's native ActiveEffect API instead of core system's deprecated path
+        const effectData = {
+          name: game.i18n.localize(effect.name || effect.label || effectName),
+          img: effect.img || effect.icon || "icons/svg/aura.svg",
+          statuses: [effect.id],
+          origin: actor.uuid,
+        };
+
+        await actor.createEmbeddedDocuments("ActiveEffect", [effectData]);
         return true;
       } else if (!active && hasEffect) {
-        // Remove the effect
-        await actor.toggleStatusEffect(effect.id || effectName, {
-          active: false,
-        });
-        return true;
+        // Remove the effect using native API
+        const activeEffect = actor.effects.find(
+          (e) =>
+            e.statuses?.has(effect.id) ||
+            e.name === effectName ||
+            e.name === effect.name ||
+            e.name === effect.label
+        );
+
+        if (activeEffect) {
+          await activeEffect.delete();
+          return true;
+        }
       }
 
       return false;
