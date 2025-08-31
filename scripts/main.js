@@ -1,22 +1,21 @@
 /**
- * Dragonbane Combat Assistant - Main Module (Updated for Phase 3.2)
+ * Dragonbane Combat Assistant - Main Module (Phase 3.3 - Simplified Hooks)
  * Core initialization and module management
  */
 
 import { DragonbaneEncumbranceMonitor } from "./encumbrance-monitor.js";
 import { DragonbaneGrudgeTracker } from "./grudge-tracker.js";
+import {
+  cleanupCharacterSheets,
+  disableTokenActionHUD,
+  registerHooks,
+} from "./hooks.js";
 import { DragonbanePatternManager } from "./pattern-manager.js";
 import { DragonbaneRulesDisplay } from "./rules-display.js";
 import { isDebugMode, registerSettings, SETTINGS } from "./settings.js";
 import { DragonbaneUtils } from "./utils.js";
 import { DragonbaneValidator } from "./validation.js";
 import { DragonbaneYZEIntegration } from "./yze-integration.js";
-// CHANGED: Import new simplified hook system
-import {
-  cleanupCharacterSheets,
-  disableTokenActionHUD,
-  registerHooks,
-} from "./hooks.js";
 
 class DragonbaneActionRules {
   static ID = "dragonbane-action-rules";
@@ -26,7 +25,7 @@ class DragonbaneActionRules {
     RULES_MESSAGE: "dragonbaneRulesMessage",
   };
 
-  // Module components (REMOVED: static hooks = null;)
+  // Module components
   static validator = null;
   static rulesDisplay = null;
   static encumbranceMonitor = null;
@@ -83,9 +82,8 @@ class DragonbaneActionRules {
         DragonbaneActionRules.ID
       );
 
-      // CHANGED: Register hooks and keybinds using simplified system
-      DragonbaneActionRules.registerMainHooks();
-      DragonbaneActionRules.registerKeybinds();
+      // SIMPLIFIED: Direct hook and keybind registration
+      DragonbaneActionRules.registerHooksAndKeybinds();
 
       // Conditional initialization logging using the new convenience function
       setTimeout(() => {
@@ -109,27 +107,30 @@ class DragonbaneActionRules {
   }
 
   /**
-   * Register main hooks that should always be active
+   * SIMPLIFIED: Register hooks and keybinds - no complex state management
    */
-  static registerMainHooks() {
+  static registerHooksAndKeybinds() {
     try {
-      // Main initialization hook
+      // Main ready hook for module activation
       Hooks.once("ready", () => {
         // Enable module if it's set to enabled in settings
         if (game.settings.get(DragonbaneActionRules.ID, SETTINGS.ENABLED)) {
           DragonbaneActionRules.enableModule();
         }
 
-        // Additional ready-state initialization
+        // Initialize components that need ready state
         DragonbaneActionRules.encumbranceMonitor?.initialize();
         DragonbaneActionRules.yzeIntegration?.initialize();
       });
 
-      // CHANGED: Register all hooks using simplified system
+      // SIMPLIFIED: Direct hook registration using new system
       registerHooks(DragonbaneActionRules.ID);
+
+      // Register keyboard shortcuts
+      DragonbaneActionRules.registerKeybinds();
     } catch (error) {
       console.error(
-        `${DragonbaneActionRules.ID} | Failed to register main hooks:`,
+        `${DragonbaneActionRules.ID} | Failed to register hooks and keybinds:`,
         error
       );
     }
@@ -200,12 +201,12 @@ class DragonbaneActionRules {
   }
 
   /**
-   * Enable the module (SIMPLIFIED: No complex hook management)
+   * SIMPLIFIED: Enable the module - no complex hook management needed
    */
   static enableModule() {
     try {
-      // REMOVED: Complex hook enabling logic - hooks are now always registered
-      // Settings control behavior inside hooks, not registration
+      // All hooks are now always registered - settings control behavior inside hooks
+      // No need for complex enabling/disabling logic
 
       if (isDebugMode(DragonbaneActionRules.ID)) {
         console.log(
@@ -223,11 +224,11 @@ class DragonbaneActionRules {
   }
 
   /**
-   * Disable the module (SIMPLIFIED: Just disable integrations)
+   * SIMPLIFIED: Disable the module - just cleanup external integrations
    */
   static disableModule() {
     try {
-      // CHANGED: Use simplified cleanup functions
+      // Clean up external integrations
       disableTokenActionHUD();
       cleanupCharacterSheets();
 
