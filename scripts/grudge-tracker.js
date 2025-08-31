@@ -49,7 +49,6 @@ export class DragonbaneGrudgeTracker {
         return;
       }
     } catch (error) {
-      // CHANGED: Use DoD_Utility.WARNING instead of console.error
       if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
         DoD_Utility.WARNING(
           `Error processing grudge tracking: ${error.message}`
@@ -62,7 +61,6 @@ export class DragonbaneGrudgeTracker {
       }
     }
   }
-
   /**
    * Check if message is an attack roll (for dragon detection)
    */
@@ -215,7 +213,6 @@ export class DragonbaneGrudgeTracker {
       // Clean up the stored damage roll
       this.recentDamageRolls.delete(damageData.targetId);
     } catch (error) {
-      // CHANGED: Use DoD_Utility.WARNING instead of console.error
       if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
         DoD_Utility.WARNING(
           `Error processing damage application: ${error.message}`
@@ -261,7 +258,6 @@ export class DragonbaneGrudgeTracker {
    */
   _extractDamageApplicationData(message) {
     try {
-      // Look for damage application patterns in the message
       const content = message.content;
 
       // Extract target actor UUID (should be in the message)
@@ -270,9 +266,20 @@ export class DragonbaneGrudgeTracker {
 
       const targetId = actorMatch[1];
 
-      // Extract final damage amount
-      const damageMatch = content.match(/(\d+)\s*damage/i);
-      const finalDamage = damageMatch ? parseInt(damageMatch[1]) : 0;
+      // Try multiple damage patterns
+      let finalDamage = 0;
+
+      // Pattern 1: data-damage="8"
+      let damageMatch = content.match(/data-damage="(\d+)"/);
+      if (damageMatch) {
+        finalDamage = parseInt(damageMatch[1]);
+      } else {
+        // Pattern 2: Traditional "X damage" text
+        damageMatch = content.match(/(\d+)\s*damage/i);
+        if (damageMatch) {
+          finalDamage = parseInt(damageMatch[1]);
+        }
+      }
 
       return {
         targetId: targetId,
@@ -289,8 +296,17 @@ export class DragonbaneGrudgeTracker {
   _hasUnforgivingAbility(actor) {
     if (!actor.system?.kin?.name) return false;
 
-    const abilities = actor.system.kin.system?.abilities || "";
-    return abilities.toLowerCase().includes("unforgiving");
+    // Check multiple possible ability locations
+    const abilities1 = actor.system.kin.system?.abilities || "";
+    const abilities2 = actor.system.kin?.abilities || "";
+    const abilities3 = actor.system.kin?.description || "";
+
+    // Check all possible locations for "unforgiving" (case-insensitive)
+    return (
+      abilities1.toLowerCase().includes("unforgiving") ||
+      abilities2.toLowerCase().includes("unforgiving") ||
+      abilities3.toLowerCase().includes("unforgiving")
+    );
   }
 
   /**
@@ -689,9 +705,7 @@ export class DragonbaneGrudgeTracker {
       .substr(2, 9)}`;
 
     // Format damage with critical indicator
-    const damageDisplay = isCritical
-      ? `${damage} <span style="color: #ff6b6b; font-weight: bold; font-size: 0.8em;">CRITICAL</span>`
-      : damage.toString();
+    const damageDisplay = isCritical ? `${damage} 💥` : damage.toString();
 
     // Create new row with delete button
     const newRow = `
@@ -704,7 +718,7 @@ export class DragonbaneGrudgeTracker {
                             <button class="grudge-delete-btn" 
                                     data-row-id="${rowId}" 
                                     data-journal-id="${journal.id}"
-                                    style="background: #8b2635; color: white; border: none; padding: 2px 6px; border-radius: 3px; cursor: pointer; font-size: 12px;"
+                                    style="background: #8b2635; color: white; border: 1px solid #5d1a23; border-radius: 3px; width: 20px; height: 20px; cursor: pointer; font-size: 12px; display: flex; align-items: center; justify-content: center; line-height: 1;"
                                     title="${game.i18n.localize(
                                       "DRAGONBANE_ACTION_RULES.grudgeTracker.deleteEntry"
                                     )}">

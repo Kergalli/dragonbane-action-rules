@@ -301,6 +301,57 @@ export function registerHooks(moduleId) {
     }
   });
 
+  // Grudge tracker button handler (separate hook since grudge messages don't have rules flag)
+  Hooks.on("renderChatMessage", (message, html, data) => {
+    if (!DragonbaneUtils.getSetting(moduleId, "enabled")) return;
+    if (!DragonbaneUtils.getSetting(moduleId, "enableGrudgeTracking")) return;
+
+    // Only process messages with grudge buttons
+    if (!html.find(".add-to-grudge-list").length) return;
+
+    try {
+      html.find(".add-to-grudge-list").click(async (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+
+        const button = event.currentTarget;
+        const actorId = button.dataset.actorId;
+        const attackerName = button.dataset.attackerName;
+        const damage = button.dataset.damage;
+        const location = button.dataset.location;
+        const critical = button.dataset.critical === "true";
+
+        if (DragonbaneActionRules.grudgeTracker?.addToGrudgeList) {
+          try {
+            await DragonbaneActionRules.grudgeTracker.addToGrudgeList(
+              actorId,
+              attackerName,
+              damage,
+              location,
+              critical
+            );
+
+            // Update button to show completion
+            $(button)
+              .text(
+                game.i18n.localize(
+                  "DRAGONBANE_ACTION_RULES.grudgeTracker.buttonTextCompleted"
+                )
+              )
+              .prop("disabled", true);
+          } catch (error) {
+            console.error(`${moduleId} | Error adding to grudge list:`, error);
+            ui.notifications.error("Failed to add to grudge list");
+          }
+        } else {
+          console.error("🎯 GRUDGE ERROR: addToGrudgeList method not found");
+        }
+      });
+    } catch (error) {
+      console.error(`${moduleId} | Error in grudge button processing:`, error);
+    }
+  });
+
   // Monster action prevention with bypass system (like original)
   let bypassActive = false;
   let bypassAction = null;
