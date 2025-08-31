@@ -129,10 +129,17 @@ class DragonbaneActionRules {
       // Register keyboard shortcuts
       DragonbaneActionRules.registerKeybinds();
     } catch (error) {
-      console.error(
-        `${DragonbaneActionRules.ID} | Failed to register hooks and keybinds:`,
-        error
-      );
+      // CHANGED: Use DoD_Utility.WARNING instead of console.error
+      if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
+        DoD_Utility.WARNING(
+          `Failed to register hooks and keybinds: ${error.message}`
+        );
+      } else {
+        console.error(
+          `${DragonbaneActionRules.ID} | Failed to register hooks and keybinds:`,
+          error
+        );
+      }
     }
   }
 
@@ -192,11 +199,28 @@ class DragonbaneActionRules {
         editable: [{ key: "KeyX", modifiers: ["Alt"] }],
         onDown: () => DragonbaneActionRules.clearAllOverrides(),
       });
-    } catch (error) {
-      console.error(
-        `${DragonbaneActionRules.ID} | Failed to register keybinds:`,
-        error
+
+      // Show Override Status (Alt-S)
+      game.keybindings.register(
+        DragonbaneActionRules.ID,
+        "showOverrideStatus",
+        {
+          name: "Show Override Status",
+          hint: "Display current validation override status",
+          editable: [{ key: "KeyS", modifiers: ["Alt"] }],
+          onDown: () => DragonbaneActionRules.showOverrideStatus(),
+        }
       );
+    } catch (error) {
+      // CHANGED: Use DoD_Utility.WARNING instead of console.error
+      if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
+        DoD_Utility.WARNING(`Failed to register keybinds: ${error.message}`);
+      } else {
+        console.error(
+          `${DragonbaneActionRules.ID} | Failed to register keybinds:`,
+          error
+        );
+      }
     }
   }
 
@@ -216,10 +240,15 @@ class DragonbaneActionRules {
         );
       }
     } catch (error) {
-      console.error(
-        `${DragonbaneActionRules.ID} | Failed to enable module:`,
-        error
-      );
+      // CHANGED: Use DoD_Utility.WARNING instead of console.error
+      if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
+        DoD_Utility.WARNING(`Failed to enable module: ${error.message}`);
+      } else {
+        console.error(
+          `${DragonbaneActionRules.ID} | Failed to enable module:`,
+          error
+        );
+      }
     }
   }
 
@@ -240,10 +269,15 @@ class DragonbaneActionRules {
         );
       }
     } catch (error) {
-      console.error(
-        `${DragonbaneActionRules.ID} | Failed to disable module:`,
-        error
-      );
+      // CHANGED: Use DoD_Utility.WARNING instead of console.error
+      if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
+        DoD_Utility.WARNING(`Failed to disable module: ${error.message}`);
+      } else {
+        console.error(
+          `${DragonbaneActionRules.ID} | Failed to disable module:`,
+          error
+        );
+      }
     }
   }
 
@@ -292,6 +326,29 @@ class DragonbaneActionRules {
       allValidations: false,
     };
     ui.notifications.info("All validation overrides cleared");
+  }
+  static showOverrideStatus() {
+    const overrides = DragonbaneActionRules.overrides || {};
+
+    // Check which overrides are active
+    const activeOverrides = [];
+    if (overrides.targetSelection) activeOverrides.push("Target Selection");
+    if (overrides.rangeChecking) activeOverrides.push("Range Checking");
+    if (overrides.yzeActionTracking)
+      activeOverrides.push("YZE Action Tracking");
+    if (overrides.allValidations) activeOverrides.push("All Validation Rules");
+
+    // Create status message
+    let message;
+    if (activeOverrides.length === 0) {
+      message = "All validation rules active";
+    } else {
+      message = `Active overrides: ${activeOverrides.join(", ")}`;
+    }
+
+    // Show personal notification (not in chat)
+    ui.notifications.info(message);
+    console.log(`${DragonbaneActionRules.ID} | Override Status: ${message}`);
   }
 }
 

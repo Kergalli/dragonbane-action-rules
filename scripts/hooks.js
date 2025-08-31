@@ -32,7 +32,14 @@ export function registerHooks(moduleId) {
         DragonbaneActionRules.grudgeTracker.onChatMessage(message);
       }
     } catch (error) {
-      console.error(`${moduleId} | Error in chat message processing:`, error);
+      // CHANGED: Use DoD_Utility.WARNING instead of console.error
+      if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
+        DoD_Utility.WARNING(
+          `Error in chat message processing: ${error.message}`
+        );
+      } else {
+        console.error(`${moduleId} | Error in chat message processing:`, error);
+      }
     }
   });
 
@@ -59,7 +66,7 @@ export function registerHooks(moduleId) {
         }
       });
 
-      // FIXED: Mark weapon broken button - handle UUID properly
+      // FIXED: Mark weapon broken button - Phase 6 compliant with DoD_Utility.WARNING()
       html.find(".mark-weapon-broken").click(async (event) => {
         event.preventDefault();
         event.stopPropagation(); // Prevent core system from also processing this click
@@ -97,10 +104,13 @@ export function registerHooks(moduleId) {
           }
 
           if (!actor) {
-            console.error(
-              `${moduleId} | Failed to find actor with any method. ID was:`,
-              actorId
-            );
+            // PHASE 6: Use DoD_Utility.WARNING() instead of console.error
+            const errorMsg = `Failed to find actor with any method. ID was: ${actorId}`;
+            if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
+              DoD_Utility.WARNING(errorMsg);
+            } else {
+              console.error(`${moduleId} | ${errorMsg}`);
+            }
             ui.notifications.error(
               game.i18n.localize(
                 "DRAGONBANE_ACTION_RULES.weaponBroken.errors.actorNotFound"
@@ -139,9 +149,9 @@ export function registerHooks(moduleId) {
                 "DRAGONBANE_ACTION_RULES.weaponBroken.dialogContent",
                 { weaponName: weapon.name }
               )}</p>
-                        <p><em>${game.i18n.localize(
-                          "DRAGONBANE_ACTION_RULES.weaponBroken.dialogExplanation"
-                        )}</em></p>`,
+                  <p><em>${game.i18n.localize(
+                    "DRAGONBANE_ACTION_RULES.weaponBroken.dialogExplanation"
+                  )}</em></p>`,
               buttons: {
                 yes: {
                   icon: '<i class="fas fa-check"></i>',
@@ -183,42 +193,25 @@ export function registerHooks(moduleId) {
             )
             .prop("disabled", true);
         } catch (error) {
-          console.error(`${moduleId} | Error marking weapon broken:`, error);
+          // PHASE 6: Use DoD_Utility.WARNING() instead of console.error
+          const errorMsg = `Error marking weapon broken: ${error.message}`;
+          if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
+            DoD_Utility.WARNING(errorMsg);
+          } else {
+            console.error(`${moduleId} | ${errorMsg}`);
+          }
           ui.notifications.error("Failed to mark weapon broken");
         }
       });
-
-      // Add to grudge list button
-      html.find(".add-to-grudge-list").click(async (event) => {
-        event.preventDefault();
-        const button = event.currentTarget;
-        const actorId = button.dataset.actorId;
-        const attackerName = button.dataset.attackerName;
-        const damage = parseInt(button.dataset.damage);
-        const location = button.dataset.location;
-        const isCritical = button.dataset.critical === "true";
-
-        if (DragonbaneActionRules.grudgeTracker?.addToGrudgeList) {
-          await DragonbaneActionRules.grudgeTracker.addToGrudgeList(
-            actorId,
-            attackerName,
-            damage,
-            location,
-            isCritical
-          );
-
-          // Update button to show completion
-          $(button)
-            .text(
-              game.i18n.localize(
-                "DRAGONBANE_ACTION_RULES.grudgeTracker.buttonTextCompleted"
-              )
-            )
-            .prop("disabled", true);
-        }
-      });
     } catch (error) {
-      console.error(`${moduleId} | Error in chat button processing:`, error);
+      // CHANGED: Use DoD_Utility.WARNING instead of console.error
+      if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
+        DoD_Utility.WARNING(
+          `Error in chat button processing: ${error.message}`
+        );
+      } else {
+        console.error(`${moduleId} | Error in chat button processing:`, error);
+      }
     }
   });
 
@@ -299,7 +292,12 @@ export function registerHooks(moduleId) {
           $(this).css("background-color", "#8b2635");
         });
     } catch (error) {
-      console.error(`${moduleId} | Error in journal interaction:`, error);
+      // CHANGED: Use DoD_Utility.WARNING instead of console.error
+      if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
+        DoD_Utility.WARNING(`Error in journal interaction: ${error.message}`);
+      } else {
+        console.error(`${moduleId} | Error in journal interaction:`, error);
+      }
     }
   });
 
@@ -366,7 +364,17 @@ export function registerHooks(moduleId) {
       );
       return false; // Always prevent original message
     } catch (error) {
-      console.error(`${moduleId} | Error in monster action prevention:`, error);
+      // CHANGED: Use DoD_Utility.WARNING instead of console.error
+      if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
+        DoD_Utility.WARNING(
+          `Error in monster action prevention: ${error.message}`
+        );
+      } else {
+        console.error(
+          `${moduleId} | Error in monster action prevention:`,
+          error
+        );
+      }
     }
   });
 
@@ -398,7 +406,12 @@ export function registerHooks(moduleId) {
         clearBypass(moduleId);
       }
     } catch (error) {
-      console.error(`${moduleId} | Error in rules watcher:`, error);
+      // CHANGED: Use DoD_Utility.WARNING instead of console.error
+      if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
+        DoD_Utility.WARNING(`Error in rules watcher: ${error.message}`);
+      } else {
+        console.error(`${moduleId} | Error in rules watcher:`, error);
+      }
     }
   });
 
@@ -507,10 +520,17 @@ export function registerHooks(moduleId) {
           }
         }
       } catch (error) {
-        console.error(
-          `${moduleId} | Error in Token Action HUD validation:`,
-          error
-        );
+        // CHANGED: Use DoD_Utility.WARNING instead of console.error
+        if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
+          DoD_Utility.WARNING(
+            `Error in Token Action HUD validation: ${error.message}`
+          );
+        } else {
+          console.error(
+            `${moduleId} | Error in Token Action HUD validation:`,
+            error
+          );
+        }
       }
 
       return originalMethods.get("rollItem").call(this, itemName, ...args);
@@ -570,22 +590,33 @@ export function registerHooks(moduleId) {
             }
           }
         } catch (error) {
-          console.error(
-            `${moduleId} | Error in character sheet validation:`,
-            error
-          );
+          // CHANGED: Use DoD_Utility.WARNING instead of console.error
+          if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
+            DoD_Utility.WARNING(
+              `Error in character sheet validation: ${error.message}`
+            );
+          } else {
+            console.error(
+              `${moduleId} | Error in character sheet validation:`,
+              error
+            );
+          }
         }
 
         return originalOnSkillRoll.call(sheet, event);
       };
     } catch (error) {
-      console.error(`${moduleId} | Error hooking character sheet:`, error);
+      // CHANGED: Use DoD_Utility.WARNING instead of console.error
+      if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
+        DoD_Utility.WARNING(`Error hooking character sheet: ${error.message}`);
+      } else {
+        console.error(`${moduleId} | Error hooking character sheet:`, error);
+      }
     }
   });
 
   // Encumbrance monitoring hooks
   Hooks.on("updateActor", (actor, changes, options, userId) => {
-    if (!DragonbaneUtils.getSetting(moduleId, "enabled")) return;
     if (!DragonbaneUtils.getSetting(moduleId, "enableEncumbranceMonitoring"))
       return;
 
@@ -599,51 +630,7 @@ export function registerHooks(moduleId) {
     }
   });
 
-  Hooks.on("updateItem", (item, changes, options, userId) => {
-    if (!DragonbaneUtils.getSetting(moduleId, "enabled")) return;
-    if (!DragonbaneUtils.getSetting(moduleId, "enableEncumbranceMonitoring"))
-      return;
-
-    if (DragonbaneActionRules.encumbranceMonitor?.onItemUpdate) {
-      DragonbaneActionRules.encumbranceMonitor.onItemUpdate(
-        item,
-        changes,
-        options,
-        userId
-      );
-    }
-  });
-
-  Hooks.on("createItem", (item, options, userId) => {
-    if (!DragonbaneUtils.getSetting(moduleId, "enabled")) return;
-    if (!DragonbaneUtils.getSetting(moduleId, "enableEncumbranceMonitoring"))
-      return;
-
-    if (DragonbaneActionRules.encumbranceMonitor?.onItemChange) {
-      DragonbaneActionRules.encumbranceMonitor.onItemChange(
-        item,
-        options,
-        userId
-      );
-    }
-  });
-
-  Hooks.on("deleteItem", (item, options, userId) => {
-    if (!DragonbaneUtils.getSetting(moduleId, "enabled")) return;
-    if (!DragonbaneUtils.getSetting(moduleId, "enableEncumbranceMonitoring"))
-      return;
-
-    if (DragonbaneActionRules.encumbranceMonitor?.onItemChange) {
-      DragonbaneActionRules.encumbranceMonitor.onItemChange(
-        item,
-        options,
-        userId
-      );
-    }
-  });
-
   Hooks.on("deleteActor", (actor, options, userId) => {
-    if (!DragonbaneUtils.getSetting(moduleId, "enabled")) return;
     if (!DragonbaneUtils.getSetting(moduleId, "enableEncumbranceMonitoring"))
       return;
 
@@ -710,61 +697,4 @@ function normalizeAction(action) {
   if (actionLower === disarmTerm || actionLower === "disarm") return "disarm";
 
   return actionLower;
-}
-
-async function showMonsterActionDialog(
-  action,
-  targetName,
-  data,
-  options,
-  moduleId
-) {
-  const dialogKey = action === "disarm" ? "disarm" : "parry";
-
-  const proceed = await new Promise((resolve) => {
-    new Dialog({
-      title: game.i18n.localize(
-        `DRAGONBANE_ACTION_RULES.monsterPrevention.${dialogKey}.title`
-      ),
-      content: `<p>${game.i18n.format(
-        `DRAGONBANE_ACTION_RULES.monsterPrevention.${dialogKey}.content`,
-        { targetName }
-      )}</p>`,
-      buttons: {
-        proceed: {
-          icon: '<i class="fas fa-check"></i>',
-          label: game.i18n.localize(
-            "DRAGONBANE_ACTION_RULES.monsterPrevention.proceed"
-          ),
-          callback: () => resolve(true),
-        },
-        cancel: {
-          icon: '<i class="fas fa-times"></i>',
-          label: game.i18n.localize(
-            "DRAGONBANE_ACTION_RULES.monsterPrevention.cancel"
-          ),
-          callback: () => resolve(false),
-        },
-      },
-      default: "cancel",
-      close: () => resolve(false),
-    }).render(true);
-  });
-
-  if (proceed) {
-    // Create approved message manually
-    const approvedData = {
-      ...data,
-      flags: {
-        ...data.flags,
-        [moduleId]: {
-          ...(data.flags?.[moduleId] || {}),
-          monsterActionApproved: true,
-        },
-      },
-    };
-
-    await ChatMessage.create(approvedData, options);
-  }
-  // If canceled, do nothing - message was already blocked
 }
