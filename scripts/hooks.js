@@ -694,6 +694,46 @@ export function registerHooks(moduleId) {
     }
   });
 
+  Hooks.on("updateItem", (item, changes, options, userId) => {
+    if (!DragonbaneUtils.getSetting(moduleId, "enableEncumbranceMonitoring"))
+      return;
+
+    if (DragonbaneActionRules.encumbranceMonitor?.onItemUpdate) {
+      DragonbaneActionRules.encumbranceMonitor.onItemUpdate(
+        item,
+        changes,
+        options,
+        userId
+      );
+    }
+  });
+
+  Hooks.on("createItem", (item, options, userId) => {
+    if (!DragonbaneUtils.getSetting(moduleId, "enableEncumbranceMonitoring"))
+      return;
+
+    if (DragonbaneActionRules.encumbranceMonitor?.onItemChange) {
+      DragonbaneActionRules.encumbranceMonitor.onItemChange(
+        item,
+        options,
+        userId
+      );
+    }
+  });
+
+  Hooks.on("deleteItem", (item, options, userId) => {
+    if (!DragonbaneUtils.getSetting(moduleId, "enableEncumbranceMonitoring"))
+      return;
+
+    if (DragonbaneActionRules.encumbranceMonitor?.onItemChange) {
+      DragonbaneActionRules.encumbranceMonitor.onItemChange(
+        item,
+        options,
+        userId
+      );
+    }
+  });
+
   console.log(`${moduleId} | Simplified hook system registered`);
 }
 

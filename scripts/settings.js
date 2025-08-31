@@ -57,7 +57,45 @@ export function registerSettings(moduleId) {
     },
   });
 
+  // Debug settings
+  game.settings.register(moduleId, SETTINGS.DEBUG_MODE, {
+    name: game.i18n.localize("DRAGONBANE_ACTION_RULES.settings.debugMode.name"),
+    hint: game.i18n.localize("DRAGONBANE_ACTION_RULES.settings.debugMode.hint"),
+    scope: "world",
+    config: true,
+    type: Boolean,
+    default: false,
+  });
+
+  // Delay setting
+  game.settings.register(moduleId, SETTINGS.DELAY, {
+    name: game.i18n.localize("DRAGONBANE_ACTION_RULES.settings.delay.name"),
+    hint: game.i18n.localize("DRAGONBANE_ACTION_RULES.settings.delay.hint"),
+    scope: "world",
+    config: true,
+    type: Number,
+    default: 800,
+    range: {
+      min: 0,
+      max: 5000,
+      step: 100,
+    },
+  });
+
   // Validation settings
+  game.settings.register(moduleId, SETTINGS.SHOW_PARRY_DURABILITY, {
+    name: game.i18n.localize(
+      "DRAGONBANE_ACTION_RULES.settings.showParryDurability.name"
+    ),
+    hint: game.i18n.localize(
+      "DRAGONBANE_ACTION_RULES.settings.showParryDurability.hint"
+    ),
+    scope: "world",
+    config: true,
+    type: Boolean,
+    default: true,
+  });
+
   game.settings.register(moduleId, SETTINGS.ENFORCE_TARGET_SELECTION, {
     name: game.i18n.localize(
       "DRAGONBANE_ACTION_RULES.settings.enforceTargetSelection.name"
@@ -85,31 +123,11 @@ export function registerSettings(moduleId) {
   });
 
   game.settings.register(moduleId, SETTINGS.ENFORCE_MONSTER_ACTION_PREVENTION, {
-    name: "Enforce Monster Action Prevention",
-    hint: "Show confirmation dialogs when attempting Parry or Disarm actions against monsters",
-    scope: "world",
-    config: true,
-    type: Boolean,
-    default: true,
-  });
-
-  // Display settings
-  game.settings.register(moduleId, SETTINGS.DELAY, {
-    name: game.i18n.localize("DRAGONBANE_ACTION_RULES.settings.delay.name"),
-    hint: game.i18n.localize("DRAGONBANE_ACTION_RULES.settings.delay.hint"),
-    scope: "world",
-    config: true,
-    type: Number,
-    default: 3000,
-    range: { min: 0, max: 10000, step: 500 },
-  });
-
-  game.settings.register(moduleId, SETTINGS.SHOW_PARRY_DURABILITY, {
     name: game.i18n.localize(
-      "DRAGONBANE_ACTION_RULES.settings.showParryDurability.name"
+      "DRAGONBANE_ACTION_RULES.settings.enforceMonsterActionPrevention.name"
     ),
     hint: game.i18n.localize(
-      "DRAGONBANE_ACTION_RULES.settings.showParryDurability.hint"
+      "DRAGONBANE_ACTION_RULES.settings.enforceMonsterActionPrevention.hint"
     ),
     scope: "world",
     config: true,
@@ -157,7 +175,7 @@ export function registerSettings(moduleId) {
     default: true,
   });
 
-  // Encumbrance monitoring settings with onChange handlers
+  // FIXED: Encumbrance monitoring settings with safer onChange handlers
   game.settings.register(moduleId, SETTINGS.ENABLE_ENCUMBRANCE_MONITORING, {
     name: game.i18n.localize(
       "DRAGONBANE_ACTION_RULES.settings.enableEncumbranceMonitoring.name"
@@ -171,13 +189,17 @@ export function registerSettings(moduleId) {
     default: true,
     onChange: (value) => {
       // Import main class dynamically to avoid circular imports
-      import("/modules/dragonbane-action-rules/scripts/main.js").then(
-        ({ DragonbaneActionRules }) => {
-          if (value) {
-            DragonbaneActionRules.encumbranceMonitor?.initialize();
-          }
-        }
-      );
+      setTimeout(() => {
+        import("/modules/dragonbane-action-rules/scripts/main.js")
+          .then(({ DragonbaneActionRules }) => {
+            if (value && DragonbaneActionRules?.encumbranceMonitor) {
+              DragonbaneActionRules.encumbranceMonitor.initialize();
+            }
+          })
+          .catch((error) => {
+            console.error("Error in encumbrance monitoring onChange:", error);
+          });
+      }, 100);
     },
   });
 
@@ -193,12 +215,18 @@ export function registerSettings(moduleId) {
     type: String,
     default: "Party",
     onChange: () => {
-      // Refresh monitored actors when folder changes
-      import("/modules/dragonbane-action-rules/scripts/main.js").then(
-        ({ DragonbaneActionRules }) => {
-          DragonbaneActionRules.encumbranceMonitor?.initializePreviousStates();
-        }
-      );
+      // FIXED: Safer onChange handler with timeout and error handling
+      setTimeout(() => {
+        import("/modules/dragonbane-action-rules/scripts/main.js")
+          .then(({ DragonbaneActionRules }) => {
+            if (DragonbaneActionRules?.encumbranceMonitor) {
+              DragonbaneActionRules.encumbranceMonitor.initializePreviousStates();
+            }
+          })
+          .catch((error) => {
+            console.error("Error in encumbrance folder onChange:", error);
+          });
+      }, 100);
     },
   });
 
@@ -214,12 +242,21 @@ export function registerSettings(moduleId) {
     type: String,
     default: "", // Will be set to localized default when first accessed
     onChange: () => {
-      // Ensure the new status effect exists when setting changes
-      import("/modules/dragonbane-action-rules/scripts/main.js").then(
-        ({ DragonbaneActionRules }) => {
-          DragonbaneActionRules.encumbranceMonitor?.ensureStatusEffectExists();
-        }
-      );
+      // FIXED: Safer onChange handler with timeout and error handling
+      setTimeout(() => {
+        import("/modules/dragonbane-action-rules/scripts/main.js")
+          .then(({ DragonbaneActionRules }) => {
+            if (DragonbaneActionRules?.encumbranceMonitor) {
+              DragonbaneActionRules.encumbranceMonitor.ensureStatusEffectExists();
+            }
+          })
+          .catch((error) => {
+            console.error(
+              "Error in encumbrance status effect onChange:",
+              error
+            );
+          });
+      }, 100);
     },
   });
 
@@ -295,17 +332,10 @@ export function registerSettings(moduleId) {
     default: true,
   });
 
-  // Debug settings
-  game.settings.register(moduleId, SETTINGS.DEBUG_MODE, {
-    name: game.i18n.localize("DRAGONBANE_ACTION_RULES.settings.debugMode.name"),
-    hint: game.i18n.localize("DRAGONBANE_ACTION_RULES.settings.debugMode.hint"),
-    scope: "world",
-    config: true,
-    type: Boolean,
-    default: false,
-  });
+  console.log(`${moduleId} | Settings registration complete`);
 }
 
+// PRESERVED: All original utility functions that were being imported elsewhere
 /**
  * Utility function to get setting value with fallback
  * @param {string} moduleId - The module ID
