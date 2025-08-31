@@ -179,7 +179,7 @@ export class DragonbaneValidator {
 
       if (isRangedWeapon) {
         // Ranged weapon - use calculated range
-        maxRange = weapon.system.calculatedRange || 0;
+        maxRange = (weapon.system.calculatedRange || 0) * 2; // Allow 2x range
         weaponType = "ranged weapon";
       } else if (isThrownWeapon) {
         // Thrown weapon - contextual range (melee range or thrown range)
