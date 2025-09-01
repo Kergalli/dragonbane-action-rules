@@ -112,13 +112,12 @@
       "monster": "Monster attacks cannot be parried (unless specified)",
       "movement": "Success = move yourself and enemy 2m (doesn't count as movement, no free attacks)",
       "dragon": "Dragon = counterattack (cannot be dodged/parried). If attacker rolled Dragon, need Dragon to parry (no counterattack)",
-      "noWeaponFound": "⚠️ Could not determine parrying weapon",
       "dodgeMovement": "<strong>If Dodging:</strong> You may move up to 2m in any direction (no free attacks triggered)",
       "ifParrying": "If Parrying:"
     },
     "topple": {
       "noDamage": "No damage dealt",
-      "evadeRoll": "Opponent makes opposed EVADE roll",
+      "evadeRoll": "Opponent makes opposed <strong>EVADE</strong> roll",
       "cannotDefend": "Cannot be dodged or parried",
       "success": "Success = opponent becomes prone",
       "weaponFeature": "Topple Feature",
@@ -166,8 +165,8 @@
       "statusEffectName": "Over-Encumbered",
       "nowOverEncumbered": "{actorName} is now over-encumbered ({currentEnc}/{maxEnc} items)",
       "noLongerOverEncumbered": "{actorName} is no longer over-encumbered ({currentEnc}/{maxEnc} items)",
-      "chatOverEncumbered": "{actorName} is now over-encumbered!",
-      "chatNoLongerOverEncumbered": "{actorName} is no longer over-encumbered.",
+      "chatOverEncumbered": "<strong>{actorName}</strong> is now <strong>over-encumbered!</strong>",
+      "chatNoLongerOverEncumbered": "<strong>{actorName}</strong> is no longer over-encumbered.",
       "carryingItems": "Carrying {currentEnc}/{maxEnc} items",
       "strRollReminder": "Must make STR rolls to move in combat or during travel shifts while over-encumbered.",
       "systemMessage": "Encumbrance Monitor"

@@ -367,9 +367,9 @@ export class DragonbaneEncumbranceMonitor {
         : "DRAGONBANE_ACTION_RULES.encumbrance.chatNoLongerOverEncumbered";
 
       let content = `<div class="dragonbane-encumbrance-notice">
-                <strong>${game.i18n.format(messageKey, {
+                ${game.i18n.format(messageKey, {
                   actorName: actor.name,
-                })}</strong>
+                })}
                 <div class="encumbrance-details">
                     ${game.i18n.format(
                       "DRAGONBANE_ACTION_RULES.encumbrance.carryingItems",

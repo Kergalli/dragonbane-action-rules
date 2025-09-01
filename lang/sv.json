@@ -112,13 +112,12 @@
       "monster": "Monsterattacker kan inte pareras (om inte annat anges)",
       "movement": "Lyckas = flytta dig själv och fienden 2m (räknas inte som förflyttning, inga frislag)",
       "dragon": "Drake = motattack (kan inte duckas/pareras). Om angriparen slog Drake, behövs Drake för att parera (ingen motattack)",
-      "noWeaponFound": "⚠️ Kunde inte bestämma pareringsvapen",
       "dodgeMovement": "<strong>Vid Ducka:</strong> Du kan flytta upp till 2m i valfri riktning (inga frislag utlöses)",
       "ifParrying": "Vid Parering:"
     },
     "topple": {
       "noDamage": "Ingen skada tillfogad",
-      "evadeRoll": "Motståndaren gör ett motsatt UNDVIKA-slag",
+      "evadeRoll": "Motståndaren gör ett motsatt <strong>UNDVIKA</strong>-slag",
       "cannotDefend": "Kan inte duckas eller pareras",
       "success": "Lyckas = motståndaren blir liggande",
       "weaponFeature": "Fäll-funktion",
@@ -166,8 +165,8 @@
       "statusEffectName": "Överbelastad",
       "nowOverEncumbered": "{actorName} är nu överbelastad ({currentEnc}/{maxEnc} föremål)",
       "noLongerOverEncumbered": "{actorName} är inte längre överbelastad ({currentEnc}/{maxEnc} föremål)",
-      "chatOverEncumbered": "{actorName} är nu överbelastad!",
-      "chatNoLongerOverEncumbered": "{actorName} är inte längre överbelastad.",
+      "chatOverEncumbered": "<strong>{actorName}</strong> är nu <strong>överbelastad!</strong>",
+      "chatNoLongerOverEncumbered": "<strong>{actorName}</strong> är inte längre överbelastad.",
       "carryingItems": "Bär {currentEnc}/{maxEnc} föremål",
       "strRollReminder": "Måste göra STY-slag för att röra sig i strid eller under reseskift när överbelastad.",
       "systemMessage": "Bärförmågeövervakare"

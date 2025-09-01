@@ -290,10 +290,6 @@ export class DragonbaneRulesDisplay {
         content += `<li><strong>${weaponName} ${game.i18n.localize(
           "DRAGONBANE_ACTION_RULES.durability"
         )}:</strong> ${durability}</li>`;
-      } else {
-        content += `<li class="weapon-warning">${game.i18n.localize(
-          "DRAGONBANE_ACTION_RULES.parry.noWeaponFound"
-        )}</li>`;
       }
     }
 
@@ -417,15 +413,19 @@ export class DragonbaneRulesDisplay {
     let content = `<li>${game.i18n.localize(
       "DRAGONBANE_ACTION_RULES.weakspot.piercing"
     )}</li>
-                <li>${game.i18n.localize(
-                  "DRAGONBANE_ACTION_RULES.weakspot.bane"
-                )}</li>
-                <li>${game.i18n.localize(
-                  "DRAGONBANE_ACTION_RULES.weakspot.success"
-                )}</li>`;
+              <li>${game.i18n.localize(
+                "DRAGONBANE_ACTION_RULES.weakspot.bane"
+              )}</li>
+              <li>${game.i18n.localize(
+                "DRAGONBANE_ACTION_RULES.weakspot.success"
+              )}</li>`;
 
     if (message) {
-      content += this._getShoveRuleIfApplicable(message, actor);
+      const shoveRule = this._getShoveRuleIfApplicable(message, actor);
+      if (shoveRule) {
+        // CHANGED: Wrap the plain text content in <li> tags here
+        content += `<li>${shoveRule}</li>`;
+      }
     }
 
     return content;
@@ -456,10 +456,10 @@ export class DragonbaneRulesDisplay {
       const targetName =
         target.name ||
         game.i18n.localize("DRAGONBANE_ACTION_RULES.shove.defaultTarget");
-      return `<li>${game.i18n.format(
-        "DRAGONBANE_ACTION_RULES.shove.available",
-        { targetName: targetName }
-      )}</li>`;
+      // CHANGED: Return plain text without <li> tags
+      return game.i18n.format("DRAGONBANE_ACTION_RULES.shove.available", {
+        targetName: targetName,
+      });
     }
 
     return "";
@@ -533,10 +533,10 @@ export class DragonbaneRulesDisplay {
     const speakerName = game.i18n.localize(
       "DRAGONBANE_ACTION_RULES.speakers.evade"
     );
-    const content = `<li>${game.i18n.localize(
+    const content = `${game.i18n.localize(
       "DRAGONBANE_ACTION_RULES.evade.movementAvailable"
-    )}</li>`;
-    const chatContent = `<div class="dragonbane-action-rules"><ul>${content}</ul></div>`;
+    )}`;
+    const chatContent = `<div class="dragonbane-action-rules">${content}</div>`;
 
     setTimeout(async () => {
       try {
@@ -570,7 +570,7 @@ export class DragonbaneRulesDisplay {
     const speakerName = game.i18n.localize(
       "DRAGONBANE_ACTION_RULES.speakers.shove"
     );
-    const chatContent = `<div class="dragonbane-action-rules"><ul>${content}</ul></div>`;
+    const chatContent = `<div class="dragonbane-action-rules">${content}</div>`;
 
     setTimeout(async () => {
       try {
