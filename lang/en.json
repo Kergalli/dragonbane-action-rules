@@ -9,7 +9,7 @@
     "settings": {
       "enabled": {
         "name": "Enable Combat Assistant",
-        "hint": "Automatically show rules when combat actions are used in chat"
+        "hint": "Master toggle - disables all Combat Assistant features when turned off (validation, rules, encumbrance, etc.)"
       },
       "delay": {
         "name": "Display Delay (milliseconds)",

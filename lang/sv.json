@@ -9,7 +9,7 @@
     "settings": {
       "enabled": {
         "name": "Aktivera Stridsassistent",
-        "hint": "Visa automatiskt regler när stridshandlingar används i chatten"
+        "hint": "Huvudbrytare - inaktiverar alla Combat Assistant-funktioner när den är avstängd (validering, regler, belastning, etc.)"
       },
       "delay": {
         "name": "Visningsfördröjning (millisekunder)",
