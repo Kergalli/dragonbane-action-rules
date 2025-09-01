@@ -49,24 +49,7 @@ export function registerHooks(moduleId) {
     if (!message.getFlag(moduleId, "dragonbaneRulesMessage")) return;
 
     try {
-      // Show Parry Rules button
-      html.find(".show-parry-rules").click(async (event) => {
-        event.preventDefault();
-        const button = event.currentTarget;
-        const weaponId = button.dataset.weaponId;
-        const actorId = button.dataset.actorId;
-        const dragonRolled = button.dataset.dragonRolled === "true";
-
-        if (DragonbaneActionRules.rulesDisplay?.showFullParryRules) {
-          await DragonbaneActionRules.rulesDisplay.showFullParryRules(
-            weaponId,
-            actorId,
-            dragonRolled
-          );
-        }
-      });
-
-      // FIXED: Mark weapon broken button - Phase 6 compliant with DoD_Utility.WARNING()
+      // Mark weapon broken button - Phase 6 compliant with DoD_Utility.WARNING()
       html.find(".mark-weapon-broken").click(async (event) => {
         event.preventDefault();
         event.stopPropagation(); // Prevent core system from also processing this click
