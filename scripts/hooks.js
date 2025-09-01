@@ -561,7 +561,7 @@ export function registerHooks(moduleId) {
     };
   }
 
-  // Character sheet attack interception
+  // Character sheet attack interception - FIXED: Handle both PC and NPC sheets
   Hooks.on("renderActorSheet", (sheet, html, data) => {
     if (!DragonbaneUtils.getSetting(moduleId, "enabled")) return;
     if (
@@ -571,16 +571,55 @@ export function registerHooks(moduleId) {
       return;
 
     if (sheet.constructor.name !== "DoDCharacterSheet") return;
-    if (sheet._dragonbaneHooked) return;
 
     try {
+      // FIXED: Don't skip re-hooking since HTML elements are recreated on each render
       sheet._dragonbaneHooked = true;
 
-      // Target weapon attack buttons: .rollable-skill within weapon rows
+      // FIXED: Handle both PC and NPC weapon structures
+
+      // PC weapons: .rollable-skill within weapon rows (tr[data-item-id])
       html.find("tr[data-item-id] .rollable-skill").each((index, element) => {
         const $element = $(element);
         const $row = $element.closest("tr[data-item-id]");
         const itemId = $row.attr("data-item-id");
+
+        if (itemId) {
+          const item = sheet.actor.items.get(itemId);
+
+          if (item?.type === "weapon") {
+            element.addEventListener(
+              "click",
+              async function (event) {
+                if (DragonbaneActionRules?.overrides?.validationBypass) {
+                  return;
+                }
+
+                if (DragonbaneActionRules?.validator?.performWeaponAttack) {
+                  const validation =
+                    await DragonbaneActionRules.validator.performWeaponAttack(
+                      item.name,
+                      sheet.actor
+                    );
+
+                  if (!validation.success) {
+                    event.preventDefault();
+                    event.stopImmediatePropagation();
+                    ui.notifications.warn(validation.message);
+                    return false;
+                  }
+                }
+              },
+              true
+            ); // Use capture phase
+          }
+        }
+      });
+
+      // NPC weapons: .rollable-skill elements with data-item-id directly on them
+      html.find(".rollable-skill[data-item-id]").each((index, element) => {
+        const $element = $(element);
+        const itemId = $element.attr("data-item-id");
 
         if (itemId) {
           const item = sheet.actor.items.get(itemId);
