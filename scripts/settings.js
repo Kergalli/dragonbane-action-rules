@@ -1,6 +1,5 @@
 /**
  * Dragonbane Combat Assistant - Settings Management
- * Simplified settings registration aligned with core Dragonbane system patterns
  */
 
 // Settings constants for consistent access across the module
@@ -32,7 +31,6 @@ export const SETTINGS = {
 
 /**
  * Register all module settings using core Dragonbane system pattern
- * @param {string} moduleId - The module ID for settings registration
  */
 export function registerSettings(moduleId) {
   console.log(`${moduleId} | Registering settings`);
@@ -189,7 +187,7 @@ export function registerSettings(moduleId) {
     default: true,
   });
 
-  // FIXED: Encumbrance monitoring settings with safer onChange handlers
+  // Encumbrance monitoring settings with safer onChange handlers
   game.settings.register(moduleId, SETTINGS.ENABLE_ENCUMBRANCE_MONITORING, {
     name: game.i18n.localize(
       "DRAGONBANE_ACTION_RULES.settings.enableEncumbranceMonitoring.name"
@@ -349,23 +347,12 @@ export function registerSettings(moduleId) {
     type: Boolean,
     default: true,
   });
-
-  console.log(`${moduleId} | Settings registration complete`);
 }
 
-// PRESERVED: All original utility functions that were being imported elsewhere
-/**
- * Utility function to get setting value with fallback
- * @param {string} moduleId - The module ID
- * @param {string} setting - The setting key
- * @param {*} fallback - Fallback value if setting fails to load
- * @returns {*} The setting value or fallback
- */
 export function getSetting(moduleId, setting, fallback = null) {
   try {
     return game.settings.get(moduleId, setting);
   } catch (error) {
-    // CHANGED: Use DoD_Utility.WARNING instead of console.warn
     if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
       DoD_Utility.WARNING(`Failed to get setting ${setting}: ${error.message}`);
     } else {
@@ -378,20 +365,7 @@ export function getSetting(moduleId, setting, fallback = null) {
 /**
  * Convenience functions for common settings checks
  * These maintain the same API as the old class methods for easier migration
- * @param {string} moduleId - The module ID
  */
-export function isModuleEnabled(moduleId) {
-  return getSetting(moduleId, SETTINGS.ENABLED, true);
-}
-
 export function isDebugMode(moduleId) {
   return getSetting(moduleId, SETTINGS.DEBUG_MODE, false);
-}
-
-export function isEncumbranceMonitoringEnabled(moduleId) {
-  return getSetting(moduleId, SETTINGS.ENABLE_ENCUMBRANCE_MONITORING, true);
-}
-
-export function isYZEIntegrationEnabled(moduleId) {
-  return getSetting(moduleId, SETTINGS.ENABLE_YZE_INTEGRATION, true);
 }

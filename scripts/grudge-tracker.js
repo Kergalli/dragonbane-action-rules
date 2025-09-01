@@ -1,6 +1,5 @@
 /**
  * Dragonbane Combat Assistant - Grudge Tracker
- * Handles tracking of damage dealt to characters with Unforgiving kin ability
  */
 
 import { DragonbaneUtils } from "./utils.js";
@@ -53,11 +52,6 @@ export class DragonbaneGrudgeTracker {
         DoD_Utility.WARNING(
           `Error processing grudge tracking: ${error.message}`
         );
-      } else {
-        console.error(
-          `${this.moduleId} | Error processing grudge tracking:`,
-          error
-        );
       }
     }
   }
@@ -99,7 +93,7 @@ export class DragonbaneGrudgeTracker {
         // Get attacker info
         const attackerId = message.speaker?.actor || message.speaker?.token;
 
-        // Get target info from current targets (best we can do)
+        // Get target info from current targets
         const targets = Array.from(game.user.targets);
         const targetId = targets.length === 1 ? targets[0].actor?.uuid : null;
 
@@ -119,11 +113,8 @@ export class DragonbaneGrudgeTracker {
         }
       }
     } catch (error) {
-      // CHANGED: Use DoD_Utility.WARNING instead of console.error
       if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
         DoD_Utility.WARNING(`Error storing attack roll: ${error.message}`);
-      } else {
-        console.error(`${this.moduleId} | Error storing attack roll:`, error);
       }
     }
   }
@@ -137,7 +128,7 @@ export class DragonbaneGrudgeTracker {
       const attackerName = this._extractAttackerName(message);
       if (!attackerName) return;
 
-      // Extract target info (this is tricky from damage roll)
+      // Extract target info
       const targetId = this._extractTargetFromDamageRoll(message);
       if (!targetId) return;
 
@@ -162,11 +153,8 @@ export class DragonbaneGrudgeTracker {
       // Clean up old entries
       this._cleanupOldDamageRolls();
     } catch (error) {
-      // CHANGED: Use DoD_Utility.WARNING instead of console.error
       if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
         DoD_Utility.WARNING(`Error storing damage roll: ${error.message}`);
-      } else {
-        console.error(`${this.moduleId} | Error storing damage roll:`, error);
       }
     }
   }
@@ -216,11 +204,6 @@ export class DragonbaneGrudgeTracker {
       if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
         DoD_Utility.WARNING(
           `Error processing damage application: ${error.message}`
-        );
-      } else {
-        console.error(
-          `${this.moduleId} | Error processing damage application:`,
-          error
         );
       }
     }
@@ -296,17 +279,10 @@ export class DragonbaneGrudgeTracker {
   _hasUnforgivingAbility(actor) {
     if (!actor.system?.kin?.name) return false;
 
-    // Check multiple possible ability locations
-    const abilities1 = actor.system.kin.system?.abilities || "";
-    const abilities2 = actor.system.kin?.abilities || "";
-    const abilities3 = actor.system.kin?.description || "";
+    // Kin abilities are stored in the nested system object
+    const abilities = actor.system.kin.system?.abilities || "";
 
-    // Check all possible locations for "unforgiving" (case-insensitive)
-    return (
-      abilities1.toLowerCase().includes("unforgiving") ||
-      abilities2.toLowerCase().includes("unforgiving") ||
-      abilities3.toLowerCase().includes("unforgiving")
-    );
+    return abilities.toLowerCase().includes("unforgiving");
   }
 
   /**
@@ -465,11 +441,8 @@ export class DragonbaneGrudgeTracker {
         }`
       );
     } catch (error) {
-      // CHANGED: Use DoD_Utility.WARNING instead of console.error
       if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
         DoD_Utility.WARNING(`Error adding to grudge list: ${error.message}`);
-      } else {
-        console.error(`${this.moduleId} | Error adding to grudge list:`, error);
       }
       ui.notifications.error(
         game.i18n.localize(
@@ -532,11 +505,8 @@ export class DragonbaneGrudgeTracker {
         `Deleted grudge entry ${rowId} from ${journal.name}`
       );
     } catch (error) {
-      // CHANGED: Use DoD_Utility.WARNING instead of console.error
       if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
         DoD_Utility.WARNING(`Error deleting grudge entry: ${error.message}`);
-      } else {
-        console.error(`${this.moduleId} | Error deleting grudge entry:`, error);
       }
       ui.notifications.error(
         game.i18n.localize(
@@ -573,7 +543,7 @@ export class DragonbaneGrudgeTracker {
         folder = await Folder.create({
           name: folderName,
           type: "JournalEntry",
-          color: "#00604d", // Use the module's green color
+          color: "#00604d",
         });
       }
 
@@ -607,15 +577,9 @@ export class DragonbaneGrudgeTracker {
           `Created grudge journal: ${journalName} in folder: ${folderName}`
         );
       } catch (error) {
-        // CHANGED: Use DoD_Utility.WARNING instead of console.error
         if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
           DoD_Utility.WARNING(
             `Error creating grudge journal: ${error.message}`
-          );
-        } else {
-          console.error(
-            `${this.moduleId} | Error creating grudge journal:`,
-            error
           );
         }
         ui.notifications.error(

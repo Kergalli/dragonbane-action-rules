@@ -129,7 +129,7 @@ export class DragonbaneYZEIntegration {
   }
 
   /**
-   * Determine action type from chat message
+   * Determine if message represents an action (simplified)
    */
   determineActionType(message) {
     // Skip whispered messages - usually informational, not actions
@@ -141,6 +141,7 @@ export class DragonbaneYZEIntegration {
       );
       return null;
     }
+
     // Skip damage/healing rolls - these are follow-ups, not actions
     if (this._isDamageRoll(message)) {
       DragonbaneUtils.debugLog(
@@ -171,17 +172,14 @@ export class DragonbaneYZEIntegration {
       return null;
     }
 
+    // Simplified: Any dice roll that passes the filters is an action
     const content = message.content;
-    if (this.patternManager.isMonsterAttack(content)) return "monsterAttack";
-    if (this.patternManager.isWeaponAttack(content)) return "weaponAttack";
-    if (this.patternManager.isSpellCast(content)) return "spellCast";
-    if (this.patternManager.isSkillTest(content)) return "skillTest";
-    if (this.patternManager.isValidGeneralAction(content))
-      return "generalAction";
+    if (this.patternManager.isAction(content)) {
+      return "action"; // Single action type instead of multiple specific types
+    }
 
     return null;
   }
-
   /**
    * Check if this is a reaction spell
    */

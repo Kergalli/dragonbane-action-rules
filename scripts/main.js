@@ -1,5 +1,5 @@
 /**
- * Dragonbane Combat Assistant - Main Module (Phase 3.3 - Simplified Hooks)
+ * Dragonbane Combat Assistant - Main Module
  * Core initialization and module management
  */
 
@@ -79,19 +79,17 @@ class DragonbaneActionRules {
         DragonbaneActionRules.ID
       );
 
-      // SIMPLIFIED: Direct hook and keybind registration
+      // Direct hook and keybind registration
       DragonbaneActionRules.registerHooksAndKeybinds();
 
-      // Conditional initialization logging using the new convenience function
-      setTimeout(() => {
-        if (isDebugMode(DragonbaneActionRules.ID)) {
-          console.log(
-            `${DragonbaneActionRules.ID} | ${game.i18n.localize(
-              "DRAGONBANE_ACTION_RULES.console.initializing"
-            )} v${DragonbaneActionRules.VERSION}`
-          );
-        }
-      }, 100); // Small delay to ensure settings are registered
+      // Debug initialization message
+      DragonbaneUtils.debugLog(
+        DragonbaneActionRules.ID,
+        "Main",
+        `${game.i18n.localize(
+          "DRAGONBANE_ACTION_RULES.console.initializing"
+        )} v${DragonbaneActionRules.VERSION}`
+      );
     } catch (error) {
       console.error(
         `${DragonbaneActionRules.ID} | Critical initialization error:`,
@@ -104,7 +102,7 @@ class DragonbaneActionRules {
   }
 
   /**
-   * SIMPLIFIED: Register hooks and keybinds - no complex state management
+   * Register hooks and keybinds - no complex state management
    */
   static registerHooksAndKeybinds() {
     try {
@@ -120,21 +118,15 @@ class DragonbaneActionRules {
         DragonbaneActionRules.yzeIntegration?.initialize();
       });
 
-      // SIMPLIFIED: Direct hook registration using new system
+      // Direct hook registration using new system
       registerHooks(DragonbaneActionRules.ID);
 
       // Register keyboard shortcuts
       DragonbaneActionRules.registerKeybinds();
     } catch (error) {
-      // CHANGED: Use DoD_Utility.WARNING instead of console.error
       if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
         DoD_Utility.WARNING(
           `Failed to register hooks and keybinds: ${error.message}`
-        );
-      } else {
-        console.error(
-          `${DragonbaneActionRules.ID} | Failed to register hooks and keybinds:`,
-          error
         );
       }
     }
@@ -157,7 +149,6 @@ class DragonbaneActionRules {
         }
       );
     } catch (error) {
-      // CHANGED: Use DoD_Utility.WARNING instead of console.error
       if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
         DoD_Utility.WARNING(`Failed to register keybinds: ${error.message}`);
       } else {
@@ -170,13 +161,10 @@ class DragonbaneActionRules {
   }
 
   /**
-   * SIMPLIFIED: Enable the module - no complex hook management needed
+   * Enable the module - no complex hook management needed
    */
   static enableModule() {
     try {
-      // All hooks are now always registered - settings control behavior inside hooks
-      // No need for complex enabling/disabling logic
-
       if (isDebugMode(DragonbaneActionRules.ID)) {
         console.log(
           `${DragonbaneActionRules.ID} | ${game.i18n.localize(
@@ -185,20 +173,14 @@ class DragonbaneActionRules {
         );
       }
     } catch (error) {
-      // CHANGED: Use DoD_Utility.WARNING instead of console.error
       if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
         DoD_Utility.WARNING(`Failed to enable module: ${error.message}`);
-      } else {
-        console.error(
-          `${DragonbaneActionRules.ID} | Failed to enable module:`,
-          error
-        );
       }
     }
   }
 
   /**
-   * SIMPLIFIED: Disable the module - just cleanup external integrations
+   * Disable the module - just cleanup external integrations
    */
   static disableModule() {
     try {
@@ -214,14 +196,8 @@ class DragonbaneActionRules {
         );
       }
     } catch (error) {
-      // CHANGED: Use DoD_Utility.WARNING instead of console.error
       if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
         DoD_Utility.WARNING(`Failed to disable module: ${error.message}`);
-      } else {
-        console.error(
-          `${DragonbaneActionRules.ID} | Failed to disable module:`,
-          error
-        );
       }
     }
   }

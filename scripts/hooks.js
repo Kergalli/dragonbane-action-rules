@@ -1,6 +1,5 @@
 /**
- * Dragonbane Combat Assistant - Simplified Hook Registration
- * Aligned with core Dragonbane system patterns
+ * Dragonbane Combat Assistant - Simplified Hook Registration (Cleaned)
  */
 
 import { DragonbaneUtils } from "./utils.js";
@@ -27,18 +26,15 @@ export function registerHooks(moduleId) {
         await DragonbaneActionRules.yzeIntegration.onChatMessageAction(message);
       }
 
-      // FIXED: Grudge tracker processing (was onGrudgeTracking, now onChatMessage)
+      // Grudge tracker processing
       if (DragonbaneActionRules.grudgeTracker?.onChatMessage) {
         DragonbaneActionRules.grudgeTracker.onChatMessage(message);
       }
     } catch (error) {
-      // CHANGED: Use DoD_Utility.WARNING instead of console.error
       if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
         DoD_Utility.WARNING(
           `Error in chat message processing: ${error.message}`
         );
-      } else {
-        console.error(`${moduleId} | Error in chat message processing:`, error);
       }
     }
   });
@@ -49,40 +45,29 @@ export function registerHooks(moduleId) {
     if (!message.getFlag(moduleId, "dragonbaneRulesMessage")) return;
 
     try {
-      // Mark weapon broken button - Phase 6 compliant with DoD_Utility.WARNING()
+      // Mark weapon broken button
       html.find(".mark-weapon-broken").click(async (event) => {
         event.preventDefault();
-        event.stopPropagation(); // Prevent core system from also processing this click
+        event.stopPropagation();
         const button = event.currentTarget;
         const weaponId = button.dataset.weaponId;
-        const actorId = button.dataset.actorId; // This is a UUID
+        const actorId = button.dataset.actorId;
         const sceneId = button.dataset.sceneId;
         const tokenId = button.dataset.tokenId;
 
         try {
-          // Debug: Log what we're getting
-          console.log(
-            `${moduleId} | Mark weapon broken - Actor ID received:`,
-            actorId
-          );
-
-          // Use existing DragonbaneUtils.getActorFromSpeakerData() - handles token vs prototype correctly
           const speakerData = {
             actor: actorId,
             scene: sceneId,
             token: tokenId,
           };
 
-          console.log(`${moduleId} | Using speaker data:`, speakerData);
           const actor = DragonbaneUtils.getActorFromSpeakerData(speakerData);
 
           if (!actor) {
-            // PHASE 6: Use DoD_Utility.WARNING() instead of console.error
             const errorMsg = `Failed to find actor with any method. ID was: ${actorId}`;
             if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
               DoD_Utility.WARNING(errorMsg);
-            } else {
-              console.error(`${moduleId} | ${errorMsg}`);
             }
             ui.notifications.error(
               game.i18n.localize(
@@ -91,8 +76,6 @@ export function registerHooks(moduleId) {
             );
             return;
           }
-
-          console.log(`${moduleId} | Successfully found actor:`, actor.name);
 
           const weapon = actor.items.get(weaponId);
           if (!weapon) {
@@ -166,24 +149,18 @@ export function registerHooks(moduleId) {
             )
             .prop("disabled", true);
         } catch (error) {
-          // PHASE 6: Use DoD_Utility.WARNING() instead of console.error
           const errorMsg = `Error marking weapon broken: ${error.message}`;
           if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
             DoD_Utility.WARNING(errorMsg);
-          } else {
-            console.error(`${moduleId} | ${errorMsg}`);
           }
           ui.notifications.error("Failed to mark weapon broken");
         }
       });
     } catch (error) {
-      // CHANGED: Use DoD_Utility.WARNING instead of console.error
       if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
         DoD_Utility.WARNING(
           `Error in chat button processing: ${error.message}`
         );
-      } else {
-        console.error(`${moduleId} | Error in chat button processing:`, error);
       }
     }
   });
@@ -265,11 +242,8 @@ export function registerHooks(moduleId) {
           $(this).css("background-color", "#8b2635");
         });
     } catch (error) {
-      // CHANGED: Use DoD_Utility.WARNING instead of console.error
       if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
         DoD_Utility.WARNING(`Error in journal interaction: ${error.message}`);
-      } else {
-        console.error(`${moduleId} | Error in journal interaction:`, error);
       }
     }
   });
@@ -325,22 +299,7 @@ export function registerHooks(moduleId) {
     }
   });
 
-  // Monster action prevention with bypass system (like original)
-  let bypassActive = false;
-  let bypassAction = null;
-  let bypassTimeout = null;
-
-  // Clear bypass state
-  function clearBypass(moduleId) {
-    bypassActive = false;
-    bypassAction = null;
-    if (bypassTimeout) {
-      clearTimeout(bypassTimeout);
-      bypassTimeout = null;
-    }
-    console.log(`${moduleId} | Monster action bypass cleared`);
-  }
-
+  // CLEANED: Monster action prevention - no more timed bypass system
   Hooks.on("preCreateChatMessage", (document, data, options, userId) => {
     if (!DragonbaneUtils.getSetting(moduleId, "enabled")) return;
     if (
@@ -353,14 +312,18 @@ export function registerHooks(moduleId) {
       return;
     if (userId !== game.user.id) return;
 
-    // Check for active bypass - KEY FIX!
-    if (bypassActive) {
-      console.log(`${moduleId} | Bypassing prevention due to active bypass`);
-      return; // Allow message to proceed
+    // FIXED: Skip rules messages - they're not actual attack attempts
+    if (document.getFlag(moduleId, "dragonbaneRulesMessage")) {
+      return;
     }
 
-    // Check for active overrides
-    if (DragonbaneActionRules.overrides?.allValidations) return;
+    // FIXED: Skip if already processed by monster prevention to prevent infinite loops
+    if (document.getFlag(moduleId, "monsterActionProcessed")) {
+      return;
+    }
+
+    // Check for active overrides (Alt+V general validation bypass)
+    if (DragonbaneActionRules.overrides?.validationBypass) return;
 
     try {
       const actionMatch = getActionMatch(document.content);
@@ -388,57 +351,15 @@ export function registerHooks(moduleId) {
       );
       return false; // Always prevent original message
     } catch (error) {
-      // CHANGED: Use DoD_Utility.WARNING instead of console.error
       if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
         DoD_Utility.WARNING(
           `Error in monster action prevention: ${error.message}`
         );
-      } else {
-        console.error(
-          `${moduleId} | Error in monster action prevention:`,
-          error
-        );
       }
     }
   });
 
-  // Rules watcher - clears bypass when rules message detected
-  Hooks.on("createChatMessage", (message) => {
-    if (!bypassActive || !bypassAction) return;
-
-    try {
-      const content = message.content;
-      if (!content) return;
-
-      // Check if this is a rules message for the bypassed action
-      const actionKey =
-        bypassAction === "parry"
-          ? "DRAGONBANE_ACTION_RULES.actions.parry"
-          : "DRAGONBANE_ACTION_RULES.actions.disarm";
-
-      const actionName = game.i18n.localize(actionKey);
-      const rulesText = game.i18n.format(
-        "DRAGONBANE_ACTION_RULES.speakers.generic",
-        { action: actionName }
-      );
-
-      const speaker = message.speaker?.alias || "";
-      if (speaker.includes(rulesText) || content.includes(rulesText)) {
-        console.log(
-          `${moduleId} | Detected ${bypassAction} rules message, clearing bypass`
-        );
-        clearBypass(moduleId);
-      }
-    } catch (error) {
-      // CHANGED: Use DoD_Utility.WARNING instead of console.error
-      if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
-        DoD_Utility.WARNING(`Error in rules watcher: ${error.message}`);
-      } else {
-        console.error(`${moduleId} | Error in rules watcher:`, error);
-      }
-    }
-  });
-
+  // CLEANED: Simplified monster action dialog - no bypass system
   async function showMonsterActionDialog(
     action,
     targetName,
@@ -479,22 +400,19 @@ export function registerHooks(moduleId) {
 
     if (proceed) {
       console.log(
-        `${moduleId} | User proceeded with ${action} - activating bypass`
+        `${moduleId} | User proceeded with ${action} against monster`
       );
 
-      // Activate bypass system
-      bypassAction = action;
-      bypassActive = true;
+      // FIXED: Mark as processed to prevent infinite loop re-triggering
+      document.updateSource({
+        flags: {
+          [moduleId]: {
+            monsterActionProcessed: true,
+          },
+        },
+      });
 
-      // 5-second fallback timeout
-      bypassTimeout = setTimeout(() => {
-        if (bypassActive) {
-          console.log(`${moduleId} | Bypass cleared by timeout (fallback)`);
-          clearBypass(moduleId);
-        }
-      }, 5000);
-
-      // Recreate the message (will pass through due to bypass)
+      // Now recreate the message - it will skip the prevention check
       await ChatMessage.create(document.toObject());
     } else {
       console.log(`${moduleId} | User cancelled ${action} against monster`);
@@ -519,7 +437,7 @@ export function registerHooks(moduleId) {
       }
 
       // Skip if overrides active
-      if (DragonbaneActionRules.overrides?.allValidations) {
+      if (DragonbaneActionRules.overrides?.validationBypass) {
         return originalMethods.get("rollItem").call(this, itemName, ...args);
       }
 
@@ -544,15 +462,9 @@ export function registerHooks(moduleId) {
           }
         }
       } catch (error) {
-        // CHANGED: Use DoD_Utility.WARNING instead of console.error
         if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
           DoD_Utility.WARNING(
             `Error in Token Action HUD validation: ${error.message}`
-          );
-        } else {
-          console.error(
-            `${moduleId} | Error in Token Action HUD validation:`,
-            error
           );
         }
       }
@@ -561,7 +473,7 @@ export function registerHooks(moduleId) {
     };
   }
 
-  // Character sheet attack interception - FIXED: Handle both PC and NPC sheets
+  // Character sheets attack interception
   Hooks.on("renderActorSheet", (sheet, html, data) => {
     if (!DragonbaneUtils.getSetting(moduleId, "enabled")) return;
     if (
@@ -573,10 +485,7 @@ export function registerHooks(moduleId) {
     if (sheet.constructor.name !== "DoDCharacterSheet") return;
 
     try {
-      // FIXED: Don't skip re-hooking since HTML elements are recreated on each render
       sheet._dragonbaneHooked = true;
-
-      // FIXED: Handle both PC and NPC weapon structures
 
       // PC weapons: .rollable-skill within weapon rows (tr[data-item-id])
       html.find("tr[data-item-id] .rollable-skill").each((index, element) => {
@@ -611,7 +520,7 @@ export function registerHooks(moduleId) {
                 }
               },
               true
-            ); // Use capture phase
+            );
           }
         }
       });
@@ -648,7 +557,7 @@ export function registerHooks(moduleId) {
                 }
               },
               true
-            ); // Use capture phase
+            );
           }
         }
       });
@@ -656,11 +565,6 @@ export function registerHooks(moduleId) {
       if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
         DoD_Utility.WARNING(
           `Error applying weapon interceptors: ${error.message}`
-        );
-      } else {
-        console.error(
-          `${moduleId} | Error applying weapon interceptors:`,
-          error
         );
       }
     }
@@ -761,7 +665,6 @@ export function cleanupCharacterSheets() {
 
 // Helper functions for monster action prevention
 function getActionMatch(content) {
-  // Get current localized action terms for pattern matching
   const parryTerm = game.i18n.localize("DoD.attackTypes.parry") || "parry";
   const disarmTerm = game.i18n.localize("DoD.attackTypes.disarm") || "disarm";
 

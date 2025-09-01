@@ -1,6 +1,5 @@
 /**
- * Dragonbane Combat Assistant - Shared Utility Methods
- * Common functionality used across multiple components
+ * Dragonbane Combat Assistant - Shared Utility Methods (Cleaned)
  */
 
 export class DragonbaneUtils {
@@ -31,7 +30,7 @@ export class DragonbaneUtils {
    * Get actor from message speaker
    */
   static getActorFromMessage(message) {
-    return DragonbaneUtils.getActorFromSpeakerData(message?.speaker);
+    return this.getActorFromSpeakerData(message?.speaker);
   }
 
   /**
@@ -44,7 +43,7 @@ export class DragonbaneUtils {
 
       if (uuidMatch && message.speaker?.actor) {
         const itemId = uuidMatch[1];
-        const actor = DragonbaneUtils.getActorFromMessage(message);
+        const actor = this.getActorFromMessage(message);
         const item = actor?.items.get(itemId);
 
         if (item && item.type === itemType) {
@@ -54,11 +53,8 @@ export class DragonbaneUtils {
 
       return null;
     } catch (error) {
-      // CHANGED: Use DoD_Utility.WARNING instead of console.error
       if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
         DoD_Utility.WARNING(`Error extracting ${itemType}: ${error.message}`);
-      } else {
-        console.error(`DragonbaneUtils | Error extracting ${itemType}:`, error);
       }
       return null;
     }
@@ -68,58 +64,41 @@ export class DragonbaneUtils {
    * Extract weapon from message
    */
   static extractWeaponFromMessage(message) {
-    return DragonbaneUtils.extractItemFromMessage(message, "weapon");
+    return this.extractItemFromMessage(message, "weapon");
   }
 
   /**
    * Extract skill from message
    */
   static extractSkillFromMessage(message) {
-    return DragonbaneUtils.extractItemFromMessage(message, "skill");
+    return this.extractItemFromMessage(message, "skill");
   }
 
   /**
    * Extract spell from message
    */
   static extractSpellFromMessage(message) {
-    return DragonbaneUtils.extractItemFromMessage(message, "spell");
+    return this.extractItemFromMessage(message, "spell");
   }
 
   /**
-   * Check if actor is monster type
+   * Check if actor is monster type (simplified)
    */
   static isMonsterActor(actor) {
     if (!actor) return false;
-
-    if (actor.type === "monster") {
-      DragonbaneUtils.debugLog(
-        "DragonbaneUtils",
-        "Utils",
-        `Monster detected: ${actor.name}`
-      );
-      return true;
-    }
-
-    return false;
+    return actor.type === "monster";
   }
 
   /**
    * Get setting value with fallback
-   * Updated to align with new settings system
    */
   static getSetting(moduleId, settingName, fallback) {
     try {
       return game.settings.get(moduleId, settingName);
     } catch (error) {
-      // CHANGED: Use DoD_Utility.WARNING instead of console.warn
       if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
         DoD_Utility.WARNING(
           `Failed to get setting ${settingName}: ${error.message}`
-        );
-      } else {
-        console.warn(
-          `${moduleId} | Failed to get setting ${settingName}:`,
-          error
         );
       }
       return fallback;
@@ -127,21 +106,11 @@ export class DragonbaneUtils {
   }
 
   /**
-   * Debug logging with component identification (robust version)
+   * Debug logging (simplified)
    */
   static debugLog(moduleId, component, message) {
-    try {
-      // Handle legacy calls with wrong moduleId
-      const correctModuleId =
-        moduleId === "DragonbaneUtils" ? "dragonbane-action-rules" : moduleId;
-
-      // Only log if debug mode is enabled
-      if (game.settings?.get?.(correctModuleId, "debugMode")) {
-        console.log(`${correctModuleId} | ${component} | ${message}`);
-      }
-    } catch (error) {
-      // Fallback for debug logging - don't break functionality
-      console.log(`[DEBUG] ${component} | ${message}`);
+    if (game.settings?.get?.(moduleId, "debugMode")) {
+      console.log(`${moduleId} | ${component} | ${message}`);
     }
   }
 
@@ -168,7 +137,7 @@ export class DragonbaneUtils {
    * Check if weapon has the "Topple" feature
    */
   static hasToppleFeature(weapon) {
-    return DragonbaneUtils.hasWeaponFeature(
+    return this.hasWeaponFeature(
       weapon,
       "DoD.weaponFeatureTypes.toppling",
       "toppling"
@@ -179,18 +148,14 @@ export class DragonbaneUtils {
    * Check if weapon has the "Long" property
    */
   static hasLongProperty(weapon) {
-    return DragonbaneUtils.hasWeaponFeature(
-      weapon,
-      "DoD.weaponFeatureTypes.long",
-      "long"
-    );
+    return this.hasWeaponFeature(weapon, "DoD.weaponFeatureTypes.long", "long");
   }
 
   /**
    * Check if weapon has the "Thrown" feature
    */
   static hasThrownFeature(weapon) {
-    return DragonbaneUtils.hasWeaponFeature(
+    return this.hasWeaponFeature(
       weapon,
       "DoD.weaponFeatureTypes.thrown",
       "thrown"
@@ -264,10 +229,10 @@ export class DragonbaneUtils {
     if (!actor || !effectName) return false;
 
     try {
-      const effect = DragonbaneUtils.findStatusEffect(effectName);
+      const effect = this.findStatusEffect(effectName);
       if (!effect) return false;
 
-      const hasEffect = DragonbaneUtils.hasStatusEffect(actor, effectName);
+      const hasEffect = this.hasStatusEffect(actor, effectName);
 
       if (active && !hasEffect) {
         // FIXED: Use Foundry's native ActiveEffect API instead of core system's deprecated path
@@ -298,15 +263,9 @@ export class DragonbaneUtils {
 
       return false;
     } catch (error) {
-      // CHANGED: Use DoD_Utility.WARNING instead of console.error
       if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
         DoD_Utility.WARNING(
           `Error toggling status effect ${effectName}: ${error.message}`
-        );
-      } else {
-        console.error(
-          `DragonbaneUtils | Error toggling status effect ${effectName}:`,
-          error
         );
       }
       return false;
@@ -319,7 +278,7 @@ export class DragonbaneUtils {
   static ensureStatusEffectExists(effectName, iconPath = "icons/svg/aura.svg") {
     if (!effectName) return false;
 
-    const existingEffect = DragonbaneUtils.findStatusEffect(effectName);
+    const existingEffect = this.findStatusEffect(effectName);
     if (existingEffect) return true;
 
     try {
@@ -342,15 +301,9 @@ export class DragonbaneUtils {
 
       return false;
     } catch (error) {
-      // CHANGED: Use DoD_Utility.WARNING instead of console.error
       if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
         DoD_Utility.WARNING(
           `Error ensuring status effect exists ${effectName}: ${error.message}`
-        );
-      } else {
-        console.error(
-          `DragonbaneUtils | Error ensuring status effect exists ${effectName}:`,
-          error
         );
       }
       return false;
@@ -396,8 +349,8 @@ export class DragonbaneUtils {
    * Compare STR damage bonuses to determine if shove is possible
    */
   static canShove(attacker, defender) {
-    const attackerBonus = DragonbaneUtils.extractStrDamageBonus(attacker);
-    const defenderBonus = DragonbaneUtils.extractStrDamageBonus(defender);
+    const attackerBonus = this.extractStrDamageBonus(attacker);
+    const defenderBonus = this.extractStrDamageBonus(defender);
 
     return attackerBonus >= defenderBonus;
   }
@@ -406,7 +359,7 @@ export class DragonbaneUtils {
    * Check if spell attack
    */
   static isSpellAttack(message) {
-    const item = DragonbaneUtils.extractItemFromMessage(message, "spell");
+    const item = this.extractItemFromMessage(message, "spell");
     return item && item.type === "spell";
   }
 
@@ -421,15 +374,9 @@ export class DragonbaneUtils {
       // Check for "Reaction" casting time (case-insensitive)
       return castingTime.toLowerCase().includes("reaction");
     } catch (error) {
-      // CHANGED: Use DoD_Utility.WARNING instead of console.error
       if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
         DoD_Utility.WARNING(
           `Error checking spell casting time: ${error.message}`
-        );
-      } else {
-        console.error(
-          "DragonbaneUtils | Error checking spell casting time:",
-          error
         );
       }
       return false;

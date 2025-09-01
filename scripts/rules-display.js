@@ -1,6 +1,5 @@
 /**
  * Dragonbane Combat Assistant - Rules Display
- * Handles chat message processing and automatic rule display
  */
 
 import { SETTINGS, getSetting } from "./settings.js";
@@ -30,14 +29,8 @@ export class DragonbaneRulesDisplay {
       this._handleEvadeSkillRoll(message);
       this._handleActionMessage(message, content);
     } catch (error) {
-      // CHANGED: Use DoD_Utility.WARNING instead of console.error
       if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
         DoD_Utility.WARNING(`Error processing chat message: ${error.message}`);
-      } else {
-        console.error(
-          `${this.moduleId} | Error processing chat message:`,
-          error
-        );
       }
     }
   }
@@ -177,15 +170,9 @@ export class DragonbaneRulesDisplay {
         await this._displayShoveRule(shoveRule);
       }
     } catch (error) {
-      // CHANGED: Use DoD_Utility.WARNING instead of console.error
       if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
         DoD_Utility.WARNING(
           `Error processing regular melee attack: ${error.message}`
-        );
-      } else {
-        console.error(
-          `${this.moduleId} | Error processing regular melee attack:`,
-          error
         );
       }
     }
@@ -222,15 +209,9 @@ export class DragonbaneRulesDisplay {
 
       await this._displayEvadeMovementRule();
     } catch (error) {
-      // CHANGED: Use DoD_Utility.WARNING instead of console.error
       if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
         DoD_Utility.WARNING(
           `Error handling EVADE skill roll: ${error.message}`
-        );
-      } else {
-        console.error(
-          `${this.moduleId} | Error handling EVADE skill roll:`,
-          error
         );
       }
     }
@@ -423,7 +404,6 @@ export class DragonbaneRulesDisplay {
     if (message) {
       const shoveRule = this._getShoveRuleIfApplicable(message, actor);
       if (shoveRule) {
-        // CHANGED: Wrap the plain text content in <li> tags here
         content += `<li>${shoveRule}</li>`;
       }
     }
@@ -456,7 +436,6 @@ export class DragonbaneRulesDisplay {
       const targetName =
         target.name ||
         game.i18n.localize("DRAGONBANE_ACTION_RULES.shove.defaultTarget");
-      // CHANGED: Return plain text without <li> tags
       return game.i18n.format("DRAGONBANE_ACTION_RULES.shove.available", {
         targetName: targetName,
       });
@@ -515,14 +494,8 @@ export class DragonbaneRulesDisplay {
           },
         });
       } catch (error) {
-        // CHANGED: Use DoD_Utility.WARNING instead of console.error
         if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
           DoD_Utility.WARNING(`Error creating chat message: ${error.message}`);
-        } else {
-          console.error(
-            `${this.moduleId} | Error creating chat message:`,
-            error
-          );
         }
       }
     }, delay);
@@ -550,15 +523,9 @@ export class DragonbaneRulesDisplay {
           },
         });
       } catch (error) {
-        // CHANGED: Use DoD_Utility.WARNING instead of console.error
         if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
           DoD_Utility.WARNING(
             `Error creating evade movement chat message: ${error.message}`
-          );
-        } else {
-          console.error(
-            `${this.moduleId} | Error creating evade movement chat message:`,
-            error
           );
         }
       }
@@ -584,15 +551,9 @@ export class DragonbaneRulesDisplay {
           },
         });
       } catch (error) {
-        // CHANGED: Use DoD_Utility.WARNING instead of console.error
         if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
           DoD_Utility.WARNING(
             `Error creating shove chat message: ${error.message}`
-          );
-        } else {
-          console.error(
-            `${this.moduleId} | Error creating shove chat message:`,
-            error
           );
         }
       }
@@ -709,11 +670,8 @@ export class DragonbaneRulesDisplay {
         `Weapon ${weapon.name} marked as broken by ${game.user.name}`
       );
     } catch (error) {
-      // CHANGED: Use DoD_Utility.WARNING instead of console.error
       if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
         DoD_Utility.WARNING(`Error marking weapon broken: ${error.message}`);
-      } else {
-        console.error(`${this.moduleId} | Error marking weapon broken:`, error);
       }
       ui.notifications.error(
         game.i18n.localize(

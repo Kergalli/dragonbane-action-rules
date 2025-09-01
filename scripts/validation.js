@@ -1,6 +1,5 @@
 /**
  * Dragonbane Combat Assistant - Attack Validation
- * Handles target selection and weapon range with thrown weapon support
  */
 
 import { SETTINGS, getSetting } from "./settings.js";
@@ -160,7 +159,6 @@ export class DragonbaneValidator {
 
   /**
    * Validate weapon range with thrown weapon support
-   * Fixed to use correct Dragonbane system property names and methods
    */
   validateRange(attackerToken, targetToken, weapon, weaponName) {
     try {
@@ -210,7 +208,7 @@ export class DragonbaneValidator {
         ) {
           maxRange = weapon.system.calculatedRange;
         } else {
-          // Fallback: long weapons can reach 4m, regular melee weapons 2m (adjacent in Dragonbane)
+          // Fallback: long weapons can reach 4m, regular melee weapons 2m
           maxRange = isLongWeapon ? 4 : 2;
         }
         weaponType = "melee weapon";
