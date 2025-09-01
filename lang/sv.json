@@ -31,6 +31,10 @@
         "name": "Tvinga Avståndskontroll",
         "hint": "Validera att attacker är inom vapnets räckvidd (närstrid: upp till 2m/4m för långa, avstånd: upp till 2x grundräckvidd, kast: kontextuell)"
       },
+      "enforceMonsterActionPrevention": {
+         "name": "Aktivera Monsterhändelse-förebyggande",
+         "hint": "Visa bekräftelsedialoger innan du försöker parera eller avväpna monster (förhindrar ogiltiga framsteg och utbildar om regler)"
+      },
       "enableShoveReminders": {
         "name": "VALFRI REGEL: Aktivera Knuff-regelpåminnelser",
         "hint": "Visa knuff-regelpåminnelser för närstrids specialattacker när STY-skadebonus tillåter det"

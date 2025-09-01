@@ -31,6 +31,10 @@
         "name": "Enforce Range Checking", 
         "hint": "Validate that attacks are within weapon range (melee: up to 2m/4m for long, ranged: up to 2x base range, thrown: contextual)"
       },
+      "enforceMonsterActionPrevention": {
+        "name": "Enable Monster Action Prevention",
+        "hint": "Show confirmation dialogs before attempting parry or disarm actions against monsters (prevents invalid advancement and educates about rules)"
+      },
       "enableShoveReminders": {
         "name": "OPTIONAL RULE: Enable Shove Rule Reminders",
         "hint": "Show shove rule reminders for melee special attacks when STR damage bonus allows it"

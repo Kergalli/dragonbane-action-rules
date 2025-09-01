@@ -46,14 +46,28 @@ export function registerSettings(moduleId) {
     type: Boolean,
     default: true,
     onChange: (value) => {
-      // Import main class dynamically to avoid circular imports
-      import("/modules/dragonbane-action-rules/scripts/main.js").then(
-        ({ DragonbaneActionRules }) => {
-          value
-            ? DragonbaneActionRules.enableModule()
-            : DragonbaneActionRules.disableModule();
+      // Use global reference instead of dynamic import to avoid import issues
+      setTimeout(() => {
+        try {
+          const DragonbaneActionRules = window.DragonbaneActionRules;
+          if (DragonbaneActionRules) {
+            if (value) {
+              DragonbaneActionRules.enableModule();
+            } else {
+              DragonbaneActionRules.disableModule();
+            }
+          } else {
+            console.warn(
+              `${moduleId} | DragonbaneActionRules not available for settings onChange`
+            );
+          }
+        } catch (error) {
+          console.error(
+            `${moduleId} | Error in enabled setting onChange:`,
+            error
+          );
         }
-      );
+      }, 100);
     },
   });
 
@@ -188,17 +202,16 @@ export function registerSettings(moduleId) {
     type: Boolean,
     default: true,
     onChange: (value) => {
-      // Import main class dynamically to avoid circular imports
       setTimeout(() => {
-        import("/modules/dragonbane-action-rules/scripts/main.js")
-          .then(({ DragonbaneActionRules }) => {
-            if (value && DragonbaneActionRules?.encumbranceMonitor) {
-              DragonbaneActionRules.encumbranceMonitor.initialize();
-            }
-          })
-          .catch((error) => {
-            console.error("Error in encumbrance monitoring onChange:", error);
-          });
+        try {
+          const DragonbaneActionRules = window.DragonbaneActionRules;
+          if (DragonbaneActionRules?.encumbranceMonitor) {
+            // Call appropriate method based on setting
+            DragonbaneActionRules.encumbranceMonitor.initialize(); // or other method
+          }
+        } catch (error) {
+          console.error(`${moduleId} | Error in encumbrance onChange:`, error);
+        }
       }, 100);
     },
   });
@@ -215,17 +228,16 @@ export function registerSettings(moduleId) {
     type: String,
     default: "Party",
     onChange: () => {
-      // FIXED: Safer onChange handler with timeout and error handling
       setTimeout(() => {
-        import("/modules/dragonbane-action-rules/scripts/main.js")
-          .then(({ DragonbaneActionRules }) => {
-            if (DragonbaneActionRules?.encumbranceMonitor) {
-              DragonbaneActionRules.encumbranceMonitor.initializePreviousStates();
-            }
-          })
-          .catch((error) => {
-            console.error("Error in encumbrance folder onChange:", error);
-          });
+        try {
+          const DragonbaneActionRules = window.DragonbaneActionRules;
+          if (DragonbaneActionRules?.encumbranceMonitor) {
+            // Call appropriate method based on setting
+            DragonbaneActionRules.encumbranceMonitor.initializePreviousStates();
+          }
+        } catch (error) {
+          console.error(`${moduleId} | Error in encumbrance onChange:`, error);
+        }
       }, 100);
     },
   });
@@ -242,20 +254,16 @@ export function registerSettings(moduleId) {
     type: String,
     default: "", // Will be set to localized default when first accessed
     onChange: () => {
-      // FIXED: Safer onChange handler with timeout and error handling
       setTimeout(() => {
-        import("/modules/dragonbane-action-rules/scripts/main.js")
-          .then(({ DragonbaneActionRules }) => {
-            if (DragonbaneActionRules?.encumbranceMonitor) {
-              DragonbaneActionRules.encumbranceMonitor.ensureStatusEffectExists();
-            }
-          })
-          .catch((error) => {
-            console.error(
-              "Error in encumbrance status effect onChange:",
-              error
-            );
-          });
+        try {
+          const DragonbaneActionRules = window.DragonbaneActionRules;
+          if (DragonbaneActionRules?.encumbranceMonitor) {
+            // Call appropriate method based on setting
+            DragonbaneActionRules.encumbranceMonitor.ensureStatusEffectExists();
+          }
+        } catch (error) {
+          console.error(`${moduleId} | Error in encumbrance onChange:`, error);
+        }
       }, 100);
     },
   });
@@ -286,14 +294,20 @@ export function registerSettings(moduleId) {
     type: Boolean,
     default: true,
     onChange: (value) => {
-      // Import main class dynamically to avoid circular imports
-      import("/modules/dragonbane-action-rules/scripts/main.js").then(
-        ({ DragonbaneActionRules }) => {
-          if (value) {
+      // Use global reference instead of dynamic import to avoid import issues
+      setTimeout(() => {
+        try {
+          const DragonbaneActionRules = window.DragonbaneActionRules;
+          if (DragonbaneActionRules && value) {
             DragonbaneActionRules.yzeIntegration?.initialize();
           }
+        } catch (error) {
+          console.error(
+            `${moduleId} | Error in YZE integration onChange:`,
+            error
+          );
         }
-      );
+      }, 100);
     },
   });
 
@@ -309,12 +323,16 @@ export function registerSettings(moduleId) {
     type: String,
     default: "",
     onChange: () => {
-      // Refresh patterns when exclusions change
-      import("/modules/dragonbane-action-rules/scripts/main.js").then(
-        ({ DragonbaneActionRules }) => {
-          DragonbaneActionRules.patternManager?.refreshPatterns();
+      setTimeout(() => {
+        try {
+          const DragonbaneActionRules = window.DragonbaneActionRules;
+          if (DragonbaneActionRules?.patternManager?.refreshPatterns) {
+            DragonbaneActionRules.patternManager.refreshPatterns();
+          }
+        } catch (error) {
+          console.error(`${moduleId} | Error refreshing patterns:`, error);
         }
-      );
+      }, 100);
     },
   });
 

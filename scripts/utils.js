@@ -471,12 +471,23 @@ export class DragonbaneUtils {
    */
   static extractStrDamageBonus(actor) {
     if (!actor || !actor.system) return 0;
-
     const bonusValue = actor.system?.damageBonus?.str?.value;
-    if (!bonusValue || bonusValue === "none") return 0;
-
-    // Extract numeric value from dice notation (e.g., "d4" -> 4, "d6" -> 6)
-    const match = bonusValue.match(/d(\d+)/);
-    return match ? parseInt(match[1]) : 0;
+    if (!bonusValue) return 0;
+    if (typeof bonusValue === "number") return bonusValue;
+    if (typeof bonusValue === "string") {
+      if (
+        bonusValue.toLowerCase() === "none" ||
+        bonusValue === "" ||
+        bonusValue === "0"
+      )
+        return 0;
+      const diceKeyMatch = bonusValue.match(/^d(\d+)$/i);
+      if (diceKeyMatch) return parseInt(diceKeyMatch[1]);
+      const displayMatch = bonusValue.match(/^D(\d+)$/i);
+      if (displayMatch) return parseInt(displayMatch[1]);
+      const numericMatch = bonusValue.match(/^(\d+)$/);
+      if (numericMatch) return parseInt(numericMatch[1]);
+    }
+    return 0;
   }
 }

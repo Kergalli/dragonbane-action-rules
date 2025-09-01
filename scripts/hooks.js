@@ -571,135 +571,59 @@ export function registerHooks(moduleId) {
       return;
 
     if (sheet.constructor.name !== "DoDCharacterSheet") return;
-    if (sheet._dragonbaneHooked) return; // Already hooked
+    if (sheet._dragonbaneHooked) return;
 
     try {
       sheet._dragonbaneHooked = true;
 
-      // Store original method
-      const originalOnSkillRoll = sheet._onSkillRoll;
+      // Target weapon attack buttons: .rollable-skill within weapon rows
+      html.find("tr[data-item-id] .rollable-skill").each((index, element) => {
+        const $element = $(element);
+        const $row = $element.closest("tr[data-item-id]");
+        const itemId = $row.attr("data-item-id");
 
-      // Override the _onSkillRoll method with validation
-      sheet._onSkillRoll = async (event) => {
-        // Skip if validation bypass active
-        if (DragonbaneActionRules.overrides?.validationBypass) {
-          return originalOnSkillRoll.call(sheet, event);
-        }
+        if (itemId) {
+          const item = sheet.actor.items.get(itemId);
 
-        try {
-          const element = event.currentTarget;
-          const itemId = element.closest("[data-item-id]")?.dataset.itemId;
+          if (item?.type === "weapon") {
+            element.addEventListener(
+              "click",
+              async function (event) {
+                if (DragonbaneActionRules?.overrides?.validationBypass) {
+                  return;
+                }
 
-          if (itemId) {
-            const item = sheet.actor.items.get(itemId);
+                if (DragonbaneActionRules?.validator?.performWeaponAttack) {
+                  const validation =
+                    await DragonbaneActionRules.validator.performWeaponAttack(
+                      item.name,
+                      sheet.actor
+                    );
 
-            if (
-              item?.type === "weapon" &&
-              DragonbaneActionRules.validator?.performWeaponAttack
-            ) {
-              const validation =
-                await DragonbaneActionRules.validator.performWeaponAttack(
-                  item.name,
-                  sheet.actor
-                );
-
-              if (!validation.success) {
-                ui.notifications.warn(validation.message);
-                return;
-              }
-            }
-          }
-        } catch (error) {
-          // CHANGED: Use DoD_Utility.WARNING instead of console.error
-          if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
-            DoD_Utility.WARNING(
-              `Error in character sheet validation: ${error.message}`
-            );
-          } else {
-            console.error(
-              `${moduleId} | Error in character sheet validation:`,
-              error
-            );
+                  if (!validation.success) {
+                    event.preventDefault();
+                    event.stopImmediatePropagation();
+                    ui.notifications.warn(validation.message);
+                    return false;
+                  }
+                }
+              },
+              true
+            ); // Use capture phase
           }
         }
-
-        return originalOnSkillRoll.call(sheet, event);
-      };
+      });
     } catch (error) {
-      // CHANGED: Use DoD_Utility.WARNING instead of console.error
       if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
-        DoD_Utility.WARNING(`Error hooking character sheet: ${error.message}`);
+        DoD_Utility.WARNING(
+          `Error applying weapon interceptors: ${error.message}`
+        );
       } else {
-        console.error(`${moduleId} | Error hooking character sheet:`, error);
+        console.error(
+          `${moduleId} | Error applying weapon interceptors:`,
+          error
+        );
       }
-    }
-  });
-
-  // Encumbrance monitoring hooks
-  Hooks.on("updateActor", (actor, changes, options, userId) => {
-    if (!DragonbaneUtils.getSetting(moduleId, "enableEncumbranceMonitoring"))
-      return;
-
-    if (DragonbaneActionRules.encumbranceMonitor?.onActorUpdate) {
-      DragonbaneActionRules.encumbranceMonitor.onActorUpdate(
-        actor,
-        changes,
-        options,
-        userId
-      );
-    }
-  });
-
-  Hooks.on("deleteActor", (actor, options, userId) => {
-    if (!DragonbaneUtils.getSetting(moduleId, "enableEncumbranceMonitoring"))
-      return;
-
-    if (DragonbaneActionRules.encumbranceMonitor?.onActorDelete) {
-      DragonbaneActionRules.encumbranceMonitor.onActorDelete(
-        actor,
-        options,
-        userId
-      );
-    }
-  });
-
-  Hooks.on("updateItem", (item, changes, options, userId) => {
-    if (!DragonbaneUtils.getSetting(moduleId, "enableEncumbranceMonitoring"))
-      return;
-
-    if (DragonbaneActionRules.encumbranceMonitor?.onItemUpdate) {
-      DragonbaneActionRules.encumbranceMonitor.onItemUpdate(
-        item,
-        changes,
-        options,
-        userId
-      );
-    }
-  });
-
-  Hooks.on("createItem", (item, options, userId) => {
-    if (!DragonbaneUtils.getSetting(moduleId, "enableEncumbranceMonitoring"))
-      return;
-
-    if (DragonbaneActionRules.encumbranceMonitor?.onItemChange) {
-      DragonbaneActionRules.encumbranceMonitor.onItemChange(
-        item,
-        options,
-        userId
-      );
-    }
-  });
-
-  Hooks.on("deleteItem", (item, options, userId) => {
-    if (!DragonbaneUtils.getSetting(moduleId, "enableEncumbranceMonitoring"))
-      return;
-
-    if (DragonbaneActionRules.encumbranceMonitor?.onItemChange) {
-      DragonbaneActionRules.encumbranceMonitor.onItemChange(
-        item,
-        options,
-        userId
-      );
     }
   });
 

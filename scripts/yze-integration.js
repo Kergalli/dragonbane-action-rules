@@ -132,6 +132,15 @@ export class DragonbaneYZEIntegration {
    * Determine action type from chat message
    */
   determineActionType(message) {
+    // Skip whispered messages - usually informational, not actions
+    if (message.whisper && message.whisper.length > 0) {
+      DragonbaneUtils.debugLog(
+        this.moduleId,
+        "YZEIntegration",
+        "Skipping whispered message (likely informational)"
+      );
+      return null;
+    }
     // Skip damage/healing rolls - these are follow-ups, not actions
     if (this._isDamageRoll(message)) {
       DragonbaneUtils.debugLog(
