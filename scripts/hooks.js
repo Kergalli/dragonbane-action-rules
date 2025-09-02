@@ -287,19 +287,29 @@ export function registerHooks(moduleId) {
               )
               .prop("disabled", true);
           } catch (error) {
-            console.error(`${moduleId} | Error adding to grudge list:`, error);
+            if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
+              DoD_Utility.WARNING(
+                `Error adding to grudge list: ${error.message}`
+              );
+            }
             ui.notifications.error("Failed to add to grudge list");
           }
         } else {
-          console.error("🎯 GRUDGE ERROR: addToGrudgeList method not found");
+          if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
+            DoD_Utility.WARNING("addToGrudgeList method not found");
+          }
         }
       });
     } catch (error) {
-      console.error(`${moduleId} | Error in grudge button processing:`, error);
+      if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
+        DoD_Utility.WARNING(
+          `Error in grudge button processing: ${error.message}`
+        );
+      }
     }
   });
 
-  // CLEANED: Monster action prevention - no more timed bypass system
+  // Monster action prevention - no more timed bypass system
   Hooks.on("preCreateChatMessage", (document, data, options, userId) => {
     if (!DragonbaneUtils.getSetting(moduleId, "enabled")) return;
     if (

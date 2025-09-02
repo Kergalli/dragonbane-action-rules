@@ -60,10 +60,11 @@ export function registerSettings(moduleId) {
             );
           }
         } catch (error) {
-          console.error(
-            `${moduleId} | Error in enabled setting onChange:`,
-            error
-          );
+          if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
+            DoD_Utility.WARNING(
+              `Error in enabled setting onChange: ${error.message}`
+            );
+          }
         }
       }, 100);
     },
@@ -208,7 +209,11 @@ export function registerSettings(moduleId) {
             DragonbaneActionRules.encumbranceMonitor.initialize(); // or other method
           }
         } catch (error) {
-          console.error(`${moduleId} | Error in encumbrance onChange:`, error);
+          if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
+            DoD_Utility.WARNING(
+              `Error in encumbrance onChange: ${error.message}`
+            );
+          }
         }
       }, 100);
     },
@@ -234,7 +239,11 @@ export function registerSettings(moduleId) {
             DragonbaneActionRules.encumbranceMonitor.initializePreviousStates();
           }
         } catch (error) {
-          console.error(`${moduleId} | Error in encumbrance onChange:`, error);
+          if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
+            DoD_Utility.WARNING(
+              `Error in encumbrance folder onChange: ${error.message}`
+            );
+          }
         }
       }, 100);
     },
@@ -260,7 +269,11 @@ export function registerSettings(moduleId) {
             DragonbaneActionRules.encumbranceMonitor.ensureStatusEffectExists();
           }
         } catch (error) {
-          console.error(`${moduleId} | Error in encumbrance onChange:`, error);
+          if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
+            DoD_Utility.WARNING(
+              `Error in encumbrance status onChange: ${error.message}`
+            );
+          }
         }
       }, 100);
     },
@@ -300,10 +313,11 @@ export function registerSettings(moduleId) {
             DragonbaneActionRules.yzeIntegration?.initialize();
           }
         } catch (error) {
-          console.error(
-            `${moduleId} | Error in YZE integration onChange:`,
-            error
-          );
+          if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
+            DoD_Utility.WARNING(
+              `Error in YZE integration onChange: ${error.message}`
+            );
+          }
         }
       }, 100);
     },
@@ -328,7 +342,9 @@ export function registerSettings(moduleId) {
             DragonbaneActionRules.patternManager.refreshPatterns();
           }
         } catch (error) {
-          console.error(`${moduleId} | Error refreshing patterns:`, error);
+          if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
+            DoD_Utility.WARNING(`Error refreshing patterns: ${error.message}`);
+          }
         }
       }, 100);
     },
@@ -355,8 +371,6 @@ export function getSetting(moduleId, setting, fallback = null) {
   } catch (error) {
     if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
       DoD_Utility.WARNING(`Failed to get setting ${setting}: ${error.message}`);
-    } else {
-      console.warn(`${moduleId} | Failed to get setting ${setting}:`, error);
     }
     return fallback;
   }

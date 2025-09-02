@@ -91,10 +91,9 @@ class DragonbaneActionRules {
         )} v${DragonbaneActionRules.VERSION}`
       );
     } catch (error) {
-      console.error(
-        `${DragonbaneActionRules.ID} | Critical initialization error:`,
-        error
-      );
+      if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
+        DoD_Utility.WARNING(`Critical initialization error: ${error.message}`);
+      }
       ui.notifications.error(
         "Dragonbane Combat Assistant failed to initialize. Check console for details."
       );
@@ -151,11 +150,6 @@ class DragonbaneActionRules {
     } catch (error) {
       if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
         DoD_Utility.WARNING(`Failed to register keybinds: ${error.message}`);
-      } else {
-        console.error(
-          `${DragonbaneActionRules.ID} | Failed to register keybinds:`,
-          error
-        );
       }
     }
   }
