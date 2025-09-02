@@ -9,7 +9,7 @@
     "settings": {
       "enabled": {
         "name": "Aktivera Stridsassistent",
-        "hint": "Visa automatiskt regler när stridshandlingar används i chatten"
+        "hint": "Huvudbrytare - inaktiverar alla Combat Assistant-funktioner när den är avstängd (validering, regler, belastning, etc.)"
       },
       "delay": {
         "name": "Visningsfördröjning (millisekunder)",
@@ -31,6 +31,10 @@
         "name": "Tvinga Avståndskontroll",
         "hint": "Validera att attacker är inom vapnets räckvidd (närstrid: upp till 2m/4m för långa, avstånd: upp till 2x grundräckvidd, kast: kontextuell)"
       },
+      "enforceMonsterActionPrevention": {
+         "name": "Aktivera Monsterhändelse-förebyggande",
+         "hint": "Visa bekräftelsedialoger innan du försöker parera eller avväpna monster (förhindrar ogiltiga framsteg och utbildar om regler)"
+      },
       "enableShoveReminders": {
         "name": "VALFRI REGEL: Aktivera Knuff-regelpåminnelser",
         "hint": "Visa knuff-regelpåminnelser för närstrids specialattacker när STY-skadebonus tillåter det"
@@ -49,7 +53,7 @@
       },
       "encumbranceMonitorFolder": {
         "name": "Bärförmågeövervaknings-mapp",
-        "hint": "Namn på aktörmappen att övervaka för bärförmåga (lämna tom för att övervaka alla karaktärer)"
+        "hint": "Namn på aktörmappen att övervaka för bärförmåga. Övervakar aktörer i exakt det mappnamn som anges. Lämna tom för att övervaka alla karaktärer."
       },
       "encumbranceStatusEffect": {
         "name": "Bärförmåge-statuseffekt",
@@ -65,7 +69,7 @@
       },
       "yzeCustomExclusions": {
         "name": "YZE Handlings-undantag",
-        "hint": "Ytterligare ord/fraser att utesluta från handlingsspårning (kommaseparerade). Dessa tärningskast kommer inte att utlösa handlings-statuseffekter. Se README.md för några exempel. Obs: Reaktions-trollformler undantas automatiskt genom att kontrollera deras kasttid."
+        "hint": "Ytterligare ord/fraser/UUIDs att utesluta från handlingsspårning (kommaseparerade). Dessa tärningskast kommer inte att utlösa handlings-statuseffekter. Se README.md för några exempel. Obs: Reaktions-trollformler undantas automatiskt genom att kontrollera deras kasttid."
       },
       "enableGrudgeTracking": {
         "name": "Aktivera Obarmhärtighetsspårare",
@@ -108,13 +112,12 @@
       "monster": "Monsterattacker kan inte pareras (om inte annat anges)",
       "movement": "Lyckas = flytta dig själv och fienden 2m (räknas inte som förflyttning, inga frislag)",
       "dragon": "Drake = motattack (kan inte duckas/pareras). Om angriparen slog Drake, behövs Drake för att parera (ingen motattack)",
-      "noWeaponFound": "⚠️ Kunde inte bestämma pareringsvapen",
       "dodgeMovement": "<strong>Vid Ducka:</strong> Du kan flytta upp till 2m i valfri riktning (inga frislag utlöses)",
       "ifParrying": "Vid Parering:"
     },
     "topple": {
       "noDamage": "Ingen skada tillfogad",
-      "evadeRoll": "Motståndaren gör ett motsatt UNDVIKA-slag",
+      "evadeRoll": "Motståndaren gör ett motsatt <strong>UNDVIKA</strong>-slag",
       "cannotDefend": "Kan inte duckas eller pareras",
       "success": "Lyckas = motståndaren blir liggande",
       "weaponFeature": "Fäll-funktion",
@@ -135,7 +138,7 @@
       "success": "Lyckas = fienden räknas som rustningslös"
     },
     "shove": {
-      "available": "<strong>Bonus:</strong> STY-fördel tillåter att knuffa {targetName} 2m i valfri riktning",
+      "available": "<strong>Bonus:</strong> STY-fördel tillåter att knuffa {targetName} 2m i valfri riktning.",
       "defaultTarget": "målet"
     },
     "evade": {
@@ -162,8 +165,8 @@
       "statusEffectName": "Överbelastad",
       "nowOverEncumbered": "{actorName} är nu överbelastad ({currentEnc}/{maxEnc} föremål)",
       "noLongerOverEncumbered": "{actorName} är inte längre överbelastad ({currentEnc}/{maxEnc} föremål)",
-      "chatOverEncumbered": "{actorName} är nu överbelastad!",
-      "chatNoLongerOverEncumbered": "{actorName} är inte längre överbelastad.",
+      "chatOverEncumbered": "<strong>{actorName}</strong> är nu <strong>överbelastad!</strong>",
+      "chatNoLongerOverEncumbered": "<strong>{actorName}</strong> är inte längre överbelastad.",
       "carryingItems": "Bär {currentEnc}/{maxEnc} föremål",
       "strRollReminder": "Måste göra STY-slag för att röra sig i strid eller under reseskift när överbelastad.",
       "systemMessage": "Bärförmågeövervakare"
@@ -205,7 +208,7 @@
     },
     "grudgeTracker": {
       "speakerName": "Obarmhärtighetsspårare",
-      "damageReceived": "{actorName} har tagit {damage} skada från {attackerName}",
+      "damageReceived": "{actorName} har tagit {damage} skada från {attackerName}.",
       "addToGrudgeList": "Lägg till i Grudglista",
       "buttonTextCompleted": "Tillagt i Grudglista",
       "deleteEntry": "Ta bort denna agg-post",

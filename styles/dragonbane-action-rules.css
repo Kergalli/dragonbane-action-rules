@@ -4,10 +4,6 @@
 
 /* Main rules container */
 .dragonbane-action-rules {
-    border: 2px solid #00604d;
-    padding: 10px;
-    background: #f0e9de;
-    margin: 5px 0;
     border-radius: 3px;
     font-family: var(--dod-font-primary, "QTFrizQuad", sans-serif);
 }
@@ -15,13 +11,14 @@
 /* List styling */
 .dragonbane-action-rules ul {
     margin: 0;
-    padding-left: 1.2em;
+    padding-left: 1.5em;
+    padding-right: 1.0em;
+    padding-top: 0.3em;
+    padding-bottom: 0.3em;
     list-style-type: disc;
 }
 
 .dragonbane-action-rules li {
-    margin: 0.3em 0;
-    color: #2b2b2b;
     line-height: 1.0;
 }
 
@@ -49,12 +46,6 @@
     }
 }
 
-/* Weapon not found warning */
-.dragonbane-action-rules .weapon-warning {
-    color: #d4690a;
-    font-style: italic;
-}
-
 /* Weapon actions container */
 .dragonbane-action-rules .weapon-actions {
     margin-top: 8px;
@@ -64,51 +55,17 @@
 }
 
 /* Encumbrance notice styling */
-.dragonbane-encumbrance-notice {
-    border: 2px solid #00604d;
-    padding: 10px;
-    background: #f0e9de;
-    margin: 5px 0;
-    font-family: var(--dod-font-primary, "QTFrizQuad", sans-serif);
-}
-
-.dragonbane-encumbrance-notice strong {
-    color: #00604d;
-    font-weight: bold;
-}
-
 .dragonbane-encumbrance-notice .encumbrance-details {
     margin: 4px 0;
-    font-size: 0.9em;
-    color: #5a5a5a;
+    font-size: 0.95em;
 }
 
 .dragonbane-encumbrance-notice .encumbrance-rule {
-    margin: 6px 0;
-    padding: 4px;
-    background: rgba(0, 96, 77, 0.1);
-    border-left: 3px solid #00604d;
-    font-size: 0.85em;
-    font-style: italic;
-}
-
-/* Responsive design for smaller screens */
-@media (max-width: 600px) {
-    .dragonbane-action-rules,
-    .dragonbane-encumbrance-notice {
-        margin: 3px 0;
-        padding: 8px;
-        font-size: 0.9em;
-    }
-    
-    .dragonbane-action-rules ul {
-        padding-left: 1em;
-    }
-}
-
-/* Integration with chat cards */
-.chat-message .dragonbane-action-rules,
-.chat-message .dragonbane-encumbrance-notice {
     margin-top: 5px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    padding: 5px;
+    background: rgba(0, 0, 0, 0.1);
+    border: 1px solid #999;
+    box-shadow: 0 0 2px #FFF inset;
+    font-size: 0.95em;
+    font-style: italic;
 }

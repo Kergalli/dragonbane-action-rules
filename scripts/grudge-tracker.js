@@ -1,6 +1,5 @@
 /**
  * Dragonbane Combat Assistant - Grudge Tracker
- * Handles tracking of damage dealt to characters with Unforgiving kin ability
  */
 
 import { DragonbaneUtils } from "./utils.js";
@@ -49,13 +48,13 @@ export class DragonbaneGrudgeTracker {
         return;
       }
     } catch (error) {
-      console.error(
-        `${this.moduleId} | Error processing grudge tracking:`,
-        error
-      );
+      if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
+        DoD_Utility.WARNING(
+          `Error processing grudge tracking: ${error.message}`
+        );
+      }
     }
   }
-
   /**
    * Check if message is an attack roll (for dragon detection)
    */
@@ -94,15 +93,16 @@ export class DragonbaneGrudgeTracker {
         // Get attacker info
         const attackerId = message.speaker?.actor || message.speaker?.token;
 
-        // Get target info from current targets (best we can do)
+        // Get target info from current targets
         const targets = Array.from(game.user.targets);
         const targetId = targets.length === 1 ? targets[0].actor?.uuid : null;
 
         if (attackerId && targetId) {
-          // Create a key combining attacker and target
           const attackKey = `${attackerId}-${targetId}`;
 
           this.recentAttackRolls.set(attackKey, {
+            attackerId: attackerId,
+            targetId: targetId,
             isDragon: true,
             timestamp: Date.now(),
             messageId: message.id,
@@ -113,29 +113,33 @@ export class DragonbaneGrudgeTracker {
         }
       }
     } catch (error) {
-      console.error(`${this.moduleId} | Error storing attack roll:`, error);
+      if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
+        DoD_Utility.WARNING(`Error storing attack roll: ${error.message}`);
+      }
     }
   }
 
   /**
-   * Store damage roll info for correlation with damage application
+   * Store damage roll data for correlation with damage application
    */
   _storeDamageRoll(message) {
     try {
-      // Extract attacker and target from damage roll
-      const damageRollData = this._extractDamageRollData(message);
-      if (!damageRollData) return;
+      // Extract attacker info from damage roll
+      const attackerName = this._extractAttackerName(message);
+      if (!attackerName) return;
 
-      // Look up dragon status from recent attack rolls
-      const attackerId = message.speaker?.actor || message.speaker?.token;
-      const attackKey = `${attackerId}-${damageRollData.targetId}`;
+      // Extract target info
+      const targetId = this._extractTargetFromDamageRoll(message);
+      if (!targetId) return;
 
+      // Check for associated attack roll (for critical hit detection)
+      const attackKey = `${message.speaker?.actor}-${targetId}`;
       const attackRoll = this.recentAttackRolls.get(attackKey);
       const isCritical = attackRoll ? attackRoll.isDragon : false;
 
       // Store with timeout cleanup
-      this.recentDamageRolls.set(damageRollData.targetId, {
-        attackerName: damageRollData.attackerName,
+      this.recentDamageRolls.set(targetId, {
+        attackerName: attackerName,
         isCritical: isCritical,
         timestamp: Date.now(),
         messageId: message.id,
@@ -149,7 +153,9 @@ export class DragonbaneGrudgeTracker {
       // Clean up old entries
       this._cleanupOldDamageRolls();
     } catch (error) {
-      console.error(`${this.moduleId} | Error storing damage roll:`, error);
+      if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
+        DoD_Utility.WARNING(`Error storing damage roll: ${error.message}`);
+      }
     }
   }
 
@@ -195,65 +201,74 @@ export class DragonbaneGrudgeTracker {
       // Clean up the stored damage roll
       this.recentDamageRolls.delete(damageData.targetId);
     } catch (error) {
-      console.error(
-        `${this.moduleId} | Error processing damage application:`,
-        error
-      );
+      if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
+        DoD_Utility.WARNING(
+          `Error processing damage application: ${error.message}`
+        );
+      }
     }
   }
 
   /**
-   * Extract data from damage roll message (first message)
+   * Extract attacker name from damage roll message
    */
-  _extractDamageRollData(message) {
-    try {
-      const content = message.content;
-
-      // Extract target ID from data-target-id
-      const targetMatch = content.match(/data-target-id="([^"]+)"/);
-      if (!targetMatch) return null;
-
-      // Get attacker name from message speaker
-      const attackerName =
-        message.speaker?.alias || message.speaker?.name || "Unknown Attacker";
-
-      return {
-        targetId: targetMatch[1],
-        attackerName: attackerName.trim(),
-      };
-    } catch (error) {
-      console.error(
-        `${this.moduleId} | Error extracting damage roll data:`,
-        error
-      );
-      return null;
+  _extractAttackerName(message) {
+    // Try to get from speaker first
+    if (message.speaker?.alias) return message.speaker.alias;
+    if (message.speaker?.actor) {
+      const actor = game.actors.get(message.speaker.actor);
+      if (actor) return actor.name;
     }
+
+    // Fallback to "Unknown"
+    return game.i18n.localize(
+      "DRAGONBANE_ACTION_RULES.grudgeTracker.unknownAttacker"
+    );
   }
 
   /**
-   * Extract data from damage application message (second message)
+   * Extract target UUID from damage roll (challenging without targeting info)
+   */
+  _extractTargetFromDamageRoll(message) {
+    // This is difficult without explicit targeting info
+    // Best we can do is use current targets at time of roll
+    const targets = Array.from(game.user.targets);
+    return targets.length === 1 ? targets[0].actor?.uuid : null;
+  }
+
+  /**
+   * Extract damage application data from message
    */
   _extractDamageApplicationData(message) {
     try {
       const content = message.content;
 
-      // Extract actor ID
+      // Extract target actor UUID (should be in the message)
       const actorMatch = content.match(/data-actor-id="([^"]+)"/);
       if (!actorMatch) return null;
 
-      // Extract final damage amount
-      const damageMatch = content.match(/data-damage="(\d+)"/);
-      if (!damageMatch) return null;
+      const targetId = actorMatch[1];
+
+      // Try multiple damage patterns
+      let finalDamage = 0;
+
+      // Pattern 1: data-damage="8"
+      let damageMatch = content.match(/data-damage="(\d+)"/);
+      if (damageMatch) {
+        finalDamage = parseInt(damageMatch[1]);
+      } else {
+        // Pattern 2: Traditional "X damage" text
+        damageMatch = content.match(/(\d+)\s*damage/i);
+        if (damageMatch) {
+          finalDamage = parseInt(damageMatch[1]);
+        }
+      }
 
       return {
-        targetId: actorMatch[1],
-        finalDamage: parseInt(damageMatch[1], 10),
+        targetId: targetId,
+        finalDamage: finalDamage,
       };
     } catch (error) {
-      console.error(
-        `${this.moduleId} | Error extracting damage application data:`,
-        error
-      );
       return null;
     }
   }
@@ -262,17 +277,11 @@ export class DragonbaneGrudgeTracker {
    * Check if actor has Unforgiving kin ability
    */
   _hasUnforgivingAbility(actor) {
-    if (!actor) return false;
+    if (!actor.system?.kin?.name) return false;
 
-    // Find the kin item
-    const kinItem = actor.items.find((i) => i.type === "kin");
-    if (!kinItem) return false;
+    // Kin abilities are stored in the nested system object
+    const abilities = actor.system.kin.system?.abilities || "";
 
-    // Check if the abilities include 'Unforgiving'
-    const abilities = kinItem.system?.abilities;
-    if (!abilities) return false;
-
-    // Check if abilities contains 'Unforgiving' (case insensitive)
     return abilities.toLowerCase().includes("unforgiving");
   }
 
@@ -432,7 +441,9 @@ export class DragonbaneGrudgeTracker {
         }`
       );
     } catch (error) {
-      console.error(`${this.moduleId} | Error adding to grudge list:`, error);
+      if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
+        DoD_Utility.WARNING(`Error adding to grudge list: ${error.message}`);
+      }
       ui.notifications.error(
         game.i18n.localize(
           "DRAGONBANE_ACTION_RULES.grudgeTracker.errors.addFailed"
@@ -494,7 +505,9 @@ export class DragonbaneGrudgeTracker {
         `Deleted grudge entry ${rowId} from ${journal.name}`
       );
     } catch (error) {
-      console.error(`${this.moduleId} | Error deleting grudge entry:`, error);
+      if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
+        DoD_Utility.WARNING(`Error deleting grudge entry: ${error.message}`);
+      }
       ui.notifications.error(
         game.i18n.localize(
           "DRAGONBANE_ACTION_RULES.grudgeTracker.errors.deleteFailed"
@@ -530,7 +543,7 @@ export class DragonbaneGrudgeTracker {
         folder = await Folder.create({
           name: folderName,
           type: "JournalEntry",
-          color: "#00604d", // Use the module's green color
+          color: "#00604d",
         });
       }
 
@@ -564,10 +577,11 @@ export class DragonbaneGrudgeTracker {
           `Created grudge journal: ${journalName} in folder: ${folderName}`
         );
       } catch (error) {
-        console.error(
-          `${this.moduleId} | Error creating grudge journal:`,
-          error
-        );
+        if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
+          DoD_Utility.WARNING(
+            `Error creating grudge journal: ${error.message}`
+          );
+        }
         ui.notifications.error(
           game.i18n.localize(
             "DRAGONBANE_ACTION_RULES.grudgeTracker.errors.journalCreateFailed"
@@ -655,9 +669,9 @@ export class DragonbaneGrudgeTracker {
       .substr(2, 9)}`;
 
     // Format damage with critical indicator
-    const damageDisplay = isCritical ? `${damage} 💥` : damage;
+    const damageDisplay = isCritical ? `${damage} 💥` : damage.toString();
 
-    // Create new row HTML with delete button (original simple styling)
+    // Create new row with delete button
     const newRow = `
                     <tr id="${rowId}">
                         <td>${date}</td>
@@ -668,16 +682,18 @@ export class DragonbaneGrudgeTracker {
                             <button class="grudge-delete-btn" 
                                     data-row-id="${rowId}" 
                                     data-journal-id="${journal.id}"
-                                    style="background: #8b2635; color: white; border: 1px solid #5d1a23; border-radius: 3px; width: 20px; height: 20px; font-size: 12px; cursor: pointer; padding: 0; display: flex; align-items: center; justify-content: center; line-height: 1;"
+                                    style="background: #8b2635; color: white; border: 1px solid #5d1a23; border-radius: 3px; width: 20px; height: 20px; cursor: pointer; font-size: 12px; display: flex; align-items: center; justify-content: center; line-height: 1;"
                                     title="${game.i18n.localize(
                                       "DRAGONBANE_ACTION_RULES.grudgeTracker.deleteEntry"
-                                    )}">×</button>
+                                    )}">
+                                ✕
+                            </button>
                         </td>
                     </tr>`;
 
-    // Insert new row into tbody
+    // Insert new row into table
     const updatedContent = currentContent.replace(
-      /<\/tbody>/,
+      "</tbody>",
       `${newRow}
                 </tbody>`
     );
@@ -686,36 +702,35 @@ export class DragonbaneGrudgeTracker {
     await page.update({
       "text.content": updatedContent,
     });
+
+    DragonbaneUtils.debugLog(
+      this.moduleId,
+      "GrudgeTracker",
+      `Added grudge entry: ${attackerName} (${damage} damage) to ${journal.name}`
+    );
   }
 
   /**
-   * Clean up old damage roll entries
-   */
-  _cleanupOldDamageRolls() {
-    const now = Date.now();
-    for (const [key, value] of this.recentDamageRolls.entries()) {
-      if (now - value.timestamp > this.damageRollTimeout) {
-        this.recentDamageRolls.delete(key);
-      }
-    }
-  }
-
-  /**
-   * Clean up old attack roll entries
+   * Clean up old attack rolls
    */
   _cleanupOldAttackRolls() {
     const now = Date.now();
-    for (const [key, value] of this.recentAttackRolls.entries()) {
-      if (now - value.timestamp > this.attackRollTimeout) {
+    for (const [key, entry] of this.recentAttackRolls) {
+      if (now - entry.timestamp > this.attackRollTimeout) {
         this.recentAttackRolls.delete(key);
       }
     }
   }
 
   /**
-   * Debug logging
+   * Clean up old damage rolls
    */
-  debugLog(message) {
-    DragonbaneUtils.debugLog(this.moduleId, "GrudgeTracker", message);
+  _cleanupOldDamageRolls() {
+    const now = Date.now();
+    for (const [key, entry] of this.recentDamageRolls) {
+      if (now - entry.timestamp > this.damageRollTimeout) {
+        this.recentDamageRolls.delete(key);
+      }
+    }
   }
 }
