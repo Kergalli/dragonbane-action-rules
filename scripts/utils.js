@@ -9,7 +9,7 @@ export class DragonbaneUtils {
   static getActorFromSpeakerData(speakerData) {
     if (!speakerData) return null;
 
-    // Try token-specific actor first
+    // Token-specific actor (reliable primary approach)
     if (speakerData.scene && speakerData.token) {
       const scene = game.scenes.get(speakerData.scene);
       const token = scene?.tokens.get(speakerData.token);
@@ -18,12 +18,8 @@ export class DragonbaneUtils {
       }
     }
 
-    // Fallback to base actor
-    if (speakerData.actor) {
-      return game.actors.get(speakerData.actor);
-    }
-
-    return null;
+    // Direct actor lookup (simplified fallback)
+    return speakerData.actor ? game.actors.get(speakerData.actor) : null;
   }
 
   /**
