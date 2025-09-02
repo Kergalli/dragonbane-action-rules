@@ -365,18 +365,8 @@ export class DragonbaneUtils {
   static isSpellReactionCastingTime(spell) {
     if (!spell || !spell.system) return false;
 
-    try {
-      const castingTime = spell.system.castingTime || "";
-      // Check for "Reaction" casting time (case-insensitive)
-      return castingTime.toLowerCase().includes("reaction");
-    } catch (error) {
-      if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
-        DoD_Utility.WARNING(
-          `Error checking spell casting time: ${error.message}`
-        );
-      }
-      return false;
-    }
+    const castingTime = spell.system.castingTime || "";
+    return castingTime.toLowerCase().includes("reaction");
   }
 
   /**
