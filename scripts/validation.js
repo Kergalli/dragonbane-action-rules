@@ -80,21 +80,19 @@ export class DragonbaneValidator {
   /**
    * Get actor and token from parameter or selection
    */
+  // Simplified - straightforward token finding
   getActorAndToken(actor) {
     let selectedActor = actor;
     let selectedToken = null;
 
     if (!selectedActor) {
+      // No actor provided - use selected token
       selectedToken = canvas.tokens.controlled[0];
-      if (selectedToken) {
-        selectedActor = selectedToken.actor;
-      }
+      selectedActor = selectedToken?.actor;
     } else {
-      // Find the token for this actor for range calculations
-      selectedToken = selectedActor.getActiveTokens()[0];
-      if (!selectedToken) {
-        selectedToken = canvas.tokens.controlled[0];
-      }
+      // Actor provided - find its token (simple approach)
+      selectedToken =
+        selectedActor.getActiveTokens()[0] || canvas.tokens.controlled[0];
     }
 
     return { selectedActor, selectedToken };
