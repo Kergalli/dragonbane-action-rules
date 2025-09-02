@@ -53,7 +53,7 @@
       },
       "encumbranceMonitorFolder": {
         "name": "Bärförmågeövervaknings-mapp",
-        "hint": "Namn på aktörmappen att övervaka för bärförmåga (lämna tom för att övervaka alla karaktärer)"
+        "hint": "Namn på aktörmappen att övervaka för bärförmåga. Övervakar aktörer i exakt det mappnamn som anges. Lämna tom för att övervaka alla karaktärer."
       },
       "encumbranceStatusEffect": {
         "name": "Bärförmåge-statuseffekt",

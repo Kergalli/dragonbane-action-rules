@@ -53,7 +53,7 @@
       },
       "encumbranceMonitorFolder": {
         "name": "Encumbrance Monitor Folder",
-        "hint": "Name of the actor folder to monitor for encumbrance (leave blank to monitor all characters)"
+        "hint": "Name of the actor folder to monitor for encumbrance. Monitors actors in the exact folder name specified. Leave blank to monitor all characters."
       },
       "encumbranceStatusEffect": {
         "name": "Encumbrance Status Effect",

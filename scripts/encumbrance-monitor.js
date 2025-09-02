@@ -128,9 +128,9 @@ export class DragonbaneEncumbranceMonitor {
       }
     }
 
-    if (!actorFolder) {
-      // No folder - only monitor if target is empty string
-      return targetFolder === "";
+    if (targetFolder === "") {
+      // Empty target folder means monitor all characters
+      return true;
     }
 
     return actorFolder.name === targetFolder;
