@@ -333,68 +333,23 @@ export class DragonbaneYZEIntegration {
   getNextAvailableCombatantForToken(actor, tokenId) {
     if (!DragonbaneUtils.hasCombat()) return null;
 
-    // If we have a specific token ID, find combatants for that exact token
-    if (tokenId) {
-      const tokenCombatants = game.combat.turns.filter(
-        (turn) => turn.tokenId === tokenId
-      );
+    // Get combatants (prefer token-specific, fallback to actor)
+    const combatants = tokenId
+      ? game.combat.turns.filter((turn) => turn.tokenId === tokenId)
+      : game.combat.turns.filter((turn) => turn.actor?.id === actor.id);
 
-      // Find the first combatant for this token that hasn't used their action yet
-      for (const combatant of tokenCombatants) {
-        const actionNumber = this.getActionNumberForCombatant(combatant);
-        const statusEffectId = `action${actionNumber}`;
-
-        // Check if this combatant already has the action status effect
-        const hasActionEffect = DragonbaneUtils.hasStatusEffect(
-          combatant.token?.actor,
-          statusEffectId
-        );
-
-        if (!hasActionEffect) {
-          DragonbaneUtils.debugLog(
-            this.moduleId,
-            "YZEIntegration",
-            `Found available combatant for token ${tokenId}: action ${actionNumber}`
-          );
-          return combatant;
-        }
-      }
-
-      DragonbaneUtils.debugLog(
-        this.moduleId,
-        "YZEIntegration",
-        `No available combatants found for token ${tokenId}`
-      );
-      return null;
-    }
-
-    // Fallback to actor-based lookup if no token ID (shouldn't happen in normal cases)
-    DragonbaneUtils.debugLog(
-      this.moduleId,
-      "YZEIntegration",
-      `No token ID provided, falling back to actor-based lookup for ${actor.name}`
-    );
-    const actorCombatants = game.combat.turns.filter(
-      (turn) => turn.actor?.id === actor.id
-    );
-
-    if (actorCombatants.length === 0) return null;
-
-    // Find the first combatant that hasn't used their action yet
-    for (const combatant of actorCombatants) {
+    // Single logic path for finding available combatant (no duplication!)
+    for (const combatant of combatants) {
       const actionNumber = this.getActionNumberForCombatant(combatant);
       const statusEffectId = `action${actionNumber}`;
 
-      const hasActionEffect = DragonbaneUtils.hasStatusEffect(
-        combatant.token?.actor,
-        statusEffectId
-      );
-
-      if (!hasActionEffect) {
+      if (
+        !DragonbaneUtils.hasStatusEffect(combatant.token?.actor, statusEffectId)
+      ) {
         DragonbaneUtils.debugLog(
           this.moduleId,
           "YZEIntegration",
-          `Found available combatant for ${actor.name}: action ${actionNumber}`
+          `Found available combatant: action ${actionNumber}`
         );
         return combatant;
       }
