@@ -165,88 +165,8 @@ export function registerHooks(moduleId) {
     }
   });
 
-  // Journal interaction for grudge tracker delete buttons
-  Hooks.on("renderJournalSheet", (journal, html, data) => {
-    if (!DragonbaneUtils.getSetting(moduleId, "enabled")) return;
-    if (!DragonbaneUtils.getSetting(moduleId, "enableGrudgeTracking")) return;
-
-    // Only handle grudge list journals
-    const folderName = game.i18n.localize(
-      "DRAGONBANE_ACTION_RULES.grudgeTracker.folderName"
-    );
-    if (journal.object.folder?.name !== folderName) return;
-
-    try {
-      // Event delegation for delete buttons
-      html
-        .off("click", ".grudge-delete-btn")
-        .on("click", ".grudge-delete-btn", async (event) => {
-          event.preventDefault();
-          event.stopPropagation();
-
-          const button = event.currentTarget;
-          const rowId = button.dataset.rowId;
-          const journalId = button.dataset.journalId;
-
-          if (
-            rowId &&
-            journalId &&
-            DragonbaneActionRules.grudgeTracker?.deleteGrudgeEntry
-          ) {
-            // Show confirmation dialog
-            const confirmed = await new Promise((resolve) => {
-              new Dialog({
-                title: game.i18n.localize(
-                  "DRAGONBANE_ACTION_RULES.grudgeTracker.confirmDelete.title"
-                ),
-                content: `<p>${game.i18n.localize(
-                  "DRAGONBANE_ACTION_RULES.grudgeTracker.confirmDelete.content"
-                )}</p>`,
-                buttons: {
-                  yes: {
-                    icon: '<i class="fas fa-check"></i>',
-                    label: game.i18n.localize(
-                      "DRAGONBANE_ACTION_RULES.grudgeTracker.confirmDelete.confirm"
-                    ),
-                    callback: () => resolve(true),
-                  },
-                  no: {
-                    icon: '<i class="fas fa-times"></i>',
-                    label: game.i18n.localize(
-                      "DRAGONBANE_ACTION_RULES.grudgeTracker.confirmDelete.cancel"
-                    ),
-                    callback: () => resolve(false),
-                  },
-                },
-                default: "no",
-                close: () => resolve(false),
-              }).render(true);
-            });
-
-            if (confirmed) {
-              await DragonbaneActionRules.grudgeTracker.deleteGrudgeEntry(
-                journalId,
-                rowId
-              );
-            }
-          }
-        });
-
-      // Hover effects for delete buttons
-      html
-        .off("mouseenter mouseleave", ".grudge-delete-btn")
-        .on("mouseenter", ".grudge-delete-btn", function () {
-          $(this).css("background-color", "#a82d42");
-        })
-        .on("mouseleave", ".grudge-delete-btn", function () {
-          $(this).css("background-color", "#8b2635");
-        });
-    } catch (error) {
-      if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
-        DoD_Utility.WARNING(`Error in journal interaction: ${error.message}`);
-      }
-    }
-  });
+  // Support both v12 and v13 journal hooks
+  registerJournalHooks(moduleId);
 
   // Grudge tracker button handler (separate hook since grudge messages don't have rules flag)
   Hooks.on("renderChatMessage", (message, html, data) => {
@@ -671,6 +591,127 @@ export function cleanupCharacterSheets() {
         app.constructor.name === "DoDCharacterSheet" && app._dragonbaneHooked
     )
     .forEach((app) => delete app._dragonbaneHooked);
+}
+
+// Support both v12 and v13 journal hooks
+function registerJournalHooks(moduleId) {
+  // v12 hook
+  Hooks.on("renderJournalSheet", (journal, html, data) => {
+    handleGrudgeJournalSheet(moduleId, journal, html, {
+      folderPath: journal.object.folder?.name,
+      journalName: journal.object.name,
+    });
+  });
+
+  // v13 hook
+  Hooks.on("renderJournalEntryPageSheet", (sheet, html, data) => {
+    handleGrudgeJournalSheet(moduleId, sheet, html, {
+      folderPath: sheet.document?.parent?.folder?.name,
+      journalName: sheet.document?.name,
+    });
+  });
+}
+
+// Shared handler for both versions
+function handleGrudgeJournalSheet(moduleId, sheetOrJournal, html, paths) {
+  if (!DragonbaneUtils.getSetting(moduleId, "enabled")) return;
+  if (!DragonbaneUtils.getSetting(moduleId, "enableGrudgeTracking")) return;
+
+  const folderName = game.i18n.localize(
+    "DRAGONBANE_ACTION_RULES.grudgeTracker.folderName"
+  );
+  if (paths.folderPath !== folderName) return;
+
+  try {
+    // Handle different HTML parameter types between v12 and v13
+    const $html = html.find ? html : $(html); // v12 has .find, v13 needs jQuery wrap
+
+    // Check if delete buttons exist
+    const deleteButtons = $html.find(".grudge-delete-btn");
+
+    // Event delegation for delete buttons
+    $html // Use $html instead of html
+      .off("click", ".grudge-delete-btn")
+      .on("click", ".grudge-delete-btn", async (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+
+        const button = event.currentTarget;
+        const rowId = button.dataset.rowId;
+        const journalId = button.dataset.journalId;
+
+        if (!rowId || !journalId) {
+          console.warn("Grudge delete: Missing row or journal ID");
+          return;
+        }
+
+        if (!DragonbaneActionRules?.grudgeTracker?.deleteGrudgeEntry) {
+          console.warn(
+            "Grudge delete: Module not ready or missing grudgeTracker"
+          );
+          ui.notifications.warn(
+            "Module not ready. Please try again in a moment."
+          );
+          return;
+        }
+
+        // Show confirmation dialog
+        const confirmed = await new Promise((resolve) => {
+          new Dialog({
+            title: game.i18n.localize(
+              "DRAGONBANE_ACTION_RULES.grudgeTracker.confirmDelete.title"
+            ),
+            content: `<p>${game.i18n.localize(
+              "DRAGONBANE_ACTION_RULES.grudgeTracker.confirmDelete.content"
+            )}</p>`,
+            buttons: {
+              yes: {
+                icon: '<i class="fas fa-check"></i>',
+                label: game.i18n.localize(
+                  "DRAGONBANE_ACTION_RULES.grudgeTracker.confirmDelete.confirm"
+                ),
+                callback: () => resolve(true),
+              },
+              no: {
+                icon: '<i class="fas fa-times"></i>',
+                label: game.i18n.localize(
+                  "DRAGONBANE_ACTION_RULES.grudgeTracker.confirmDelete.cancel"
+                ),
+                callback: () => resolve(false),
+              },
+            },
+            default: "no",
+            close: () => resolve(false),
+          }).render(true);
+        });
+
+        if (confirmed) {
+          try {
+            await DragonbaneActionRules.grudgeTracker.deleteGrudgeEntry(
+              journalId,
+              rowId
+            );
+          } catch (error) {
+            console.error("Error deleting grudge entry:", error);
+            ui.notifications.error("Failed to delete grudge entry");
+          }
+        }
+      });
+
+    // Hover effects for delete buttons
+    $html // Use $html instead of html
+      .off("mouseenter mouseleave", ".grudge-delete-btn")
+      .on("mouseenter", ".grudge-delete-btn", function () {
+        $(this).css("background-color", "#a82d42");
+      })
+      .on("mouseleave", ".grudge-delete-btn", function () {
+        $(this).css("background-color", "#8b2635");
+      });
+  } catch (error) {
+    if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
+      DoD_Utility.WARNING(`Error in journal interaction: ${error.message}`);
+    }
+  }
 }
 
 // Helper functions for monster action prevention
