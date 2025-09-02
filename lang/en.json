@@ -138,7 +138,7 @@
       "success": "Success = enemy counts as armorless"
     },
     "shove": {
-      "available": "<strong>Bonus:</strong> STR advantage allows shoving {targetName} 2m in any direction",
+      "available": "<strong>Bonus:</strong> STR advantage allows shoving {targetName} 2m in any direction.",
       "defaultTarget": "target"
     },
     "evade": {
@@ -208,7 +208,7 @@
     },
     "grudgeTracker": {
       "speakerName": "Unforgiving Tracker",
-      "damageReceived": "{actorName} has taken {damage} damage from {attackerName}",
+      "damageReceived": "{actorName} has taken {damage} damage from {attackerName}.",
       "addToGrudgeList": "Add to Grudge List",
       "buttonTextCompleted": "Added to Grudge List",
       "deleteEntry": "Delete this grudge entry",

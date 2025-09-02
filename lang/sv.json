@@ -138,7 +138,7 @@
       "success": "Lyckas = fienden räknas som rustningslös"
     },
     "shove": {
-      "available": "<strong>Bonus:</strong> STY-fördel tillåter att knuffa {targetName} 2m i valfri riktning",
+      "available": "<strong>Bonus:</strong> STY-fördel tillåter att knuffa {targetName} 2m i valfri riktning.",
       "defaultTarget": "målet"
     },
     "evade": {
@@ -208,7 +208,7 @@
     },
     "grudgeTracker": {
       "speakerName": "Obarmhärtighetsspårare",
-      "damageReceived": "{actorName} har tagit {damage} skada från {attackerName}",
+      "damageReceived": "{actorName} har tagit {damage} skada från {attackerName}.",
       "addToGrudgeList": "Lägg till i Grudglista",
       "buttonTextCompleted": "Tillagt i Grudglista",
       "deleteEntry": "Ta bort denna agg-post",
