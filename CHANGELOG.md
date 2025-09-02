@@ -35,11 +35,16 @@
 - **Fixed NPC weapon validation** - NPC sheets now properly validate weapon attacks
 - **Fixed validation persistence** - Attack validation no longer lost when reopening character sheets
 - **Improved sheet compatibility** - Better handling of both PC and NPC sheet DOM structures
+- **Fixed grudge tracker delete buttons in Foundry v13** - Delete buttons in grudge journals now work correctly in both Foundry v12 and v13
+- **Improved cross-version compatibility** - Enhanced journal sheet handling for better stability across Foundry versions
 
 ### Technical Improvements
 
 - **Enhanced compatibility** - Better integration with core Dragonbane system patterns
 - **Performance optimizations** - Streamlined code execution and reduced redundancy
+- **Internal code optimization** - Streamlined actor finding, validation, and YZE integration logic for improved maintainability
+- **Reduced code complexity** - Simplified over-engineered patterns while maintaining full functionality
+- **Enhanced error handling** - More consistent error handling patterns throughout the module
 
 ---
 
