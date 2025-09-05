@@ -78,6 +78,50 @@ export class DragonbaneValidator {
   }
 
   /**
+   * Perform spell cast validation - mirrors performWeaponAttack
+   */
+  async performSpellCast(spellName, actor = null) {
+    try {
+      // Only validate if spell validation is enabled
+      if (!DragonbaneUtils.getSetting(this.moduleId, "enableSpellValidation")) {
+        return { success: true };
+      }
+
+      // Get actor and token
+      const { selectedActor, selectedToken } = this.getActorAndToken(actor);
+      if (!selectedActor || !selectedToken) {
+        return {
+          success: false,
+          message: `You must select a token to cast ${spellName}`,
+        };
+      }
+
+      // Find spell
+      const spell = selectedActor.items.find(
+        (i) => i.name === spellName && i.type === "spell"
+      );
+      if (!spell) {
+        return {
+          success: false,
+          message: `Spell ${spellName} not found`,
+        };
+      }
+
+      // Check if excluded from validation
+      if (isSpellExcluded(spellName, this.moduleId)) {
+        return { success: true };
+      }
+
+      // Perform target validation
+      const validation = validateSpellTarget(spell);
+      return validation;
+    } catch (error) {
+      console.error(`${this.moduleId} | Error in spell validation:`, error);
+      return { success: true }; // Allow spell on error
+    }
+  }
+
+  /**
    * Get actor and token from parameter or selection
    */
   // Simplified - straightforward token finding
@@ -261,4 +305,51 @@ export class DragonbaneValidator {
       return { success: true }; // Allow attack on error
     }
   }
+}
+
+/**
+ * Check if spell should be excluded from validation
+ * (Reuse existing exclusion logic from Phase 1)
+ */
+function isSpellExcluded(spellName, moduleId) {
+  const excludedSpells = DragonbaneUtils.getSetting(
+    moduleId,
+    "excludedSpells",
+    ""
+  )
+    .split(",")
+    .map((s) => s.trim())
+    .filter((s) => s.length > 0);
+
+  return excludedSpells.includes(spellName);
+}
+
+/**
+ * Validate spell target selection (mirrors weapon validateTarget logic)
+ * Start with ONLY range/touch spells - skip templates and personal
+ */
+function validateSpellTarget(spell) {
+  const rangeType = spell.system.rangeType;
+
+  // Skip validation for template and personal spells (like weapons do)
+  if (["cone", "sphere", "personal"].includes(rangeType)) {
+    return { success: true };
+  }
+
+  // For range/touch spells, require exactly 1 target (same as weapons)
+  if (game.user.targets.size === 0) {
+    return {
+      success: false,
+      message: `You must select a target to cast ${spell.name}`,
+    };
+  }
+
+  if (game.user.targets.size > 1) {
+    return {
+      success: false,
+      message: `You must select exactly one target to cast ${spell.name}`,
+    };
+  }
+
+  return { success: true };
 }

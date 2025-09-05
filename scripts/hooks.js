@@ -380,12 +380,34 @@ export function registerHooks(moduleId) {
         const selectedToken = canvas.tokens.controlled[0];
         if (selectedToken?.actor) {
           const item = selectedToken.actor.items.find(
-            (i) => i.name === itemName && i.type === "weapon"
+            (i) =>
+              i.name === itemName && (i.type === "weapon" || i.type === "spell")
           );
 
-          if (item && DragonbaneActionRules.validator?.performWeaponAttack) {
+          if (
+            item &&
+            item.type === "weapon" &&
+            DragonbaneActionRules.validator?.performWeaponAttack
+          ) {
             const validation =
               await DragonbaneActionRules.validator.performWeaponAttack(
+                itemName,
+                selectedToken.actor
+              );
+
+            if (!validation.success) {
+              ui.notifications.warn(validation.message);
+              return null;
+            }
+          }
+
+          if (
+            item &&
+            item.type === "spell" &&
+            DragonbaneActionRules.validator?.performSpellCast
+          ) {
+            const validation =
+              await DragonbaneActionRules.validator.performSpellCast(
                 itemName,
                 selectedToken.actor
               );
@@ -457,6 +479,33 @@ export function registerHooks(moduleId) {
               true
             );
           }
+
+          if (item?.type === "spell") {
+            element.addEventListener(
+              "click",
+              async function (event) {
+                if (DragonbaneActionRules?.overrides?.validationBypass) {
+                  return;
+                }
+
+                if (DragonbaneActionRules?.validator?.performSpellCast) {
+                  const validation =
+                    await DragonbaneActionRules.validator.performSpellCast(
+                      item.name,
+                      sheet.actor
+                    );
+
+                  if (!validation.success) {
+                    event.preventDefault();
+                    event.stopImmediatePropagation();
+                    ui.notifications.warn(validation.message);
+                    return false;
+                  }
+                }
+              },
+              true
+            );
+          }
         }
       });
 
@@ -479,6 +528,33 @@ export function registerHooks(moduleId) {
                 if (DragonbaneActionRules?.validator?.performWeaponAttack) {
                   const validation =
                     await DragonbaneActionRules.validator.performWeaponAttack(
+                      item.name,
+                      sheet.actor
+                    );
+
+                  if (!validation.success) {
+                    event.preventDefault();
+                    event.stopImmediatePropagation();
+                    ui.notifications.warn(validation.message);
+                    return false;
+                  }
+                }
+              },
+              true
+            );
+          }
+
+          if (item?.type === "spell") {
+            element.addEventListener(
+              "click",
+              async function (event) {
+                if (DragonbaneActionRules?.overrides?.validationBypass) {
+                  return;
+                }
+
+                if (DragonbaneActionRules?.validator?.performSpellCast) {
+                  const validation =
+                    await DragonbaneActionRules.validator.performSpellCast(
                       item.name,
                       sheet.actor
                     );
@@ -579,6 +655,36 @@ export function registerHooks(moduleId) {
   }, 2000);
 
   console.log(`${moduleId} | Simplified hook system registered`);
+}
+
+/**
+ * Phase 2B: Validate spell target selection (mirrors weapon validateTarget logic)
+ * Start with ONLY range/touch spells - skip templates and personal
+ */
+function validateSpellTarget(spell) {
+  const rangeType = spell.system.rangeType;
+
+  // Skip validation for template and personal spells (like weapons do)
+  if (["cone", "sphere", "personal"].includes(rangeType)) {
+    return { success: true };
+  }
+
+  // For range/touch spells, require exactly 1 target (same as weapons)
+  if (game.user.targets.size === 0) {
+    return {
+      success: false,
+      message: `You must select a target to cast ${spell.name}`,
+    };
+  }
+
+  if (game.user.targets.size > 1) {
+    return {
+      success: false,
+      message: `You must select exactly one target to cast ${spell.name}`,
+    };
+  }
+
+  return { success: true };
 }
 
 /**
