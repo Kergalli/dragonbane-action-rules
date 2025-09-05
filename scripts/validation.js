@@ -113,7 +113,7 @@ export class DragonbaneValidator {
       }
 
       // Perform target validation
-      const validation = validateSpellTarget(spell);
+      const validation = validateSpellTarget(spell, selectedActor);
       return validation;
     } catch (error) {
       console.error(`${this.moduleId} | Error in spell validation:`, error);
@@ -325,14 +325,43 @@ function isSpellExcluded(spellName, moduleId) {
 }
 
 /**
- * Validate spell target selection (mirrors weapon validateTarget logic)
- * Start with ONLY range/touch spells - skip templates and personal
+ * Validate spell target selection with auto-targeting for personal spells
  */
-function validateSpellTarget(spell) {
+function validateSpellTarget(spell, actor = null) {
   const rangeType = spell.system.rangeType;
 
-  // Skip validation for template and personal spells (like weapons do)
-  if (["cone", "sphere", "personal"].includes(rangeType)) {
+  // Skip validation for template spells (use template placement)
+  if (["cone", "sphere"].includes(rangeType)) {
+    return { success: true };
+  }
+
+  // Auto-target the caster for personal spells
+  if (rangeType === "personal") {
+    if (!actor) {
+      return {
+        success: false,
+        message: `No actor found to cast ${spell.name}`,
+      };
+    }
+
+    // Find the caster's token
+    const casterToken =
+      canvas.tokens.controlled[0] || actor.getActiveTokens()[0];
+
+    if (!casterToken) {
+      return {
+        success: false,
+        message: `No token found for ${actor.name} to cast ${spell.name}`,
+      };
+    }
+
+    // Auto-target the caster
+    game.user.targets.clear();
+    casterToken.setTarget(true, { user: game.user });
+
+    console.log(
+      `Combat Assistant v2.0: Auto-targeting ${actor.name} for personal spell: ${spell.name}`
+    );
     return { success: true };
   }
 
@@ -351,5 +380,67 @@ function validateSpellTarget(spell) {
     };
   }
 
+  // Perform range validation for range/touch spells
+  const rangeValidation = validateSpellRange(spell, actor);
+  if (!rangeValidation.success) {
+    return rangeValidation;
+  }
+
+  return { success: true };
+}
+
+/**
+ * Validate spell range - simpler than weapon range validation
+ */
+function validateSpellRange(spell, actor) {
+  const rangeType = spell.system.rangeType;
+
+  // Get caster and target tokens
+  const casterToken =
+    canvas.tokens.controlled[0] || actor?.getActiveTokens()[0];
+  const targetToken = Array.from(game.user.targets)[0];
+
+  if (!casterToken || !targetToken) {
+    // Can't validate range without tokens, let it through
+    return { success: true };
+  }
+
+  // Calculate distance using same method as weapons
+  const distance = canvas.grid.measurePath([casterToken, targetToken]).distance;
+
+  let maxRange;
+  let errorMessage;
+
+  if (rangeType === "touch") {
+    // Touch spells require adjacency (like melee weapons)
+    maxRange = 2; // 2 meters = adjacent
+    errorMessage = `${
+      spell.name
+    } requires touch! You must be adjacent (within 2m). Distance: ${Math.round(
+      distance
+    )}m`;
+  } else if (rangeType === "range") {
+    // Range spells use their listed range (unlike weapons at 2x range)
+    maxRange = spell.system.range || 0;
+    errorMessage = `${
+      spell.name
+    } is out of range! Max: ${maxRange}m, Distance: ${Math.round(distance)}m`;
+  } else {
+    // Other range types skip validation (personal, cone, sphere)
+    return { success: true };
+  }
+
+  if (distance > maxRange) {
+    return {
+      success: false,
+      message: errorMessage,
+    };
+  }
+
+  console.log(
+    `Combat Assistant v2.0: Range check passed - ${
+      spell.name
+    } (${rangeType}) - Distance: ${Math.round(distance)}m, Max: ${maxRange}m`
+  );
   return { success: true };
 }
