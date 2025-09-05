@@ -17,6 +17,9 @@ export function registerHooks(moduleId) {
     if (!DragonbaneUtils.getSetting(moduleId, "enabled")) return;
 
     try {
+      // Magic Trick AA support - add buttons early for AA detection
+      addMagicTrickButtonsToMessage(message);
+
       // Rules display processing
       if (DragonbaneActionRules.rulesDisplay?.onChatMessage) {
         DragonbaneActionRules.rulesDisplay.onChatMessage(message);
@@ -39,6 +42,53 @@ export function registerHooks(moduleId) {
       }
     }
   });
+
+  /**
+   * Add Magic Trick buttons during createChatMessage for earlier AA detection
+   */
+  function addMagicTrickButtonsToMessage(message) {
+    try {
+      const content = message.content;
+
+      // Look for Magic Trick pattern: actor casts spell with UUID
+      const uuidMatch = content?.match(
+        /@UUID\[Actor\.([^.]+)\.Item\.([^\]]+)\]/
+      );
+      if (uuidMatch) {
+        const [, actorId, spellId] = uuidMatch;
+        const actor = game.actors.get(actorId);
+        const spell = actor?.items.get(spellId);
+
+        // Check if it's an enhanced Magic Trick
+        if (spell && spell.type === "spell" && spell.system.damage === "n/a") {
+          // Add button with all required attributes (like real spell buttons)
+          const buttonHTML = `<div class="permission-owner" data-actor-id="Actor.${actorId}">
+                              <button class="chat-button magic-roll" 
+                                     data-actor-id="Actor.${actorId}"
+                                     data-spell-id="${spellId}"
+                                     data-power-level="1"
+                                     data-wp-cost="1"
+                                     data-target-id="Actor.${actorId}"
+                                     style="position: absolute; left: -9999px;">
+                                Roll Damage
+                              </button>
+                            </div>`;
+
+          // Inject button into message content
+          const newContent = content + buttonHTML;
+          message.updateSource({
+            content: newContent,
+          });
+
+          console.log(
+            `Combat Assistant v2.0: Added early AA button for Magic Trick: ${spell.name}`
+          );
+        }
+      }
+    } catch (error) {
+      console.error("Error adding early Magic Trick buttons:", error);
+    }
+  }
 
   // Chat button interaction processing
   Hooks.on("renderChatMessage", (message, html, data) => {
@@ -655,36 +705,6 @@ export function registerHooks(moduleId) {
   }, 2000);
 
   console.log(`${moduleId} | Simplified hook system registered`);
-}
-
-/**
- * Phase 2B: Validate spell target selection (mirrors weapon validateTarget logic)
- * Start with ONLY range/touch spells - skip templates and personal
- */
-function validateSpellTarget(spell) {
-  const rangeType = spell.system.rangeType;
-
-  // Skip validation for template and personal spells (like weapons do)
-  if (["cone", "sphere", "personal"].includes(rangeType)) {
-    return { success: true };
-  }
-
-  // For range/touch spells, require exactly 1 target (same as weapons)
-  if (game.user.targets.size === 0) {
-    return {
-      success: false,
-      message: `You must select a target to cast ${spell.name}`,
-    };
-  }
-
-  if (game.user.targets.size > 1) {
-    return {
-      success: false,
-      message: `You must select exactly one target to cast ${spell.name}`,
-    };
-  }
-
-  return { success: true };
 }
 
 /**

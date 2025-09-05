@@ -437,10 +437,5 @@ function validateSpellRange(spell, actor) {
     };
   }
 
-  console.log(
-    `Combat Assistant v2.0: Range check passed - ${
-      spell.name
-    } (${rangeType}) - Distance: ${Math.round(distance)}m, Max: ${maxRange}m`
-  );
   return { success: true };
 }
