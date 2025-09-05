@@ -32,8 +32,8 @@
         "hint": "Validera att attacker är inom vapnets räckvidd (närstrid: upp till 2m/4m för långa, avstånd: upp till 2x grundräckvidd, kast: kontextuell)"
       },
       "enforceMonsterActionPrevention": {
-         "name": "Aktivera Monsterhändelse-förebyggande",
-         "hint": "Visa bekräftelsedialoger innan du försöker parera eller avväpna monster (förhindrar ogiltiga framsteg och utbildar om regler)"
+        "name": "Aktivera Monsterhändelse-förebyggande",
+        "hint": "Visa bekräftelsedialoger innan du försöker parera eller avväpna monster (förhindrar ogiltiga framsteg och utbildar om regler)"
       },
       "enableShoveReminders": {
         "name": "VALFRI REGEL: Aktivera Knuff-regelpåminnelser",
@@ -74,6 +74,14 @@
       "enableGrudgeTracking": {
         "name": "Aktivera Obarmhärtighetsspårare",
         "hint": "Spåra automatiskt skada som tillfogats dvärgkaraktärer med Obarmhärtig släktförmåga. Skapar journaler för grudglistor."
+      },
+      "enableSpellValidation": {
+        "name": "Aktivera besvärjelse mål- och avståndvalidering",
+        "hint": "Aktivera målval och avståndskontroll för besvärjelser (samma regler som vapen). Alla besvärjelser får Automated Animations oavsett denna inställning."
+      },
+      "excludedSpells": {
+        "name": "Exkluderade besvärjelser",
+        "hint": "Kommaseparerad lista över besvärjelsenamn att exkludera från validering (de får fortfarande animationer). Exempel: 'Fågelsång, Anpassad besvärjelse'"
       }
     },
     "actions": {
@@ -184,7 +192,7 @@
       "status": {
         "targetSelection": "Målval",
         "rangeChecking": "Avståndskontroll",
-        "yzeActionTracking": "YZE Handlingsspårning", 
+        "yzeActionTracking": "YZE Handlingsspårning",
         "allValidations": "Alla Valideringar",
         "allActive": "Alla valideringsregler aktiva (inga åsidosättningar)",
         "activeOverrides": "Aktiva åsidosättningar: {overrides}"

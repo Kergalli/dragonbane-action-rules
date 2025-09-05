@@ -1,5 +1,6 @@
 /**
- * Dragonbane Combat Assistant - Simplified Hook Registration (Cleaned)
+ * Dragonbane Combat Assistant - Simplified Hook Registration (v1.5.0)
+ * Universal Spell Animation Support for Automated Animations
  */
 
 import { DragonbaneUtils } from "./utils.js";
@@ -42,6 +43,10 @@ export function registerHooks(moduleId) {
   // Chat button interaction processing
   Hooks.on("renderChatMessage", (message, html, data) => {
     if (!DragonbaneUtils.getSetting(moduleId, "enabled")) return;
+
+    // Hide fake damage buttons from enhanced spells
+    hideEnhancedSpellButtons(html);
+
     if (!message.getFlag(moduleId, "dragonbaneRulesMessage")) return;
 
     try {
@@ -568,7 +573,92 @@ export function registerHooks(moduleId) {
     }
   });
 
+  // Universal spell animation support - enhance all non-damage spells on world load
+  setTimeout(() => {
+    enhanceAllNonDamageSpells(); // Always enhance for AA
+  }, 2000);
+
   console.log(`${moduleId} | Simplified hook system registered`);
+}
+
+/**
+ * Hide Roll Damage buttons from enhanced non-damage spells
+ * Enhanced spells have "n/a" in their damage field to trigger AA, but users shouldn't see the button
+ */
+function hideEnhancedSpellButtons(html) {
+  try {
+    const magicButtons = html.find(".magic-roll");
+
+    magicButtons.each(function () {
+      const button = $(this);
+      const spellId = button.attr("data-spell-id");
+      const actorId = button.attr("data-actor-id");
+
+      if (spellId && actorId) {
+        const cleanActorId = actorId.replace("Actor.", "");
+        const actor = game.actors.get(cleanActorId);
+        const spell = actor?.items.get(spellId);
+
+        // Hide buttons for spells with "n/a" damage (our enhancement marker)
+        if (spell && spell.system.damage === "n/a") {
+          button.hide();
+        }
+      }
+    });
+  } catch (error) {
+    if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
+      DoD_Utility.WARNING(
+        `Error hiding enhanced spell buttons: ${error.message}`
+      );
+    }
+  }
+}
+
+/**
+ * Enhance all non-damage spells for Automated Animations compatibility
+ * Adds "n/a" to damage field to make spells appear as "isDamaging" so they generate Roll buttons
+ * This allows AA to detect and trigger animations for buff/debuff/utility spells
+ */
+async function enhanceAllNonDamageSpells() {
+  try {
+    // Get excluded spells list
+    const excludedSpells = DragonbaneUtils.getSetting(
+      "dragonbane-action-rules",
+      "excludedSpells",
+      ""
+    )
+      .split(",")
+      .map((s) => s.trim())
+      .filter((s) => s.length > 0);
+
+    for (let actor of game.actors) {
+      if (!actor) continue;
+
+      for (let item of actor.items) {
+        if (
+          item.type === "spell" &&
+          (!item.system.damage || item.system.damage.length === 0)
+        ) {
+          // Check if this spell is excluded
+          const isExcluded = excludedSpells.includes(item.name);
+
+          // Always enhance for AA (even excluded spells get animations)
+          await item.update({ "system.damage": "n/a" });
+
+          // Log enhancement with exclusion status
+          console.log(
+            `Combat Assistant v2.0: Enhanced ${item.name} for AA${
+              isExcluded ? " (validation excluded)" : ""
+            }`
+          );
+        }
+      }
+    }
+  } catch (error) {
+    if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
+      DoD_Utility.WARNING(`Error enhancing spells for AA: ${error.message}`);
+    }
+  }
 }
 
 /**

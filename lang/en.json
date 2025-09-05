@@ -28,7 +28,7 @@
         "hint": "Require players to select a target before making any attack"
       },
       "enforceRangeChecking": {
-        "name": "Enforce Range Checking", 
+        "name": "Enforce Range Checking",
         "hint": "Validate that attacks are within weapon range (melee: up to 2m/4m for long, ranged: up to 2x base range, thrown: contextual)"
       },
       "enforceMonsterActionPrevention": {
@@ -74,11 +74,19 @@
       "enableGrudgeTracking": {
         "name": "Enable Unforgiving Tracker",
         "hint": "Automatically track damage dealt to Dwarf characters with Unforgiving kin ability. Creates journals for grudge lists."
+      },
+      "enableSpellValidation": {
+        "name": "Enable Spell Range & Target Validation",
+        "hint": "Enable target selection and range checking for spells (same rules as weapons). All spells get Automated Animations regardless of this setting."
+      },
+      "excludedSpells": {
+        "name": "Excluded Spells",
+        "hint": "Comma-separated list of spell names to exclude from validation (they will still get animations). Example: 'Birdsong, Custom Spell'"
       }
     },
     "actions": {
       "parry": "Parry",
-      "topple": "Topple", 
+      "topple": "Topple",
       "disarm": "Disarm",
       "weakspot": "Find Weak Spot"
     },
@@ -108,7 +116,7 @@
     "parry": {
       "reaction": "Parrying uses your action for the turn (reaction)",
       "success": "Success = no damage. If damage > durability, weapon damaged until repaired",
-      "piercing": "Piercing attacks cannot damage parrying weapons/shields", 
+      "piercing": "Piercing attacks cannot damage parrying weapons/shields",
       "monster": "Monster attacks cannot be parried (unless specified)",
       "movement": "Success = move yourself and enemy 2m (doesn't count as movement, no free attacks)",
       "dragon": "Dragon = counterattack (cannot be dodged/parried). If attacker rolled Dragon, need Dragon to parry (no counterattack)",
@@ -126,7 +134,7 @@
     },
     "disarm": {
       "noDamage": "No damage dealt",
-      "skillRoll": "Opponent makes opposed weapon skill roll", 
+      "skillRoll": "Opponent makes opposed weapon skill roll",
       "cannotDefend": "Cannot be dodged or parried",
       "twoHanded": "Two-handed weapon = you get bane",
       "success": "Success = weapon lands D6 meters away (your choice of direction)",
@@ -174,7 +182,7 @@
     "overrides": {
       "targetEnforcementDisabled": "Target selection enforcement disabled",
       "targetEnforcementEnabled": "Target selection enforcement enabled",
-      "rangeCheckingDisabled": "Range checking disabled", 
+      "rangeCheckingDisabled": "Range checking disabled",
       "rangeCheckingEnabled": "Range checking enabled",
       "yzeActionTrackingDisabled": "YZE action tracking disabled",
       "yzeActionTrackingEnabled": "YZE action tracking enabled",
@@ -183,7 +191,7 @@
       "allOverridesCleared": "All validation and tracking overrides cleared",
       "status": {
         "targetSelection": "Target Selection",
-        "rangeChecking": "Range Checking", 
+        "rangeChecking": "Range Checking",
         "yzeActionTracking": "YZE Action Tracking",
         "allValidations": "All Validations",
         "allActive": "All validation rules active (no overrides)",
@@ -200,7 +208,7 @@
         "content": "Monsters cannot be disarmed. Are you sure you want to attempt this disarm against the {targetName}?"
       },
       "parry": {
-        "title": "Parry Monster Attack", 
+        "title": "Parry Monster Attack",
         "content": "Monster attacks generally cannot be parried (unless the attack specifically allows it). Are you sure you want to attempt this parry against the {targetName}?"
       },
       "proceed": "Proceed",
