@@ -341,8 +341,9 @@ function validateSpellTarget(spell, actor = null) {
     return { success: true };
   }
 
-  // Auto-target the caster for personal spells
+  // Auto-target personal spells
   if (rangeType === "personal") {
+    // Skip self-target validation if no actor
     if (!actor) {
       return {
         success: false,
@@ -367,12 +368,44 @@ function validateSpellTarget(spell, actor = null) {
       };
     }
 
-    // Auto-target the caster using Foundry's built-in method
-    game.user.updateTokenTargets([casterToken.id]);
+    // Auto-target the caster - v12/v13 compatibility with UI refresh fix
+    try {
+      // First, properly clear all existing targets with UI update
+      if (game.user.targets.size > 0) {
+        const currentTargets = Array.from(game.user.targets);
+        currentTargets.forEach((t) => {
+          if (t.setTarget) {
+            t.setTarget(false, { user: game.user });
+          }
+        });
+        game.user.targets.clear();
+      }
 
-    console.log(
-      `Combat Assistant v2.0: Auto-targeting ${actor.name} for personal spell: ${spell.name}`
-    );
+      // Now set the new target (no delay)
+      if (casterToken.object) {
+        // v13: tokens have an 'object' property
+        casterToken.object.setTarget(true, {
+          user: game.user,
+          releaseOthers: true,
+        });
+      } else if (casterToken.setTarget) {
+        // v12: tokens have setTarget directly
+        casterToken.setTarget(true, { user: game.user, releaseOthers: true });
+      } else if (game.user.updateTokenTargets) {
+        // Older v12 method as fallback
+        game.user.updateTokenTargets([casterToken.id]);
+      }
+
+      console.log(
+        `Combat Assistant v2.0: Auto-targeted ${actor.name} for personal spell: ${spell.name}`
+      );
+    } catch (error) {
+      console.warn(
+        `Combat Assistant v2.0: Auto-targeting failed for ${spell.name}, proceeding anyway:`,
+        error
+      );
+    }
+
     return { success: true };
   }
 

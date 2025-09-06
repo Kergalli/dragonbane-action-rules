@@ -408,32 +408,110 @@ export function registerHooks(moduleId) {
   if (game.dragonbane?.rollItem && !originalMethods.has("rollItem")) {
     originalMethods.set("rollItem", game.dragonbane.rollItem);
 
-    game.dragonbane.rollItem = async (itemName, ...args) => {
+    game.dragonbane.rollItem = async (itemName, itemType, ...args) => {
       // Skip if module disabled or validation disabled
       if (!DragonbaneUtils.getSetting(moduleId, "enabled")) {
-        return originalMethods.get("rollItem").call(this, itemName, ...args);
+        return originalMethods
+          .get("rollItem")
+          .call(this, itemName, itemType, ...args);
       }
 
       if (
         !DragonbaneUtils.getSetting(moduleId, "enforceTargetSelection") &&
-        !DragonbaneUtils.getSetting(moduleId, "enforceRangeChecking")
+        !DragonbaneUtils.getSetting(moduleId, "enforceRangeChecking") &&
+        !DragonbaneUtils.getSetting(moduleId, "enableSpellValidation")
       ) {
-        return originalMethods.get("rollItem").call(this, itemName, ...args);
+        return originalMethods
+          .get("rollItem")
+          .call(this, itemName, itemType, ...args);
       }
 
       // Skip if overrides active
       if (DragonbaneActionRules.overrides?.validationBypass) {
-        return originalMethods.get("rollItem").call(this, itemName, ...args);
+        return originalMethods
+          .get("rollItem")
+          .call(this, itemName, itemType, ...args);
       }
 
       try {
         const selectedToken = canvas.tokens.controlled[0];
         if (selectedToken?.actor) {
           const item = selectedToken.actor.items.find(
-            (i) =>
-              i.name === itemName && (i.type === "weapon" || i.type === "spell")
+            (i) => i.name === itemName && i.type === itemType
           );
 
+          // CHECK FOR MAGIC TRICKS FIRST - BEFORE ANY VALIDATION
+          if (item?.type === "spell") {
+            let rank = item.system?.rank || 0;
+            // Magic tricks are rank 0 or have "general" school
+            if (item.system?.school?.toLowerCase() === "general") rank = 0;
+
+            if (rank === 0) {
+              // It's a Magic Trick - redirect to useItem for proper dialog
+              console.log(
+                `Combat Assistant: Detected Magic Trick "${itemName}", redirecting to useItem for proper dialog`
+              );
+
+              // Check if it's a personal spell and auto-target (v12/v13 compatible with UI fix)
+              if (item.system?.rangeType === "personal") {
+                const casterToken = selectedToken;
+                if (casterToken) {
+                  try {
+                    // Properly clear existing targets with UI update
+                    if (game.user.targets.size > 0) {
+                      const currentTargets = Array.from(game.user.targets);
+                      currentTargets.forEach((t) => {
+                        if (t.setTarget) {
+                          t.setTarget(false, { user: game.user });
+                        }
+                      });
+                      game.user.targets.clear();
+                    }
+
+                    // Small delay for UI
+                    await new Promise((resolve) => setTimeout(resolve, 50));
+
+                    if (casterToken.object) {
+                      // v13
+                      casterToken.object.setTarget(true, {
+                        user: game.user,
+                        releaseOthers: true,
+                      });
+                    } else if (casterToken.setTarget) {
+                      // v12
+                      casterToken.setTarget(true, {
+                        user: game.user,
+                        releaseOthers: true,
+                      });
+                    } else if (game.user.updateTokenTargets) {
+                      // Older v12
+                      game.user.updateTokenTargets([casterToken.id]);
+                    }
+
+                    console.log(
+                      `Combat Assistant: Auto-targeted ${selectedToken.actor.name} for personal Magic Trick: ${itemName}`
+                    );
+                  } catch (error) {
+                    console.warn(
+                      `Combat Assistant: Auto-targeting failed for ${itemName}:`,
+                      error
+                    );
+                  }
+                }
+              }
+
+              // Call useItem instead of rollItem for Magic Tricks
+              if (game.dragonbane.useItem) {
+                return game.dragonbane.useItem(itemName, itemType, ...args);
+              }
+              // Fallback to original if useItem doesn't exist
+              return originalMethods
+                .get("rollItem")
+                .call(this, itemName, itemType, ...args);
+            }
+          }
+
+          // NORMAL VALIDATION FOR WEAPONS
           if (
             item &&
             item.type === "weapon" &&
@@ -451,6 +529,7 @@ export function registerHooks(moduleId) {
             }
           }
 
+          // NORMAL VALIDATION FOR REGULAR SPELLS (NOT MAGIC TRICKS)
           if (
             item &&
             item.type === "spell" &&
@@ -476,7 +555,9 @@ export function registerHooks(moduleId) {
         }
       }
 
-      return originalMethods.get("rollItem").call(this, itemName, ...args);
+      return originalMethods
+        .get("rollItem")
+        .call(this, itemName, itemType, ...args);
     };
   }
 
