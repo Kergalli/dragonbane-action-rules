@@ -59,10 +59,22 @@ export function registerHooks(moduleId) {
         const actor = game.actors.get(actorId);
         const spell = actor?.items.get(spellId);
 
-        // Check if it's an enhanced Magic Trick
+        // CHECK IF IT'S ACTUALLY A MAGIC TRICK (rank 0 or general school)
         if (spell && spell.type === "spell" && spell.system.damage === "n/a") {
-          // Add button with all required attributes (like real spell buttons)
-          const buttonHTML = `<div class="permission-owner" data-actor-id="Actor.${actorId}">
+          // ONLY add button for actual Magic Tricks
+          const isMagicTrick =
+            spell.system.rank === 0 ||
+            spell.system.school?.toLowerCase() === "general";
+
+          if (!isMagicTrick) {
+            // Not a Magic Trick - don't add button!
+            return;
+          }
+
+          // Only add button if it doesn't already exist (for actual Magic Tricks)
+          if (!content.includes("magic-roll")) {
+            // Add button with all required attributes (like real spell buttons)
+            const buttonHTML = `<div class="permission-owner" data-actor-id="Actor.${actorId}">
                               <button class="chat-button magic-roll" 
                                      data-actor-id="Actor.${actorId}"
                                      data-spell-id="${spellId}"
@@ -74,15 +86,16 @@ export function registerHooks(moduleId) {
                               </button>
                             </div>`;
 
-          // Inject button into message content
-          const newContent = content + buttonHTML;
-          message.updateSource({
-            content: newContent,
-          });
+            // Inject button into message content
+            const newContent = content + buttonHTML;
+            message.updateSource({
+              content: newContent,
+            });
 
-          console.log(
-            `Combat Assistant v2.0: Added early AA button for Magic Trick: ${spell.name}`
-          );
+            console.log(
+              `Combat Assistant v2.0: Added early AA button for Magic Trick: ${spell.name}`
+            );
+          }
         }
       }
     } catch (error) {
