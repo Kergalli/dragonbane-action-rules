@@ -355,9 +355,8 @@ function validateSpellTarget(spell, actor = null) {
       };
     }
 
-    // Auto-target the caster
-    game.user.targets.clear();
-    casterToken.setTarget(true, { user: game.user });
+    // Auto-target the caster using Foundry's built-in method
+    game.user.updateTokenTargets([casterToken.id]);
 
     console.log(
       `Combat Assistant v2.0: Auto-targeting ${actor.name} for personal spell: ${spell.name}`
@@ -405,6 +404,13 @@ function validateSpellRange(spell, actor) {
     return { success: true };
   }
 
+  if (rangeType === "range" && targetToken.id === casterToken.id) {
+    return {
+      success: false,
+      message: `${spell.name} cannot target the caster! Select a different target.`,
+    };
+  }
+
   // Calculate distance using same method as weapons
   const distance = canvas.grid.measurePath([casterToken, targetToken]).distance;
 
@@ -426,7 +432,7 @@ function validateSpellRange(spell, actor) {
       spell.name
     } is out of range! Max: ${maxRange}m, Distance: ${Math.round(distance)}m`;
   } else {
-    // Other range types skip validation (personal, cone, sphere)
+    // Other range types skip validation (cone, sphere)
     return { success: true };
   }
 
