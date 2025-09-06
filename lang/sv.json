@@ -111,7 +111,16 @@
       "noTarget": "Välj ett mål innan du attackerar med {weapon}.",
       "tooManyTargets": "Välj endast ett mål för {weapon}.",
       "meleeOutOfRange": "Målet är för långt bort! {weapon} är ett {weaponType} och måste vara som mest {maxRange} från målet, men målet är {distance}m bort.",
-      "rangedOutOfRange": "Målet är för långt bort! {weapon} har en maximal räckvidd på {maxRange}m, men målet är {distance}m bort."
+      "rangedOutOfRange": "Målet är för långt bort! {weapon} har en maximal räckvidd på {maxRange}m, men målet är {distance}m bort.",
+      "spellSelectToken": "Du måste välja en markör för att kasta {spell}",
+      "spellNotFound": "Besvärjelsen {spell} hittades inte",
+      "spellNoActor": "Ingen aktör hittades för att kasta {spell}",
+      "spellNoToken": "Ingen markör hittades för {actor} för att kasta {spell}",
+      "spellNoTarget": "Du måste välja ett mål för att kasta {spell}",
+      "spellTooManyTargets": "Du måste välja exakt ett mål för att kasta {spell}",
+      "spellCannotTargetSelf": "{spell} kan inte riktas mot kastaren! Välj ett annat mål.",
+      "spellTouchRange": "{spell} kräver beröring! Du måste vara intill (inom 2m). Avstånd: {distance}m",
+      "spellOutOfRange": "{spell} är utom räckvidd! Max: {maxRange}m, Avstånd: {distance}m"
     },
     "parry": {
       "reaction": "Parering använder din handling för rundan (reaktion)",

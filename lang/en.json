@@ -111,7 +111,16 @@
       "noTarget": "Please target a token before attacking with {weapon}.",
       "tooManyTargets": "Please target only one token for {weapon}.",
       "meleeOutOfRange": "Target is too far away! {weapon} is a {weaponType} and must be {maxRange} the target, but target is {distance}m away.",
-      "rangedOutOfRange": "Target is too far away! {weapon} has a maximum range of {maxRange}m, but target is {distance}m away."
+      "rangedOutOfRange": "Target is too far away! {weapon} has a maximum range of {maxRange}m, but target is {distance}m away.",
+      "spellSelectToken": "You must select a token to cast {spell}",
+      "spellNotFound": "Spell {spell} not found",
+      "spellNoActor": "No actor found to cast {spell}",
+      "spellNoToken": "No token found for {actor} to cast {spell}",
+      "spellNoTarget": "You must select a target to cast {spell}",
+      "spellTooManyTargets": "You must select exactly one target to cast {spell}",
+      "spellCannotTargetSelf": "{spell} cannot target the caster! Select a different target.",
+      "spellTouchRange": "{spell} requires touch! You must be adjacent (within 2m). Distance: {distance}m",
+      "spellOutOfRange": "{spell} is out of range! Max: {maxRange}m, Distance: {distance}m"
     },
     "parry": {
       "reaction": "Parrying uses your action for the turn (reaction)",

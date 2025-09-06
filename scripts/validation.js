@@ -92,7 +92,10 @@ export class DragonbaneValidator {
       if (!selectedActor || !selectedToken) {
         return {
           success: false,
-          message: `You must select a token to cast ${spellName}`,
+          message: game.i18n.format(
+            "DRAGONBANE_ACTION_RULES.validation.spellSelectToken",
+            { spell: spellName }
+          ),
         };
       }
 
@@ -103,7 +106,10 @@ export class DragonbaneValidator {
       if (!spell) {
         return {
           success: false,
-          message: `Spell ${spellName} not found`,
+          message: game.i18n.format(
+            "DRAGONBANE_ACTION_RULES.validation.spellNotFound",
+            { spell: spellName }
+          ),
         };
       }
 
@@ -340,7 +346,10 @@ function validateSpellTarget(spell, actor = null) {
     if (!actor) {
       return {
         success: false,
-        message: `No actor found to cast ${spell.name}`,
+        message: game.i18n.format(
+          "DRAGONBANE_ACTION_RULES.validation.spellNoActor",
+          { spell: spell.name }
+        ),
       };
     }
 
@@ -351,7 +360,10 @@ function validateSpellTarget(spell, actor = null) {
     if (!casterToken) {
       return {
         success: false,
-        message: `No token found for ${actor.name} to cast ${spell.name}`,
+        message: game.i18n.format(
+          "DRAGONBANE_ACTION_RULES.validation.spellNoToken",
+          { actor: actor.name, spell: spell.name }
+        ),
       };
     }
 
@@ -368,14 +380,20 @@ function validateSpellTarget(spell, actor = null) {
   if (game.user.targets.size === 0) {
     return {
       success: false,
-      message: `You must select a target to cast ${spell.name}`,
+      message: game.i18n.format(
+        "DRAGONBANE_ACTION_RULES.validation.spellNoTarget",
+        { spell: spell.name }
+      ),
     };
   }
 
   if (game.user.targets.size > 1) {
     return {
       success: false,
-      message: `You must select exactly one target to cast ${spell.name}`,
+      message: game.i18n.format(
+        "DRAGONBANE_ACTION_RULES.validation.spellTooManyTargets",
+        { spell: spell.name }
+      ),
     };
   }
 
@@ -407,7 +425,10 @@ function validateSpellRange(spell, actor) {
   if (rangeType === "range" && targetToken.id === casterToken.id) {
     return {
       success: false,
-      message: `${spell.name} cannot target the caster! Select a different target.`,
+      message: game.i18n.format(
+        "DRAGONBANE_ACTION_RULES.validation.spellCannotTargetSelf",
+        { spell: spell.name }
+      ),
     };
   }
 
@@ -420,17 +441,17 @@ function validateSpellRange(spell, actor) {
   if (rangeType === "touch") {
     // Touch spells require adjacency (like melee weapons)
     maxRange = 2; // 2 meters = adjacent
-    errorMessage = `${
-      spell.name
-    } requires touch! You must be adjacent (within 2m). Distance: ${Math.round(
-      distance
-    )}m`;
+    errorMessage = game.i18n.format(
+      "DRAGONBANE_ACTION_RULES.validation.spellTouchRange",
+      { spell: spell.name, distance: Math.round(distance) }
+    );
   } else if (rangeType === "range") {
     // Range spells use their listed range (unlike weapons at 2x range)
     maxRange = spell.system.range || 0;
-    errorMessage = `${
-      spell.name
-    } is out of range! Max: ${maxRange}m, Distance: ${Math.round(distance)}m`;
+    errorMessage = game.i18n.format(
+      "DRAGONBANE_ACTION_RULES.validation.spellOutOfRange",
+      { spell: spell.name, maxRange: maxRange, distance: Math.round(distance) }
+    );
   } else {
     // Other range types skip validation (cone, sphere)
     return { success: true };
