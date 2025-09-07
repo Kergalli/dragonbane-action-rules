@@ -210,11 +210,16 @@ export class SpellLibrary {
 
     // Create effect data with caster as origin
     const effectData = {
-      name: game.i18n.localize(effect.name || effectId), // Removed effect.label
+      name: game.i18n.localize(effect.name || effectId),
       img: effect.img || effect.icon || "icons/svg/aura.svg",
       statuses: [effect.id],
-      origin: caster ? caster.uuid : target.uuid, // Use caster's UUID if available
+      origin: caster ? caster.uuid : target.uuid,
     };
+
+    // Include description if it exists (DSE descriptions are user-defined, not localized)
+    if (effect.description) {
+      effectData.description = effect.description;
+    }
 
     // Add duration if specified
     if (config.duration) {
@@ -229,18 +234,14 @@ export class SpellLibrary {
       // We have permission - apply directly
       await target.createEmbeddedDocuments("ActiveEffect", [effectData]);
     } else {
-      // No permission - use socket to request GM to apply it
-      // FIXED: Pass actor UUID instead of just ID
-      game.socket.emit("module.dragonbane-action-rules", {
-        action: "applyStatusEffect",
-        targetUuid: target.uuid, // Changed from targetId to targetUuid
-        effectData: effectData,
-      });
-
-      // Also log for debugging
-      if (game.users.find((u) => u.isGM && u.active)) {
-        console.log(
-          `Combat Assistant v2.3 | Requesting GM to apply ${effectId} to ${target.name}`
+      // No permission - use socketlib to request GM to apply it
+      if (window.DragonbaneActionRules?.socket) {
+        await window.DragonbaneActionRules.socket.executeAsGM(
+          "applyStatusEffect",
+          {
+            targetUuid: target.uuid,
+            effectData: effectData,
+          }
         );
       }
     }

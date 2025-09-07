@@ -3,6 +3,7 @@
   "title": "Dragonbane Combat Assistant",
   "description": "Enhancement for Dragonbane combat and character management. Enforces target selection and weapon range for all attacks (including contextual thrown weapon support), automatically displays combat action rules when special attacks succeed, and provides event-driven encumbrance monitoring with instant notifications. Includes interactive weapon management, enhanced weapon feature display, configurable status effects for over-encumbered characters, optional rule reminders for shove and movement mechanics, EVADE skill enhancements, seamless integration with Year Zero Engine Combat module for single action tracking, monster action prevention with confirmation dialogs for Parry/Disarm attempts, and keyboard shortcuts for temporarily overriding validation rules during gameplay.",
   "version": "1.4.0",
+  "socket": true,
   "compatibility": {
     "minimum": "12",
     "verified": "13",
@@ -16,13 +17,8 @@
   ],
   "license": "MIT",
   "bugs": "https://github.com/Kergalli/dragonbane-action-rules/issues",
-  "esmodules": [
-    "scripts/main.js",
-    "scripts/utils.js"
-  ],
-  "styles": [
-    "styles/dragonbane-action-rules.css"
-  ],
+  "esmodules": ["scripts/main.js", "scripts/utils.js"],
+  "styles": ["styles/dragonbane-action-rules.css"],
   "languages": [
     {
       "lang": "en",
@@ -37,28 +33,24 @@
   ],
   "flags": {
     "hotReload": {
-      "extensions": [
-        "css",
-        "js",
-        "json"
-      ],
-      "paths": [
-        "scripts",
-        "styles",
-        "lang"
-      ]
+      "extensions": ["css", "js", "json"],
+      "paths": ["scripts", "styles", "lang"]
     }
   },
   "relationships": {
     "systems": [
       {
         "id": "dragonbane",
-        "type": "system",
-        "compatibility": {}
+        "type": "system"
+      }
+    ],
+    "requires": [
+      {
+        "id": "socketlib",
+        "type": "module"
       }
     ]
   },
-  "socket": false,
   "url": "https://github.com/kergalli/dragonbane-action-rules",
   "manifest": "https://github.com/kergalli/dragonbane-action-rules/releases/latest/download/module.json",
   "download": "https://github.com/kergalli/dragonbane-action-rules/releases/latest/download/module.zip",

@@ -115,23 +115,25 @@ class DragonbaneActionRules {
         DragonbaneActionRules.encumbranceMonitor?.initialize();
         DragonbaneActionRules.yzeIntegration?.initialize();
 
-        // Socket listener for status effect application
-        game.socket.on("module.dragonbane-action-rules", async (data) => {
-          if (!game.user.isGM) return; // Only GM processes these requests
+        // Socket setup using socketlib (replaces the game.socket.on approach)
+        if (game.modules.get("socketlib")?.active) {
+          DragonbaneActionRules.socket = socketlib.registerModule(
+            "dragonbane-action-rules"
+          );
 
-          if (data.action === "applyStatusEffect") {
-            // FIXED: Use UUID to get the actor
-            const target = await fromUuid(data.targetUuid);
-            if (target) {
-              await target.createEmbeddedDocuments("ActiveEffect", [
-                data.effectData,
-              ]);
-              console.log(
-                `Combat Assistant v2.3 | GM applied effect to ${target.name}`
-              );
+          // Register the applyStatusEffect function for GM execution
+          DragonbaneActionRules.socket.register(
+            "applyStatusEffect",
+            async (data) => {
+              const target = await fromUuid(data.targetUuid);
+              if (target) {
+                await target.createEmbeddedDocuments("ActiveEffect", [
+                  data.effectData,
+                ]);
+              }
             }
-          }
-        });
+          );
+        }
       });
 
       // Direct hook registration using new system

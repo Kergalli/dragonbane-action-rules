@@ -35,7 +35,7 @@ export function registerHooks(moduleId) {
         DragonbaneActionRules.grudgeTracker.onChatMessage(message);
       }
 
-      // ADD THIS: Spell status effect application for NEW messages only
+      // Spell status effect application for NEW messages only
       if (
         DragonbaneUtils.getSetting(moduleId, "enableSpellStatusEffects", true)
       ) {
@@ -67,13 +67,16 @@ export function registerHooks(moduleId) {
                 .filter((s) => s.length > 0);
 
               if (!excludedSpells.includes(spell.name)) {
-                // Small delay to ensure message is fully created
-                setTimeout(() => {
-                  DragonbaneActionRules.spellLibrary.applySpellEffect(
-                    spell,
-                    message
-                  );
-                }, 100);
+                // SURGICAL FIX: Only the message creator processes the effect
+                if (message.user.id === game.user.id) {
+                  // Small delay to ensure message is fully created
+                  setTimeout(() => {
+                    DragonbaneActionRules.spellLibrary.applySpellEffect(
+                      spell,
+                      message
+                    );
+                  }, 100);
+                }
               }
             }
           }
