@@ -82,6 +82,10 @@
       "excludedSpells": {
         "name": "Excluded Spells",
         "hint": "Comma-separated list of spell names to exclude from validation (they will still get animations). Example: 'Birdsong, Custom Spell'"
+      },
+      "enableSpellStatusEffects": {
+        "name": "Enable Automatic Spell Status Effects",
+        "hint": "Automatically apply status effects when spells are successfully cast."
       }
     },
     "actions": {
@@ -222,6 +226,22 @@
       },
       "proceed": "Proceed",
       "cancel": "Cancel"
+    },
+    "effects": {
+      "protector": "Protector",
+      "birdsong": "Birdsong",
+      "powerFist": "Power Fist",
+      "enchantWeapon": "Enchant Weapon",
+      "engulfingForest": "Engulfing Forest",
+      "ensnaringRoots": "Ensnaring Roots",
+      "flight": "Flight",
+      "longstrider": "Longstrider",
+      "sleep": "Sleep",
+      "stoneSkin": "Stone Skin",
+      "chill": "Chill",
+      "cold": "Cold",
+      "frost": "Frozen",
+      "heat": "Heat"
     },
     "grudgeTracker": {
       "speakerName": "Unforgiving Tracker",

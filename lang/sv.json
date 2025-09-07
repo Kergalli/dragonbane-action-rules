@@ -82,6 +82,10 @@
       "excludedSpells": {
         "name": "Exkluderade besvärjelser",
         "hint": "Kommaseparerad lista över besvärjelsenamn att exkludera från validering (de får fortfarande animationer). Exempel: 'Fågelsång, Anpassad besvärjelse'"
+      },
+      "enableSpellStatusEffects": {
+        "name": "Aktivera automatiska trollformelstatuseffekter",
+        "hint": "Applicera automatiskt statuseffekter när trollformler kastas framgångsrikt."
       }
     },
     "actions": {
@@ -222,6 +226,22 @@
       },
       "proceed": "Fortsätt",
       "cancel": "Avbryt"
+    },
+    "effects": {
+      "protector": "Beskyddare",
+      "birdsong": "Fågelsång",
+      "powerFist": "Kraftnäve",
+      "enchantWeapon": "Förtrollat vapen",
+      "engulfingForest": "Uppslukande skog",
+      "ensnaringRoots": "Snärjande rötter",
+      "flight": "Flygning",
+      "longstrider": "Långsteg",
+      "sleep": "Sömn",
+      "stoneSkin": "Stenhud",
+      "chill": "Kyla",
+      "cold": "Köld",
+      "frost": "Frusen",
+      "heat": "Värme"
     },
     "grudgeTracker": {
       "speakerName": "Obarmhärtighetsspårare",

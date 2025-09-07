@@ -11,7 +11,7 @@ export class SpellLibrary {
     // Personal spells (apply to caster) - Alphabetized
     Birdsong: {
       effectId: "dse-birdsong",
-      effectName: "EFFECT.StatusBirdsong",
+      effectNameKey: "DRAGONBANE_ACTION_RULES.effects.birdsong",
       dseIcon:
         "modules/dragonbane-status-effects/assets/icons/bird-twitter.svg",
       fallbackIcon: "icons/svg/sound.svg",
@@ -19,7 +19,7 @@ export class SpellLibrary {
     },
     "Power Fist": {
       effectId: "dse-power-fist",
-      effectName: "EFFECT.StatusPowerFist",
+      effectNameKey: "DRAGONBANE_ACTION_RULES.effects.powerFist",
       dseIcon: "modules/dragonbane-status-effects/assets/icons/fist.svg",
       fallbackIcon: "icons/svg/pawprint.svg",
       duration: 900,
@@ -28,56 +28,56 @@ export class SpellLibrary {
     // Range/Touch spells (apply to target) - Alphabetized
     "Enchant Weapon": {
       effectId: "dse-enchanted-weapon",
-      effectName: "EFFECT.StatusEnchantedWeapon",
+      effectNameKey: "DRAGONBANE_ACTION_RULES.effects.enchantWeapon",
       dseIcon: "modules/dragonbane-status-effects/assets/icons/magic-axe.svg",
       fallbackIcon: "icons/svg/sword.svg",
       duration: 900,
     },
     "Engulfing Forest": {
       effectId: "dse-ensnared", // Same as Ensnaring Roots
-      effectName: "EFFECT.StatusEnsnared",
+      effectNameKey: "DRAGONBANE_ACTION_RULES.effects.engulfingForest",
       dseIcon: "icons/svg/net.svg",
       fallbackIcon: "icons/svg/net.svg",
       duration: null,
     },
     "Ensnaring Roots": {
       effectId: "dse-ensnared",
-      effectName: "EFFECT.StatusEnsnared",
+      effectNameKey: "DRAGONBANE_ACTION_RULES.effects.ensnaringRoots",
       dseIcon: "icons/svg/net.svg",
       fallbackIcon: "icons/svg/net.svg",
       duration: null, // Permanent
     },
     Flight: {
       effectId: "dse-flying",
-      effectName: "EFFECT.StatusFlying",
+      effectNameKey: "DRAGONBANE_ACTION_RULES.effects.flight",
       dseIcon: "icons/svg/wing.svg",
       fallbackIcon: "icons/svg/wing.svg",
       duration: null,
     },
     Longstrider: {
       effectId: "dse-longstrider",
-      effectName: "EFFECT.StatusLongstrider",
+      effectNameKey: "DRAGONBANE_ACTION_RULES.effects.longstrider",
       dseIcon: "icons/svg/wingfoot.svg",
       fallbackIcon: "icons/svg/wingfoot.svg",
       duration: 900,
     },
     Protector: {
       effectId: "dse-protector",
-      effectName: "EFFECT.StatusProtector",
+      effectNameKey: "DRAGONBANE_ACTION_RULES.effects.protector",
       dseIcon: "icons/svg/shield.svg",
       fallbackIcon: "icons/svg/shield.svg",
       duration: 21600, // 6 hours in seconds
     },
     Sleep: {
       effectId: "dse-sleep",
-      effectName: "EFFECT.StatusAsleep",
+      effectNameKey: "DRAGONBANE_ACTION_RULES.effects.sleep",
       dseIcon: "icons/svg/sleep.svg",
       fallbackIcon: "icons/svg/sleep.svg",
       duration: null,
     },
     "Stone Skin": {
       effectId: "dse-stone-skin",
-      effectName: "EFFECT.StatusStoneSkin",
+      effectNameKey: "DRAGONBANE_ACTION_RULES.effects.stoneSkin",
       dseIcon: "modules/dragonbane-status-effects/assets/icons/rock-golem.svg",
       fallbackIcon: "icons/svg/mountain.svg",
       duration: 900,
@@ -86,7 +86,7 @@ export class SpellLibrary {
     // Template spells (sphere/cone - skipped in Phase 1) - Alphabetized
     Chill: {
       effectId: "dse-chill",
-      effectName: "EFFECT.StatusChill",
+      effectNameKey: "DRAGONBANE_ACTION_RULES.effects.chill",
       dseIcon:
         "modules/dragonbane-status-effects/assets/icons/ice-spell-cast.svg",
       fallbackIcon: "icons/svg/frozen.svg",
@@ -95,7 +95,7 @@ export class SpellLibrary {
     Frost: {
       primary: {
         effectId: "dse-cold",
-        effectName: "EFFECT.StatusCold",
+        effectNameKey: "DRAGONBANE_ACTION_RULES.effects.cold",
         dseIcon:
           "modules/dragonbane-status-effects/assets/icons/thermometer-cold.svg",
         fallbackIcon: "icons/svg/frozen.svg",
@@ -103,7 +103,7 @@ export class SpellLibrary {
       },
       conditional: {
         effectId: "dse-frozen",
-        effectName: "EFFECT.StatusFrozen",
+        effectNameKey: "DRAGONBANE_ACTION_RULES.effects.frost",
         dseIcon: "icons/svg/frozen.svg",
         fallbackIcon: "icons/svg/frozen.svg",
         duration: null,
@@ -112,7 +112,7 @@ export class SpellLibrary {
     },
     Heat: {
       effectId: "dse-heat",
-      effectName: "EFFECT.StatusHeat",
+      effectNameKey: "DRAGONBANE_ACTION_RULES.effects.heat",
       dseIcon: "modules/dragonbane-status-effects/assets/icons/heat-haze.svg",
       fallbackIcon: "icons/svg/fire.svg",
       duration: 900,
@@ -182,9 +182,6 @@ export class SpellLibrary {
     }
   }
 
-  /**
-   * Apply a single effect to target
-   */
   static async applyEffect(config, target, caster = null) {
     const effectId = config.effectId;
 
@@ -201,25 +198,40 @@ export class SpellLibrary {
 
     // Check if target already has this effect
     if (DragonbaneUtils.hasStatusEffect(target, effectId)) {
-      return true; // Already has effect
+      return true;
     }
 
-    // We need to apply the effect manually to set the correct origin
     const effect = DragonbaneUtils.findStatusEffect(effectId);
     if (!effect) return false;
 
-    // Create effect data with caster as origin
+    // Get localized name
+    let effectName;
+    if (config.effectNameKey) {
+      effectName = game.i18n.localize(config.effectNameKey);
+    } else if (effect.name) {
+      effectName = game.i18n.localize(effect.name);
+    } else {
+      // Fallback: format the effect ID nicely
+      effectName = effectId.replace("dse-", "").replace(/-/g, " ");
+      effectName = effectName.charAt(0).toUpperCase() + effectName.slice(1);
+    }
+
+    // Create effect data
     const effectData = {
-      name: game.i18n.localize(effect.name || effectId),
+      name: effectName,
       img: effect.img || effect.icon || "icons/svg/aura.svg",
       statuses: [effect.id],
       origin: caster ? caster.uuid : target.uuid,
     };
 
-    // Include description if it exists (DSE descriptions are user-defined, not localized)
-    if (effect.description) {
+    // Only add description if it exists AND it's not the auto-generated default
+    if (
+      effect.description &&
+      effect.description !== `${effectId} status effect`
+    ) {
       effectData.description = effect.description;
     }
+    // If no valid description, don't add a description field at all
 
     // Add duration if specified
     if (config.duration) {
@@ -229,12 +241,10 @@ export class SpellLibrary {
       };
     }
 
-    // Check if we have permission to modify the target
+    // Apply effect (rest of the code stays the same)
     if (target.isOwner || game.user.isGM) {
-      // We have permission - apply directly
       await target.createEmbeddedDocuments("ActiveEffect", [effectData]);
     } else {
-      // No permission - use socketlib to request GM to apply it
       if (window.DragonbaneActionRules?.socket) {
         await window.DragonbaneActionRules.socket.executeAsGM(
           "applyStatusEffect",
@@ -244,23 +254,6 @@ export class SpellLibrary {
           }
         );
       }
-    }
-
-    return true;
-  }
-
-  /**
-   * Special handler for Frost spell (dual effects)
-   * Note: Frost is a template spell, so this won't be used in Phase 1
-   * Keeping for future template support
-   */
-  static async applyFrostEffect(config, target, caster) {
-    // Apply Cold to all targets - pass caster for origin
-    await this.applyEffect(config.primary, target, caster);
-
-    // Apply Frozen only to non-monsters - pass caster for origin
-    if (target.type !== "monster") {
-      await this.applyEffect(config.conditional, target, caster);
     }
 
     return true;

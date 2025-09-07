@@ -29,6 +29,7 @@ export const SETTINGS = {
   ENABLE_GRUDGE_TRACKING: "enableGrudgeTracking",
   ENABLE_SPELL_VALIDATION: "enableSpellValidation",
   EXCLUDED_SPELLS: "excludedSpells",
+  ENABLE_SPELL_STATUS_EFFECTS: "enableSpellStatusEffects",
 };
 
 /**
@@ -367,24 +368,44 @@ export function registerSettings(moduleId) {
   });
 
   // Spell settings
-game.settings.register(moduleId, SETTINGS.ENABLE_SPELL_VALIDATION, {
-  name: game.i18n.localize("DRAGONBANE_ACTION_RULES.settings.enableSpellValidation.name"),
-  hint: game.i18n.localize("DRAGONBANE_ACTION_RULES.settings.enableSpellValidation.hint"),
-  scope: "world",
-  config: true,
-  type: Boolean,
-  default: true,
-});
+  game.settings.register(moduleId, SETTINGS.ENABLE_SPELL_VALIDATION, {
+    name: game.i18n.localize(
+      "DRAGONBANE_ACTION_RULES.settings.enableSpellValidation.name"
+    ),
+    hint: game.i18n.localize(
+      "DRAGONBANE_ACTION_RULES.settings.enableSpellValidation.hint"
+    ),
+    scope: "world",
+    config: true,
+    type: Boolean,
+    default: true,
+  });
 
-game.settings.register(moduleId, "excludedSpells", {
-  name: game.i18n.localize("DRAGONBANE_ACTION_RULES.settings.excludedSpells.name"),
-  hint: game.i18n.localize("DRAGONBANE_ACTION_RULES.settings.excludedSpells.hint"),
-  scope: "world",
-  config: true,
-  type: String,
-  default: "",
-});
+  game.settings.register(moduleId, "excludedSpells", {
+    name: game.i18n.localize(
+      "DRAGONBANE_ACTION_RULES.settings.excludedSpells.name"
+    ),
+    hint: game.i18n.localize(
+      "DRAGONBANE_ACTION_RULES.settings.excludedSpells.hint"
+    ),
+    scope: "world",
+    config: true,
+    type: String,
+    default: "",
+  });
 
+  game.settings.register(moduleId, SETTINGS.ENABLE_SPELL_STATUS_EFFECTS, {
+    name: game.i18n.localize(
+      "DRAGONBANE_ACTION_RULES.settings.enableSpellStatusEffects.name"
+    ),
+    hint: game.i18n.localize(
+      "DRAGONBANE_ACTION_RULES.settings.enableSpellStatusEffects.hint"
+    ),
+    scope: "world",
+    config: true,
+    type: Boolean,
+    default: true,
+  });
 }
 
 export function getSetting(moduleId, setting, fallback = null) {
