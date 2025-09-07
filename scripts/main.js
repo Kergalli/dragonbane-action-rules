@@ -13,6 +13,7 @@ import {
 import { DragonbanePatternManager } from "./pattern-manager.js";
 import { DragonbaneRulesDisplay } from "./rules-display.js";
 import { isDebugMode, registerSettings, SETTINGS } from "./settings.js";
+import { SpellLibrary } from "./spell-library.js";
 import { DragonbaneUtils } from "./utils.js";
 import { DragonbaneValidator } from "./validation.js";
 import { DragonbaneYZEIntegration } from "./yze-integration.js";
@@ -32,6 +33,7 @@ class DragonbaneActionRules {
   static yzeIntegration = null;
   static patternManager = null;
   static grudgeTracker = null;
+  static spellLibrary = SpellLibrary;
   static utils = DragonbaneUtils; // Make utils available
 
   // Override state for keyboard shortcuts
@@ -100,9 +102,6 @@ class DragonbaneActionRules {
     }
   }
 
-  /**
-   * Register hooks and keybinds - no complex state management
-   */
   static registerHooksAndKeybinds() {
     try {
       // Main ready hook for module activation
@@ -115,6 +114,24 @@ class DragonbaneActionRules {
         // Initialize components that need ready state
         DragonbaneActionRules.encumbranceMonitor?.initialize();
         DragonbaneActionRules.yzeIntegration?.initialize();
+
+        // Socket listener for status effect application
+        game.socket.on("module.dragonbane-action-rules", async (data) => {
+          if (!game.user.isGM) return; // Only GM processes these requests
+
+          if (data.action === "applyStatusEffect") {
+            // FIXED: Use UUID to get the actor
+            const target = await fromUuid(data.targetUuid);
+            if (target) {
+              await target.createEmbeddedDocuments("ActiveEffect", [
+                data.effectData,
+              ]);
+              console.log(
+                `Combat Assistant v2.3 | GM applied effect to ${target.name}`
+              );
+            }
+          }
+        });
       });
 
       // Direct hook registration using new system

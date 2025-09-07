@@ -198,9 +198,8 @@ export class DragonbaneUtils {
         (effect) =>
           effect.id === statusEffectId ||
           effect.name === effectName ||
-          effect.id === effectName ||
-          // Legacy support for v11 and earlier
-          effect.label === effectName
+          effect.id === effectName
+        // REMOVED: effect.label === effectName (deprecated)
       ) || null
     );
   }
@@ -231,9 +230,8 @@ export class DragonbaneUtils {
       const hasEffect = this.hasStatusEffect(actor, effectName);
 
       if (active && !hasEffect) {
-        // FIXED: Use Foundry's native ActiveEffect API instead of core system's deprecated path
         const effectData = {
-          name: game.i18n.localize(effect.name || effect.label || effectName),
+          name: game.i18n.localize(effect.name || effectName), // Removed effect.label
           img: effect.img || effect.icon || "icons/svg/aura.svg",
           statuses: [effect.id],
           origin: actor.uuid,
@@ -247,8 +245,8 @@ export class DragonbaneUtils {
           (e) =>
             e.statuses?.has(effect.id) ||
             e.name === effectName ||
-            e.name === effect.name ||
-            e.name === effect.label
+            e.name === effect.name
+          // REMOVED: e.name === effect.label
         );
 
         if (activeEffect) {

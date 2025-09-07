@@ -34,6 +34,51 @@ export function registerHooks(moduleId) {
       if (DragonbaneActionRules.grudgeTracker?.onChatMessage) {
         DragonbaneActionRules.grudgeTracker.onChatMessage(message);
       }
+
+      // ADD THIS: Spell status effect application for NEW messages only
+      if (
+        DragonbaneUtils.getSetting(moduleId, "enableSpellStatusEffects", true)
+      ) {
+        if (
+          DragonbaneActionRules?.patternManager?.isSuccessfulAction &&
+          DragonbaneActionRules?.spellLibrary
+        ) {
+          const messageContent = message.content || "";
+          const spell = DragonbaneUtils.extractSpellFromMessage(message);
+
+          if (spell && spell.type === "spell") {
+            const isMagicTrick =
+              spell.system.rank === 0 ||
+              spell.system.school?.toLowerCase() === "general";
+
+            const isSuccess =
+              DragonbaneActionRules.patternManager.isSuccessfulAction(
+                messageContent
+              );
+
+            if (isSuccess || isMagicTrick) {
+              const excludedSpells = DragonbaneUtils.getSetting(
+                moduleId,
+                "excludedSpells",
+                ""
+              )
+                .split(",")
+                .map((s) => s.trim())
+                .filter((s) => s.length > 0);
+
+              if (!excludedSpells.includes(spell.name)) {
+                // Small delay to ensure message is fully created
+                setTimeout(() => {
+                  DragonbaneActionRules.spellLibrary.applySpellEffect(
+                    spell,
+                    message
+                  );
+                }, 100);
+              }
+            }
+          }
+        }
+      }
     } catch (error) {
       if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
         DoD_Utility.WARNING(
