@@ -465,226 +465,256 @@ export function registerHooks(moduleId) {
     }
   }
 
-// Token Action HUD integration - hook both rollItem (weapons) and useItem (spells)
-if (game.dragonbane?.rollItem && !originalMethods.has("rollItem")) {
-  originalMethods.set("rollItem", game.dragonbane.rollItem);
+  // Token Action HUD integration - hook both rollItem (weapons) and useItem (spells)
+  if (game.dragonbane?.rollItem && !originalMethods.has("rollItem")) {
+    originalMethods.set("rollItem", game.dragonbane.rollItem);
 
-  game.dragonbane.rollItem = async (itemName, itemType, ...args) => {
-    console.log(`DEBUG: Token Action HUD rollItem called - Item: ${itemName}, Type: ${itemType}`);
-    
-    // Skip if module disabled or validation disabled
-    if (!DragonbaneUtils.getSetting(moduleId, "enabled")) {
-      return originalMethods.get("rollItem").call(this, itemName, itemType, ...args);
-    }
+    game.dragonbane.rollItem = async (itemName, itemType, ...args) => {
+      console.log(
+        `DEBUG: Token Action HUD rollItem called - Item: ${itemName}, Type: ${itemType}`
+      );
 
-    if (
-      !DragonbaneUtils.getSetting(moduleId, "enforceTargetSelection") &&
-      !DragonbaneUtils.getSetting(moduleId, "enforceRangeChecking") &&
-      !DragonbaneUtils.getSetting(moduleId, "enableSpellValidation")
-    ) {
-      return originalMethods.get("rollItem").call(this, itemName, itemType, ...args);
-    }
+      // Skip if module disabled or validation disabled
+      if (!DragonbaneUtils.getSetting(moduleId, "enabled")) {
+        return originalMethods
+          .get("rollItem")
+          .call(this, itemName, itemType, ...args);
+      }
 
-    // Skip if overrides active
-    if (DragonbaneActionRules.overrides?.validationBypass) {
-      return originalMethods.get("rollItem").call(this, itemName, itemType, ...args);
-    }
+      if (
+        !DragonbaneUtils.getSetting(moduleId, "enforceTargetSelection") &&
+        !DragonbaneUtils.getSetting(moduleId, "enforceRangeChecking") &&
+        !DragonbaneUtils.getSetting(moduleId, "enableSpellValidation")
+      ) {
+        return originalMethods
+          .get("rollItem")
+          .call(this, itemName, itemType, ...args);
+      }
 
-    try {
-      const selectedToken = canvas.tokens.controlled[0];
-      if (selectedToken?.actor) {
-        const item = selectedToken.actor.items.find(
-          (i) => i.name === itemName && i.type === itemType
-        );
+      // Skip if overrides active
+      if (DragonbaneActionRules.overrides?.validationBypass) {
+        return originalMethods
+          .get("rollItem")
+          .call(this, itemName, itemType, ...args);
+      }
 
-        // CHECK FOR MAGIC TRICKS FIRST - BEFORE ANY VALIDATION
-        if (item?.type === "spell") {
-          let rank = item.system?.rank || 0;
-          // Magic tricks are rank 0 or have "general" school
-          if (item.system?.school?.toLowerCase() === "general") rank = 0;
+      try {
+        const selectedToken = canvas.tokens.controlled[0];
+        if (selectedToken?.actor) {
+          const item = selectedToken.actor.items.find(
+            (i) => i.name === itemName && i.type === itemType
+          );
 
-          if (rank === 0) {
-            // It's a Magic Trick - redirect to useItem for proper dialog
-            console.log(
-              `Combat Assistant: Detected Magic Trick "${itemName}", redirecting to useItem for proper dialog`
-            );
+          // CHECK FOR MAGIC TRICKS FIRST - BEFORE ANY VALIDATION
+          if (item?.type === "spell") {
+            let rank = item.system?.rank || 0;
+            // Magic tricks are rank 0 or have "general" school
+            if (item.system?.school?.toLowerCase() === "general") rank = 0;
 
-            // Check if it's a personal spell and auto-target (v12/v13 compatible with UI fix)
-            if (item.system?.rangeType === "personal") {
-              const casterToken = selectedToken;
-              if (casterToken) {
-                try {
-                  // Properly clear existing targets with UI update
-                  if (game.user.targets.size > 0) {
-                    const currentTargets = Array.from(game.user.targets);
-                    currentTargets.forEach((t) => {
-                      if (t.setTarget) {
-                        t.setTarget(false, { user: game.user });
-                      }
-                    });
-                    game.user.targets.clear();
+            if (rank === 0) {
+              // It's a Magic Trick - redirect to useItem for proper dialog
+              console.log(
+                `Combat Assistant: Detected Magic Trick "${itemName}", redirecting to useItem for proper dialog`
+              );
+
+              // Check if it's a personal spell and auto-target (v12/v13 compatible with UI fix)
+              if (item.system?.rangeType === "personal") {
+                const casterToken = selectedToken;
+                if (casterToken) {
+                  try {
+                    // Properly clear existing targets with UI update
+                    if (game.user.targets.size > 0) {
+                      const currentTargets = Array.from(game.user.targets);
+                      currentTargets.forEach((t) => {
+                        if (t.setTarget) {
+                          t.setTarget(false, { user: game.user });
+                        }
+                      });
+                      game.user.targets.clear();
+                    }
+
+                    // Small delay for UI
+                    await new Promise((resolve) => setTimeout(resolve, 50));
+
+                    if (casterToken.object) {
+                      // v13
+                      casterToken.object.setTarget(true, {
+                        user: game.user,
+                        releaseOthers: true,
+                      });
+                    } else if (casterToken.setTarget) {
+                      // v12
+                      casterToken.setTarget(true, {
+                        user: game.user,
+                        releaseOthers: true,
+                      });
+                    } else if (game.user.updateTokenTargets) {
+                      // Older v12
+                      game.user.updateTokenTargets([casterToken.id]);
+                    }
+
+                    console.log(
+                      `Combat Assistant: Auto-targeted ${selectedToken.actor.name} for personal Magic Trick: ${itemName}`
+                    );
+                  } catch (error) {
+                    console.warn(
+                      `Combat Assistant: Auto-targeting failed for ${itemName}:`,
+                      error
+                    );
                   }
-
-                  // Small delay for UI
-                  await new Promise((resolve) => setTimeout(resolve, 50));
-
-                  if (casterToken.object) {
-                    // v13
-                    casterToken.object.setTarget(true, {
-                      user: game.user,
-                      releaseOthers: true,
-                    });
-                  } else if (casterToken.setTarget) {
-                    // v12
-                    casterToken.setTarget(true, {
-                      user: game.user,
-                      releaseOthers: true,
-                    });
-                  } else if (game.user.updateTokenTargets) {
-                    // Older v12
-                    game.user.updateTokenTargets([casterToken.id]);
-                  }
-
-                  console.log(
-                    `Combat Assistant: Auto-targeted ${selectedToken.actor.name} for personal Magic Trick: ${itemName}`
-                  );
-                } catch (error) {
-                  console.warn(
-                    `Combat Assistant: Auto-targeting failed for ${itemName}:`,
-                    error
-                  );
                 }
               }
+
+              // Call useItem instead of rollItem for Magic Tricks
+              if (game.dragonbane.useItem) {
+                return game.dragonbane.useItem(itemName, itemType, ...args);
+              }
+              // Fallback to original if useItem doesn't exist
+              return originalMethods
+                .get("rollItem")
+                .call(this, itemName, itemType, ...args);
             }
+          }
 
-            // Call useItem instead of rollItem for Magic Tricks
-            if (game.dragonbane.useItem) {
-              return game.dragonbane.useItem(itemName, itemType, ...args);
+          // NORMAL VALIDATION FOR WEAPONS
+          if (
+            item &&
+            item.type === "weapon" &&
+            DragonbaneActionRules.validator?.performWeaponAttack
+          ) {
+            const validation =
+              await DragonbaneActionRules.validator.performWeaponAttack(
+                itemName,
+                selectedToken.actor
+              );
+
+            if (!validation.success) {
+              ui.notifications.warn(validation.message);
+              return null;
             }
-            // Fallback to original if useItem doesn't exist
-            return originalMethods.get("rollItem").call(this, itemName, itemType, ...args);
+          }
+
+          // NORMAL VALIDATION FOR REGULAR SPELLS (NOT MAGIC TRICKS)
+          if (
+            item &&
+            item.type === "spell" &&
+            DragonbaneActionRules.validator?.performSpellCast
+          ) {
+            const validation =
+              await DragonbaneActionRules.validator.performSpellCast(
+                itemName,
+                selectedToken.actor
+              );
+
+            if (!validation.success) {
+              ui.notifications.warn(validation.message);
+              return null;
+            }
           }
         }
-
-        // NORMAL VALIDATION FOR WEAPONS
-        if (
-          item &&
-          item.type === "weapon" &&
-          DragonbaneActionRules.validator?.performWeaponAttack
-        ) {
-          const validation = await DragonbaneActionRules.validator.performWeaponAttack(
-            itemName,
-            selectedToken.actor
+      } catch (error) {
+        if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
+          DoD_Utility.WARNING(
+            `Error in Token Action HUD rollItem validation: ${error.message}`
           );
-
-          if (!validation.success) {
-            ui.notifications.warn(validation.message);
-            return null;
-          }
-        }
-
-        // NORMAL VALIDATION FOR REGULAR SPELLS (NOT MAGIC TRICKS)
-        if (
-          item &&
-          item.type === "spell" &&
-          DragonbaneActionRules.validator?.performSpellCast
-        ) {
-          const validation = await DragonbaneActionRules.validator.performSpellCast(
-            itemName,
-            selectedToken.actor
-          );
-
-          if (!validation.success) {
-            ui.notifications.warn(validation.message);
-            return null;
-          }
         }
       }
-    } catch (error) {
-      if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
-        DoD_Utility.WARNING(`Error in Token Action HUD rollItem validation: ${error.message}`);
+
+      return originalMethods
+        .get("rollItem")
+        .call(this, itemName, itemType, ...args);
+    };
+  }
+
+  // ALSO hook useItem for spells (Token Action HUD calls this for regular spells)
+  if (game.dragonbane?.useItem && !originalMethods.has("useItem")) {
+    originalMethods.set("useItem", game.dragonbane.useItem);
+
+    game.dragonbane.useItem = async (itemName, itemType, ...args) => {
+      console.log(
+        `DEBUG: Token Action HUD useItem called - Item: ${itemName}, Type: ${itemType}`
+      );
+
+      // Skip if module disabled or validation disabled
+      if (!DragonbaneUtils.getSetting(moduleId, "enabled")) {
+        return originalMethods
+          .get("useItem")
+          .call(this, itemName, itemType, ...args);
       }
-    }
 
-    return originalMethods.get("rollItem").call(this, itemName, itemType, ...args);
-  };
-}
+      if (
+        !DragonbaneUtils.getSetting(moduleId, "enforceTargetSelection") &&
+        !DragonbaneUtils.getSetting(moduleId, "enforceRangeChecking") &&
+        !DragonbaneUtils.getSetting(moduleId, "enableSpellValidation")
+      ) {
+        return originalMethods
+          .get("useItem")
+          .call(this, itemName, itemType, ...args);
+      }
 
-// ALSO hook useItem for spells (Token Action HUD calls this for regular spells)
-if (game.dragonbane?.useItem && !originalMethods.has("useItem")) {
-  originalMethods.set("useItem", game.dragonbane.useItem);
+      // Skip if overrides active
+      if (DragonbaneActionRules.overrides?.validationBypass) {
+        return originalMethods
+          .get("useItem")
+          .call(this, itemName, itemType, ...args);
+      }
 
-  game.dragonbane.useItem = async (itemName, itemType, ...args) => {
-    console.log(`DEBUG: Token Action HUD useItem called - Item: ${itemName}, Type: ${itemType}`);
-    
-    // Skip if module disabled or validation disabled
-    if (!DragonbaneUtils.getSetting(moduleId, "enabled")) {
-      return originalMethods.get("useItem").call(this, itemName, itemType, ...args);
-    }
-
-    if (
-      !DragonbaneUtils.getSetting(moduleId, "enforceTargetSelection") &&
-      !DragonbaneUtils.getSetting(moduleId, "enforceRangeChecking") &&
-      !DragonbaneUtils.getSetting(moduleId, "enableSpellValidation")
-    ) {
-      return originalMethods.get("useItem").call(this, itemName, itemType, ...args);
-    }
-
-    // Skip if overrides active
-    if (DragonbaneActionRules.overrides?.validationBypass) {
-      return originalMethods.get("useItem").call(this, itemName, itemType, ...args);
-    }
-
-    try {
-      const selectedToken = canvas.tokens.controlled[0];
-      if (selectedToken?.actor) {
-        const item = selectedToken.actor.items.find(
-          (i) => i.name === itemName && i.type === itemType
-        );
-
-        // VALIDATION FOR SPELLS (NO Magic Trick redirect needed - useItem handles them naturally)
-        if (
-          item &&
-          item.type === "spell" &&
-          DragonbaneActionRules.validator?.performSpellCast
-        ) {
-          const validation = await DragonbaneActionRules.validator.performSpellCast(
-            itemName,
-            selectedToken.actor
+      try {
+        const selectedToken = canvas.tokens.controlled[0];
+        if (selectedToken?.actor) {
+          const item = selectedToken.actor.items.find(
+            (i) => i.name === itemName && i.type === itemType
           );
 
-          if (!validation.success) {
-            ui.notifications.warn(validation.message);
-            return null;
+          // VALIDATION FOR SPELLS (NO Magic Trick redirect needed - useItem handles them naturally)
+          if (
+            item &&
+            item.type === "spell" &&
+            DragonbaneActionRules.validator?.performSpellCast
+          ) {
+            const validation =
+              await DragonbaneActionRules.validator.performSpellCast(
+                itemName,
+                selectedToken.actor
+              );
+
+            if (!validation.success) {
+              ui.notifications.warn(validation.message);
+              return null;
+            }
+          }
+
+          // VALIDATION FOR ABILITIES (useItem also handles these)
+          if (
+            item &&
+            item.type === "ability" &&
+            DragonbaneActionRules.validator?.performSpellCast
+          ) {
+            const validation =
+              await DragonbaneActionRules.validator.performSpellCast(
+                itemName,
+                selectedToken.actor
+              );
+
+            if (!validation.success) {
+              ui.notifications.warn(validation.message);
+              return null;
+            }
           }
         }
-
-        // VALIDATION FOR ABILITIES (useItem also handles these)
-        if (
-          item &&
-          item.type === "ability" &&
-          DragonbaneActionRules.validator?.performSpellCast
-        ) {
-          const validation = await DragonbaneActionRules.validator.performSpellCast(
-            itemName,
-            selectedToken.actor
+      } catch (error) {
+        if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
+          DoD_Utility.WARNING(
+            `Error in Token Action HUD useItem validation: ${error.message}`
           );
-
-          if (!validation.success) {
-            ui.notifications.warn(validation.message);
-            return null;
-          }
         }
       }
-    } catch (error) {
-      if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
-        DoD_Utility.WARNING(`Error in Token Action HUD useItem validation: ${error.message}`);
-      }
-    }
 
-    return originalMethods.get("useItem").call(this, itemName, itemType, ...args);
-  };
-}
+      return originalMethods
+        .get("useItem")
+        .call(this, itemName, itemType, ...args);
+    };
+  }
 
   // Character sheets attack interception
   Hooks.on("renderActorSheet", (sheet, html, data) => {
@@ -904,11 +934,6 @@ if (game.dragonbane?.useItem && !originalMethods.has("useItem")) {
       );
     }
   });
-
-  // Universal spell animation support - enhance all non-damage spells on world load
-  setTimeout(() => {
-    enhanceAllNonDamageSpells(); // Always enhance for AA
-  }, 2000);
 
   console.log(`${moduleId} | Simplified hook system registered`);
 }
@@ -1169,3 +1194,39 @@ function normalizeAction(action) {
 
   return actionLower;
 }
+
+/**
+ * Disable all spell enhancements for Automated Animations
+ * Removes "n/a" from damage field to restore original spell state
+ */
+async function disableAllSpellEnhancements() {
+  try {
+    let enhancedCount = 0;
+
+    for (let actor of game.actors) {
+      if (!actor) continue;
+
+      for (let item of actor.items) {
+        if (item.type === "spell" && item.system.damage === "n/a") {
+          await item.update({ "system.damage": "" });
+          enhancedCount++;
+          console.log(
+            `Combat Assistant: Removed AA enhancement from ${item.name}`
+          );
+        }
+      }
+    }
+
+    console.log(
+      `Combat Assistant: Disabled AA support for ${enhancedCount} spells`
+    );
+    return enhancedCount;
+  } catch (error) {
+    console.error("Error disabling spell enhancements:", error);
+    throw error;
+  }
+}
+
+// Make functions available globally for the dialogs
+globalThis.enhanceAllNonDamageSpells = enhanceAllNonDamageSpells;
+globalThis.disableAllSpellEnhancements = disableAllSpellEnhancements;

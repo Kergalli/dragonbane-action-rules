@@ -86,6 +86,16 @@
       "enableSpellStatusEffects": {
         "name": "Aktivera automatiska trollformelstatuseffekter",
         "hint": "Applicera automatiskt statuseffekter när trollformler kastas framgångsrikt."
+      },
+      "enableAASupport": {
+        "name": "Aktivera AA-stöd",
+        "label": "Aktivera Automated Animations",
+        "hint": "Lägg till kompatibilitetsdata till alla besvärjelser så de kan utlösa Automated Animations. Detta modifierar besvärjelsesdata genom att lägga till 'n/a' i tomma skadesfält."
+      },
+      "disableAASupport": {
+        "name": "Inaktivera AA-stöd",
+        "label": "Inaktivera Automated Animations",
+        "hint": "Ta bort kompatibilitetsdata från förbättrade besvärjelser för att inaktivera Automated Animations. Detta tar bort 'n/a' från besvärjelseskadesfält som lades till av aktiveringsfunktionen."
       }
     },
     "actions": {
@@ -242,6 +252,24 @@
       "cold": "Köld",
       "frost": "Frusen",
       "heat": "Värme"
+    },
+    "dialogs": {
+      "enableAA": {
+        "title": "Aktivera Automated Animations-stöd",
+        "content": "Detta kommer att lägga till 'n/a' i skadesfältet för alla icke-skade-besvärjelser, vilket gör dem kompatibla med Automated Animations.",
+        "warning": "Detta påverkar alla aktörer och deras besvärjelser i din värld. Enkelt att ångra med inaktivera-knappen.",
+        "warningLabel": "Varning:",
+        "enableButton": "Aktivera AA-stöd",
+        "cancelButton": "Avbryt"
+      },
+      "disableAA": {
+        "title": "Inaktivera Automated Animations-stöd",
+        "content": "Detta kommer att ta bort 'n/a' från skadesfältet för förbättrade besvärjelser, vilket inaktiverar Automated Animations-kompatibilitet.",
+        "warning": "Detta påverkar alla aktörer och deras besvärjelser i din värld. Du kan återaktivera när som helst.",
+        "warningLabel": "Varning:",
+        "disableButton": "Inaktivera AA-stöd",
+        "cancelButton": "Avbryt"
+      }
     },
     "grudgeTracker": {
       "speakerName": "Obarmhärtighetsspårare",

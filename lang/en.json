@@ -86,6 +86,16 @@
       "enableSpellStatusEffects": {
         "name": "Enable Automatic Spell Status Effects",
         "hint": "Automatically apply status effects when spells are successfully cast."
+      },
+      "enableAASupport": {
+        "name": "Enable AA Support",
+        "label": "Enable Automated Animations",
+        "hint": "Add compatibility data to all spells so they can trigger Automated Animations. This modifies spell data by adding 'n/a' to empty damage fields."
+      },
+      "disableAASupport": {
+        "name": "Disable AA Support",
+        "label": "Disable Automated Animations",
+        "hint": "Remove compatibility data from enhanced spells to disable Automated Animations. This removes 'n/a' from spell damage fields that were added by the enable function."
       }
     },
     "actions": {
@@ -242,6 +252,24 @@
       "cold": "Cold",
       "frost": "Frozen",
       "heat": "Heat"
+    },
+    "dialogs": {
+      "enableAA": {
+        "title": "Enable Automated Animations Support",
+        "content": "This will add 'n/a' to the damage field of all non-damage spells, making them compatible with Automated Animations.",
+        "warning": "This affects all actors and their spells in your world. Easily reversible with the disable button.",
+        "warningLabel": "Warning:",
+        "enableButton": "Enable AA Support",
+        "cancelButton": "Cancel"
+      },
+      "disableAA": {
+        "title": "Disable Automated Animations Support",
+        "content": "This will remove 'n/a' from the damage field of enhanced spells, disabling Automated Animations compatibility.",
+        "warning": "This affects all actors and their spells in your world. You can re-enable anytime.",
+        "warningLabel": "Warning:",
+        "disableButton": "Disable AA Support",
+        "cancelButton": "Cancel"
+      }
     },
     "grudgeTracker": {
       "speakerName": "Unforgiving Tracker",

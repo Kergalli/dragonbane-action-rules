@@ -406,6 +406,37 @@ export function registerSettings(moduleId) {
     type: Boolean,
     default: true,
   });
+
+  // AA Support buttons
+  game.settings.registerMenu(moduleId, "enableAASupport", {
+    name: game.i18n.localize(
+      "DRAGONBANE_ACTION_RULES.settings.enableAASupport.name"
+    ),
+    label: game.i18n.localize(
+      "DRAGONBANE_ACTION_RULES.settings.enableAASupport.label"
+    ),
+    hint: game.i18n.localize(
+      "DRAGONBANE_ACTION_RULES.settings.enableAASupport.hint"
+    ),
+    icon: "fas fa-magic",
+    type: EnableAADialog,
+    restricted: true,
+  });
+
+  game.settings.registerMenu(moduleId, "disableAASupport", {
+    name: game.i18n.localize(
+      "DRAGONBANE_ACTION_RULES.settings.disableAASupport.name"
+    ),
+    label: game.i18n.localize(
+      "DRAGONBANE_ACTION_RULES.settings.disableAASupport.label"
+    ),
+    hint: game.i18n.localize(
+      "DRAGONBANE_ACTION_RULES.settings.disableAASupport.hint"
+    ),
+    icon: "fas fa-undo",
+    type: DisableAADialog,
+    restricted: true,
+  });
 }
 
 export function getSetting(moduleId, setting, fallback = null) {
@@ -425,4 +456,122 @@ export function getSetting(moduleId, setting, fallback = null) {
  */
 export function isDebugMode(moduleId) {
   return getSetting(moduleId, SETTINGS.DEBUG_MODE, false);
+}
+
+/**
+ * Dialog for enabling Automated Animations support
+ */
+class EnableAADialog extends FormApplication {
+  static get defaultOptions() {
+    return foundry.utils.mergeObject(super.defaultOptions, {
+      title: game.i18n.localize("DRAGONBANE_ACTION_RULES.dialogs.enableAA.title"),
+      id: "enable-aa-dialog",
+      width: 400,
+      height: "auto",
+      closeOnSubmit: false
+    });
+  }
+
+  render(force, options) {
+    this.showDialog();
+    return this;
+  }
+
+  async showDialog() {
+    return new Promise((resolve) => {
+      new Dialog({
+        title: game.i18n.localize("DRAGONBANE_ACTION_RULES.dialogs.enableAA.title"),
+        content: `
+          <div style="margin-bottom: 1rem;">
+            <p>${game.i18n.localize("DRAGONBANE_ACTION_RULES.dialogs.enableAA.content")}</p>
+            <div style="background: #ffe6e6; border: 1px solid #ff9999; padding: 10px; margin: 10px 0; border-radius: 4px;">
+              <i class="fas fa-exclamation-triangle" style="color: #cc0000; margin-right: 8px;"></i>
+              <strong>${game.i18n.localize("DRAGONBANE_ACTION_RULES.dialogs.enableAA.warningLabel")}</strong> ${game.i18n.localize("DRAGONBANE_ACTION_RULES.dialogs.enableAA.warning")}
+            </div>
+          </div>
+        `,
+        buttons: {
+          enable: {
+            label: game.i18n.localize("DRAGONBANE_ACTION_RULES.dialogs.enableAA.enableButton"),
+            callback: async () => {
+              ui.notifications.info("Enabling Automated Animations support for all spells...");
+              try {
+                await enhanceAllNonDamageSpells();
+                ui.notifications.info("Automated Animations support enabled for all spells!");
+                resolve(true);
+              } catch (error) {
+                ui.notifications.error("Failed to enable AA support: " + error.message);
+                console.error("EnableAADialog error:", error);
+                resolve(false);
+              }
+            }
+          },
+          cancel: {
+            label: game.i18n.localize("DRAGONBANE_ACTION_RULES.dialogs.enableAA.cancelButton"),
+            callback: () => resolve(false)
+          }
+        },
+        default: "enable"
+      }).render(true);
+    });
+  }
+}
+
+/**
+ * Dialog for disabling Automated Animations support
+ */
+class DisableAADialog extends FormApplication {
+  static get defaultOptions() {
+    return foundry.utils.mergeObject(super.defaultOptions, {
+      title: game.i18n.localize("DRAGONBANE_ACTION_RULES.dialogs.disableAA.title"),
+      id: "disable-aa-dialog",
+      width: 400,
+      height: "auto",
+      closeOnSubmit: false
+    });
+  }
+
+  render(force, options) {
+    this.showDialog();
+    return this;
+  }
+
+  async showDialog() {
+    return new Promise((resolve) => {
+      new Dialog({
+        title: game.i18n.localize("DRAGONBANE_ACTION_RULES.dialogs.disableAA.title"),
+        content: `
+          <div style="margin-bottom: 1rem;">
+            <p>${game.i18n.localize("DRAGONBANE_ACTION_RULES.dialogs.disableAA.content")}</p>
+            <div style="background: #ffe6e6; border: 1px solid #ff9999; padding: 10px; margin: 10px 0; border-radius: 4px;">
+              <i class="fas fa-exclamation-triangle" style="color: #cc0000; margin-right: 8px;"></i>
+              <strong>${game.i18n.localize("DRAGONBANE_ACTION_RULES.dialogs.disableAA.warningLabel")}</strong> ${game.i18n.localize("DRAGONBANE_ACTION_RULES.dialogs.disableAA.warning")}
+            </div>
+          </div>
+        `,
+        buttons: {
+          disable: {
+            label: game.i18n.localize("DRAGONBANE_ACTION_RULES.dialogs.disableAA.disableButton"),
+            callback: async () => {
+              ui.notifications.info("Disabling Automated Animations support...");
+              try {
+                const count = await disableAllSpellEnhancements();
+                ui.notifications.info(`Automated Animations support disabled for ${count} spells!`);
+                resolve(true);
+              } catch (error) {
+                ui.notifications.error("Failed to disable AA support: " + error.message);
+                console.error("DisableAADialog error:", error);
+                resolve(false);
+              }
+            }
+          },
+          cancel: {
+            label: game.i18n.localize("DRAGONBANE_ACTION_RULES.dialogs.disableAA.cancelButton"),
+            callback: () => resolve(false)
+          }
+        },
+        default: "disable"
+      }).render(true);
+    });
+  }
 }
