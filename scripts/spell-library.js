@@ -167,11 +167,6 @@ export class SpellLibrary {
         target = targetToken?.actor || caster;
       }
 
-      // Handle Frost special case (though it's a template spell, keeping for future)
-      if (spell.name === "Frost" || spell.name === "Frost") {
-        return await this.applyFrostEffect(config, target, caster);
-      }
-
       // Standard effect application - pass caster for origin
       return await this.applyEffect(config, target, caster);
     } catch (error) {
