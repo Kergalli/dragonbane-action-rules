@@ -123,16 +123,16 @@ export class SpellLibrary {
   static SPELL_NAME_TRANSLATIONS = {
     Beskyddare: "Protector",
     Fågelsång: "Birdsong",
-    Flygning: "Flight",
+    Flyga: "Flight",
     Frost: "Frost", // Same in Swedish
-    "Förtrollat vapen": "Enchant Weapon",
+    "Förtrolla vapen": "Enchant Weapon",
     Kraftnäve: "Power Fist",
     Kyla: "Chill",
-    Långsteg: "Longstrider",
-    "Snärjande rötter": "Ensnaring Roots",
+    Långstige: "Longstrider",
+    Snärja: "Ensnaring Roots",
     Stenhud: "Stone Skin",
-    Sömn: "Sleep",
-    "Uppslukande skog": "Engulfing Forest",
+    Söva: "Sleep",
+    Snärskog: "Engulfing Forest",
     Värme: "Heat",
   };
 
