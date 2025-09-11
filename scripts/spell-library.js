@@ -6,6 +6,8 @@
 import { DragonbaneUtils } from "./utils.js";
 
 export class SpellLibrary {
+  // Template range types (system values, not localized)
+  static TEMPLATE_RANGE_TYPES = ["cone", "sphere"];
   // Complete spell-to-effect mapping from battle plan
   static SPELL_EFFECTS = {
     // Personal spells (apply to caster) - Alphabetized
@@ -32,13 +34,6 @@ export class SpellLibrary {
       dseIcon: "modules/dragonbane-status-effects/assets/icons/magic-axe.svg",
       fallbackIcon: "icons/svg/sword.svg",
       duration: 900,
-    },
-    "Engulfing Forest": {
-      effectId: "dse-ensnared", // Same as Ensnaring Roots
-      effectNameKey: "DRAGONBANE_ACTION_RULES.effects.engulfingForest",
-      dseIcon: "icons/svg/net.svg",
-      fallbackIcon: "icons/svg/net.svg",
-      duration: null,
     },
     "Ensnaring Roots": {
       effectId: "dse-ensnared",
@@ -91,6 +86,13 @@ export class SpellLibrary {
         "modules/dragonbane-status-effects/assets/icons/ice-spell-cast.svg",
       fallbackIcon: "icons/svg/frozen.svg",
       duration: 900,
+    },
+    "Engulfing Forest": {
+      effectId: "dse-ensnared", // Same as Ensnaring Roots
+      effectNameKey: "DRAGONBANE_ACTION_RULES.effects.engulfingForest",
+      dseIcon: "icons/svg/net.svg",
+      fallbackIcon: "icons/svg/net.svg",
+      duration: null,
     },
     Frost: {
       primary: {
@@ -157,8 +159,17 @@ export class SpellLibrary {
       const caster = DragonbaneUtils.getActorFromMessage(message);
       if (!caster) return false;
 
-      // Determine target based on spell type
       const rangeType = spell.system.rangeType;
+
+      // Skip template spells for now (future v2.1 implementation)
+      if (this.TEMPLATE_RANGE_TYPES.includes(rangeType)) {
+        console.log(
+          `Combat Assistant: Skipping status effect for template spell ${spell.name} (template placement not yet implemented)`
+        );
+        return false;
+      }
+
+      // Determine target based on spell type
       let target = caster; // Default for personal spells
 
       if (["range", "touch"].includes(rangeType)) {

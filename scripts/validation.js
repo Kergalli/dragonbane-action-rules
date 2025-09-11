@@ -336,13 +336,8 @@ function isSpellExcluded(spellName, moduleId) {
 function validateSpellTarget(spell, actor = null) {
   const rangeType = spell.system.rangeType;
 
-  // Skip validation for template spells (use template placement)
-  if (["cone", "sphere"].includes(rangeType)) {
-    return { success: true };
-  }
-
-  // Auto-target personal spells
-  if (rangeType === "personal") {
+  // Auto-target caster for template and personal spells
+  if (["cone", "sphere", "personal"].includes(rangeType)) {
     // Skip self-target validation if no actor
     if (!actor) {
       return {
@@ -397,7 +392,7 @@ function validateSpellTarget(spell, actor = null) {
       }
 
       console.log(
-        `Combat Assistant v2.0: Auto-targeted ${actor.name} for personal spell: ${spell.name}`
+        `Combat Assistant v2.0: Auto-targeted ${actor.name} for ${rangeType} spell: ${spell.name}`
       );
     } catch (error) {
       console.warn(
@@ -408,6 +403,8 @@ function validateSpellTarget(spell, actor = null) {
 
     return { success: true };
   }
+
+  // ... rest of the validation for range/touch spells continues here ...
 
   // For range/touch spells, require exactly 1 target (same as weapons)
   if (game.user.targets.size === 0) {
