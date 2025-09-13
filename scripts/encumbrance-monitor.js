@@ -172,6 +172,11 @@ export class DragonbaneEncumbranceMonitor {
 
       // Check if state changed
       if (previousState !== isOverEncumbered) {
+        if (!this.shouldHandleStatusEffects(actor)) {
+          // Update our local state tracking but don't touch status effects
+          this.previousStates.set(actor.id, isOverEncumbered);
+          return;
+        }
         // Handle status effects based on state transition
         if (isOverEncumbered) {
           // Character became over-encumbered - add status effect if not present
@@ -318,6 +323,36 @@ export class DragonbaneEncumbranceMonitor {
   }
 
   /**
+   * Determine if this client should create encumbrance notifications
+   */
+  shouldCreateNotification() {
+    // If there's a GM online, only let the GM create notifications
+    const activeGM = game.users.find((user) => user.active && user.isGM);
+    if (activeGM) {
+      return game.user.isGM;
+    }
+
+    // If no GM is online, let the first active user create notifications
+    const firstActiveUser = game.users.find((user) => user.active);
+    return firstActiveUser && game.user.id === firstActiveUser.id;
+  }
+
+  /**
+   * Determine if this client should handle status effects
+   * Prefers GM when available, falls back to actor owner
+   */
+  shouldHandleStatusEffects(actor) {
+    // If there's a GM online, only let the GM handle status effects
+    const activeGM = game.users.find((user) => user.active && user.isGM);
+    if (activeGM) {
+      return game.user.isGM;
+    }
+
+    // If no GM is online, only the actor owner handles status effects
+    return actor.isOwner;
+  }
+
+  /**
    * Send chat notification about encumbrance change
    */
   async sendEncumbranceNotification(
@@ -327,6 +362,11 @@ export class DragonbaneEncumbranceMonitor {
     maxEnc
   ) {
     try {
+      // Prevent duplicate chat messages from multiple clients
+      if (!this.shouldCreateNotification()) {
+        return;
+      }
+
       const messageKey = isOverEncumbered
         ? "DRAGONBANE_ACTION_RULES.encumbrance.chatOverEncumbered"
         : "DRAGONBANE_ACTION_RULES.encumbrance.chatNoLongerOverEncumbered";
