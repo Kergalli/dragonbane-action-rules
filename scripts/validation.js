@@ -73,12 +73,12 @@ export class DragonbaneValidator {
       return { success: true };
     } catch (error) {
       console.error(`${this.moduleId} | Error in weapon validation:`, error);
-      return { success: true }; // Allow attack on error
+      return { success: true };
     }
   }
 
   /**
-   * Perform spell cast validation - mirrors performWeaponAttack
+   * Perform spell cast validation
    */
   async performSpellCast(spellName, actor = null) {
     try {
@@ -123,14 +123,13 @@ export class DragonbaneValidator {
       return validation;
     } catch (error) {
       console.error(`${this.moduleId} | Error in spell validation:`, error);
-      return { success: true }; // Allow spell on error
+      return { success: true };
     }
   }
 
   /**
    * Get actor and token from parameter or selection
    */
-  // Simplified - straightforward token finding
   getActorAndToken(actor) {
     let selectedActor = actor;
     let selectedToken = null;
@@ -140,7 +139,7 @@ export class DragonbaneValidator {
       selectedToken = canvas.tokens.controlled[0];
       selectedActor = selectedToken?.actor;
     } else {
-      // Actor provided - find its token (simple approach)
+      // Actor provided - find its token
       selectedToken =
         selectedActor.getActiveTokens()[0] || canvas.tokens.controlled[0];
     }
@@ -315,7 +314,6 @@ export class DragonbaneValidator {
 
 /**
  * Check if spell should be excluded from validation
- * (Reuse existing exclusion logic from Phase 1)
  */
 function isSpellExcluded(spellName, moduleId) {
   const excludedSpells = DragonbaneUtils.getSetting(
@@ -363,9 +361,9 @@ function validateSpellTarget(spell, actor = null) {
       };
     }
 
-    // Auto-target the caster - v12/v13 compatibility with UI refresh fix
+    // Auto-target the caster - v12/v13 compatibility
     try {
-      // First, properly clear all existing targets with UI update
+      // Clear all existing targets with UI update
       if (game.user.targets.size > 0) {
         const currentTargets = Array.from(game.user.targets);
         currentTargets.forEach((t) => {
@@ -376,7 +374,7 @@ function validateSpellTarget(spell, actor = null) {
         game.user.targets.clear();
       }
 
-      // Now set the new target (no delay)
+      // Now set the new target
       if (casterToken.object) {
         // v13: tokens have an 'object' property
         casterToken.object.setTarget(true, {
@@ -403,8 +401,6 @@ function validateSpellTarget(spell, actor = null) {
 
     return { success: true };
   }
-
-  // ... rest of the validation for range/touch spells continues here ...
 
   // For range/touch spells, require exactly 1 target (same as weapons)
   if (game.user.targets.size === 0) {
@@ -437,7 +433,7 @@ function validateSpellTarget(spell, actor = null) {
 }
 
 /**
- * Validate spell range - simpler than weapon range validation
+ * Validate spell range
  */
 function validateSpellRange(spell, actor) {
   const rangeType = spell.system.rangeType;
@@ -469,7 +465,7 @@ function validateSpellRange(spell, actor) {
   let errorMessage;
 
   if (rangeType === "touch") {
-    // Touch spells require adjacency (like melee weapons)
+    // Touch spells require adjacency
     maxRange = 2; // 2 meters = adjacent
     errorMessage = game.i18n.format(
       "DRAGONBANE_ACTION_RULES.validation.spellTouchRange",

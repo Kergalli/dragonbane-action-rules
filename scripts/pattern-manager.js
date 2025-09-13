@@ -1,6 +1,5 @@
 /**
  * Dragonbane Combat Assistant - Pattern Management (Simplified)
- * Centralized pattern compilation and matching - cleaned up over-engineering
  */
 
 import { DragonbaneUtils } from "./utils.js";
@@ -9,7 +8,7 @@ export class DragonbanePatternManager {
   constructor(moduleId) {
     this.moduleId = moduleId;
 
-    // Compiled patterns - simplified to only what's actually needed
+    // Compiled patterns
     this.compiledPatterns = {
       // Rules display patterns (essential - keep all)
       actions: null,
@@ -70,7 +69,7 @@ export class DragonbanePatternManager {
 
     // Build pattern arrays - simplified to only essential patterns
     this._rawTerms = {
-      // ESSENTIAL - Rules Display patterns (keep all)
+      // Rules Display patterns (essential)
       actions: [terms.parry, terms.topple, terms.disarm, terms.weakpoint],
       success: [cleanSuccess, dragonWord],
       failure: [cleanFailure],
@@ -83,7 +82,7 @@ export class DragonbanePatternManager {
         terms.thrown,
       ],
 
-      // SIMPLIFIED - YZE Integration patterns (only what matters)
+      // YZE Integration patterns (essential)
       dice: [
         "d6",
         "d8",
@@ -136,7 +135,7 @@ export class DragonbanePatternManager {
     if (!terms || terms.length === 0) return null;
 
     const escapedTerms = terms.map((term) => this._escapeRegex(term));
-    // Add optional punctuation at the end of each term to handle "lyckades." vs "lyckades"
+    // Add optional punctuation at the end of each term
     const pattern = `\\b(?:${escapedTerms.join("|")})(?:[.!])?\\b`;
     return new RegExp(pattern, "i");
   }

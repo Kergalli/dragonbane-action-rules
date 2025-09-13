@@ -1,5 +1,5 @@
 /**
- * Spell Library - Combat Assistant v2.3
+ * Spell Library
  * Handles spell-to-effect mapping and application
  */
 
@@ -10,14 +10,14 @@ export class SpellLibrary {
   static TEMPLATE_RANGE_TYPES = ["cone", "sphere"];
   // Complete spell-to-effect mapping from battle plan
   static SPELL_EFFECTS = {
-    // Personal spells (apply to caster) - Alphabetized
+    // Personal spells (apply to caster)
     Birdsong: {
       effectId: "dse-birdsong",
       effectNameKey: "DRAGONBANE_ACTION_RULES.effects.birdsong",
       dseIcon:
         "modules/dragonbane-status-effects/assets/icons/bird-twitter.svg",
       fallbackIcon: "icons/svg/sound.svg",
-      duration: 900, // 15 minutes
+      duration: 900,
     },
     "Power Fist": {
       effectId: "dse-power-fist",
@@ -27,7 +27,7 @@ export class SpellLibrary {
       duration: 900,
     },
 
-    // Range/Touch spells (apply to target) - Alphabetized
+    // Range/Touch spells (apply to target)
     "Enchant Weapon": {
       effectId: "dse-enchanted-weapon",
       effectNameKey: "DRAGONBANE_ACTION_RULES.effects.enchantWeapon",
@@ -61,7 +61,7 @@ export class SpellLibrary {
       effectNameKey: "DRAGONBANE_ACTION_RULES.effects.protector",
       dseIcon: "icons/svg/shield.svg",
       fallbackIcon: "icons/svg/shield.svg",
-      duration: 21600, // 6 hours in seconds
+      duration: 21600,
     },
     Sleep: {
       effectId: "dse-sleep",
@@ -78,7 +78,7 @@ export class SpellLibrary {
       duration: 900,
     },
 
-    // Template spells (sphere/cone - skipped in Phase 1) - Alphabetized
+    // Template spells (sphere/cone - for future development)
     Chill: {
       effectId: "dse-chill",
       effectNameKey: "DRAGONBANE_ACTION_RULES.effects.chill",
@@ -121,7 +121,7 @@ export class SpellLibrary {
     },
   };
 
-  // Swedish spell name translations - Alphabetized
+  // Swedish spell name translations
   static SPELL_NAME_TRANSLATIONS = {
     Beskyddare: "Protector",
     Fågelsång: "Birdsong",
@@ -237,7 +237,6 @@ export class SpellLibrary {
     ) {
       effectData.description = effect.description;
     }
-    // If no valid description, don't add a description field at all
 
     // Add duration if specified
     if (config.duration) {
@@ -247,7 +246,7 @@ export class SpellLibrary {
       };
     }
 
-    // Apply effect (rest of the code stays the same)
+    // Apply effect
     if (target.isOwner || game.user.isGM) {
       await target.createEmbeddedDocuments("ActiveEffect", [effectData]);
     } else {

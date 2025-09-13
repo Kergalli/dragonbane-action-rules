@@ -1,6 +1,5 @@
 /**
- * Dragonbane Combat Assistant - Simplified Hook Registration (v1.5.0)
- * Universal Spell Animation Support for Automated Animations
+ * Dragonbane Combat Assistant - Hook Registration
  */
 
 import { DragonbaneUtils } from "./utils.js";
@@ -9,7 +8,7 @@ import { DragonbaneUtils } from "./utils.js";
 const originalMethods = new Map();
 
 /**
- * Register all module hooks - direct registration like core Dragonbane system
+ * Register all module hooks
  */
 export function registerHooks(moduleId) {
   // Main chat message processing hook
@@ -112,7 +111,7 @@ export function registerHooks(moduleId) {
         const actor = game.actors.get(actorId);
         const spell = actor?.items.get(spellId);
 
-        // CHECK IF IT'S ACTUALLY A MAGIC TRICK (rank 0 or general school)
+        // Check if Magic Trick (rank 0 or general school)
         if (spell && spell.type === "spell" && spell.system.damage === "n/a") {
           // ONLY add button for actual Magic Tricks
           const isMagicTrick =
@@ -363,12 +362,12 @@ export function registerHooks(moduleId) {
       return;
     if (userId !== game.user.id) return;
 
-    // FIXED: Skip rules messages - they're not actual attack attempts
+    // Skip rules messages
     if (document.getFlag(moduleId, "dragonbaneRulesMessage")) {
       return;
     }
 
-    // FIXED: Skip if already processed by monster prevention to prevent infinite loops
+    // Skip if already processed by monster prevention to prevent infinite loops
     if (document.getFlag(moduleId, "monsterActionProcessed")) {
       return;
     }
@@ -410,7 +409,7 @@ export function registerHooks(moduleId) {
     }
   });
 
-  // CLEANED: Simplified monster action dialog - no bypass system
+  // Monster action dialog
   async function showMonsterActionDialog(
     action,
     targetName,
@@ -454,7 +453,7 @@ export function registerHooks(moduleId) {
         `${moduleId} | User proceeded with ${action} against monster`
       );
 
-      // FIXED: Mark as processed to prevent infinite loop re-triggering
+      // Mark as processed to prevent infinite loop re-triggering
       document.updateSource({
         flags: {
           [moduleId]: {
@@ -510,7 +509,7 @@ export function registerHooks(moduleId) {
             (i) => i.name === itemName && i.type === itemType
           );
 
-          // CHECK FOR MAGIC TRICKS FIRST - BEFORE ANY VALIDATION
+          // Check for Magic Tricks (before any validation)
           if (item?.type === "spell") {
             let rank = item.system?.rank || 0;
             // Magic tricks are rank 0 or have "general" school
@@ -581,7 +580,7 @@ export function registerHooks(moduleId) {
             }
           }
 
-          // NORMAL VALIDATION FOR WEAPONS
+          // Weapon Validation
           if (
             item &&
             item.type === "weapon" &&
@@ -599,7 +598,7 @@ export function registerHooks(moduleId) {
             }
           }
 
-          // NORMAL VALIDATION FOR REGULAR SPELLS (NOT MAGIC TRICKS)
+          // Spell Validation (not Magic Tricks)
           if (
             item &&
             item.type === "spell" &&
@@ -631,7 +630,7 @@ export function registerHooks(moduleId) {
     };
   }
 
-  // ALSO hook useItem for spells (Token Action HUD calls this for regular spells)
+  // Hook useItem for spells (Token Action HUD calls this for regular spells)
   if (game.dragonbane?.useItem && !originalMethods.has("useItem")) {
     originalMethods.set("useItem", game.dragonbane.useItem);
 
@@ -671,7 +670,7 @@ export function registerHooks(moduleId) {
             (i) => i.name === itemName && i.type === itemType
           );
 
-          // VALIDATION FOR SPELLS (NO Magic Trick redirect needed - useItem handles them naturally)
+          // Spell Validation (No Magic Trick redirect needed - useItem handles them naturally)
           if (
             item &&
             item.type === "spell" &&
@@ -689,7 +688,7 @@ export function registerHooks(moduleId) {
             }
           }
 
-          // VALIDATION FOR ABILITIES (useItem also handles these)
+          // Ability Validation
           if (
             item &&
             item.type === "ability" &&

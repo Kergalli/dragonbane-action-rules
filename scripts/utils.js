@@ -1,5 +1,5 @@
 /**
- * Dragonbane Combat Assistant - Shared Utility Methods (Cleaned)
+ * Dragonbane Combat Assistant - Shared Utility Methods
  */
 
 export class DragonbaneUtils {
@@ -18,7 +18,7 @@ export class DragonbaneUtils {
       }
     }
 
-    // Direct actor lookup (simplified fallback)
+    // Direct actor lookup
     return speakerData.actor ? game.actors.get(speakerData.actor) : null;
   }
 
@@ -78,7 +78,7 @@ export class DragonbaneUtils {
   }
 
   /**
-   * Check if actor is monster type (simplified)
+   * Check if actor is monster type
    */
   static isMonsterActor(actor) {
     if (!actor) return false;
@@ -102,7 +102,7 @@ export class DragonbaneUtils {
   }
 
   /**
-   * Debug logging (simplified)
+   * Debug logging
    */
   static debugLog(moduleId, component, message) {
     if (game.settings?.get?.(moduleId, "debugMode")) {
@@ -111,7 +111,7 @@ export class DragonbaneUtils {
   }
 
   /**
-   * Check if weapon has specific feature using core Dragonbane patterns
+   * Check if weapon has specific feature
    */
   static hasWeaponFeature(weapon, dodFeatureKey, fallbackKey) {
     if (!weapon || !weapon.system?.features) return false;
@@ -159,7 +159,7 @@ export class DragonbaneUtils {
   }
 
   /**
-   * Detect dragon roll in message (simplified)
+   * Detect dragon roll in message
    */
   static detectDragonRoll(message) {
     if (!message || !message.content) return false;
@@ -186,7 +186,7 @@ export class DragonbaneUtils {
   }
 
   /**
-   * Find a status effect by name or ID - FIXED for Foundry v12+
+   * Find a status effect by name or ID - Fixed for Foundry v12+
    */
   static findStatusEffect(effectName) {
     if (!effectName) return null;
@@ -199,7 +199,6 @@ export class DragonbaneUtils {
           effect.id === statusEffectId ||
           effect.name === effectName ||
           effect.id === effectName
-        // REMOVED: effect.label === effectName (deprecated)
       ) || null
     );
   }
@@ -218,7 +217,7 @@ export class DragonbaneUtils {
   }
 
   /**
-   * FIXED: Toggle status effect using v12+ API to avoid deprecation warnings
+   * Toggle status effect using v12+ API to avoid deprecation warnings
    */
   static async toggleStatusEffect(actor, effectName, active = true) {
     if (!actor || !effectName) return false;
@@ -231,7 +230,7 @@ export class DragonbaneUtils {
 
       if (active && !hasEffect) {
         const effectData = {
-          name: game.i18n.localize(effect.name || effectName), // Removed effect.label
+          name: game.i18n.localize(effect.name || effectName),
           img: effect.img || effect.icon || "icons/svg/aura.svg",
           statuses: [effect.id],
           origin: actor.uuid,
@@ -246,7 +245,6 @@ export class DragonbaneUtils {
             e.statuses?.has(effect.id) ||
             e.name === effectName ||
             e.name === effect.name
-          // REMOVED: e.name === effect.label
         );
 
         if (activeEffect) {
@@ -305,7 +303,7 @@ export class DragonbaneUtils {
   }
 
   /**
-   * Check if skill is EVADE skill (language-agnostic)
+   * Check if skill is EVADE skill
    */
   static isEvadeSkill(skill) {
     if (!skill || !skill.name) return false;

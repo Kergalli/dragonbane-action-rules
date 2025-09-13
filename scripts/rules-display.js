@@ -93,7 +93,7 @@ export class DragonbaneRulesDisplay {
       ).toLowerCase(),
       weakspot: (
         game.i18n.localize("DoD.attackTypes.weakpoint") || "weakpoint"
-      ).toLowerCase(), // Key is weakspot, localization is weakpoint
+      ).toLowerCase(),
     };
 
     // Reverse map localized terms to English keys

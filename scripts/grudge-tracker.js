@@ -95,7 +95,7 @@ export class DragonbaneGrudgeTracker {
         // Get attacker info
         const attackerId = message.speaker?.actor || message.speaker?.token;
 
-        // ✅ FIX: Extract target from message content instead of game.user.targets
+        // Extract target from message content instead of game.user.targets
         let targetId = null;
 
         // Try to extract target from attack roll message
@@ -270,7 +270,7 @@ export class DragonbaneGrudgeTracker {
     try {
       const content = message.content;
 
-      // Extract target actor UUID from data-actor-id attribute (Dragonbane format)
+      // Extract target actor UUID from data-actor-id attribute
       const actorMatch = content.match(/data-actor-id="(Actor\.[^"]+)"/);
       if (!actorMatch) return null;
 
@@ -553,7 +553,7 @@ export class DragonbaneGrudgeTracker {
 
       let createdCount = 0;
 
-      // Create journals for each Unforgiving PC using your original method
+      // Create journals for each Unforgiving PC
       for (const actor of unforgivingPCs) {
         const journalName = game.i18n.format(
           "DRAGONBANE_ACTION_RULES.grudgeTracker.journalName",
@@ -562,8 +562,6 @@ export class DragonbaneGrudgeTracker {
 
         // Skip if already exists
         if (game.journal.getName(journalName)) continue;
-
-        // Use your original _getOrCreateGrudgeJournal method
         const journal = await this._getOrCreateGrudgeJournal(actor);
         if (journal) createdCount++;
       }
@@ -685,7 +683,7 @@ export class DragonbaneGrudgeTracker {
   }
 
   /**
-   * Create initial grudge table HTML with original styling and delete column
+   * Create initial grudge table HTML
    */
   _createInitialGrudgeTableHTML() {
     return `<div class="display-generic-table" style="padding-top: 20px;">

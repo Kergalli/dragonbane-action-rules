@@ -1,6 +1,5 @@
 /**
  * Dragonbane Combat Assistant - Main Module
- * Core initialization and module management
  */
 
 import { DragonbaneEncumbranceMonitor } from "./encumbrance-monitor.js";

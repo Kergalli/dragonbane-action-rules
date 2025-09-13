@@ -33,7 +33,7 @@ export const SETTINGS = {
 };
 
 /**
- * Register all module settings using core Dragonbane system pattern
+ * Register all module settings
  */
 export function registerSettings(moduleId) {
   console.log(`${moduleId} | Registering settings`);
@@ -191,7 +191,7 @@ export function registerSettings(moduleId) {
     default: true,
   });
 
-  // Encumbrance monitoring settings with safer onChange handlers
+  // Encumbrance monitoring settings with onChange handlers
   game.settings.register(moduleId, SETTINGS.ENABLE_ENCUMBRANCE_MONITORING, {
     name: game.i18n.localize(
       "DRAGONBANE_ACTION_RULES.settings.enableEncumbranceMonitoring.name"
@@ -529,7 +529,7 @@ class SetupGrudgeFoldersDialog extends FormApplication {
   }
 }
 
-// Dialog classes for AA Support (existing)
+// Dialog classes for AA Support
 class EnableAADialog extends FormApplication {
   static get defaultOptions() {
     return mergeObject(super.defaultOptions, {
