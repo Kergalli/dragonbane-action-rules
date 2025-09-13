@@ -72,7 +72,7 @@ export function registerHooks(moduleId) {
 
               if (!excludedSpells.includes(spell.name)) {
                 // Only the message creator processes the effect
-                if (message.author.id === game.user.id) {
+                if (message.user.id === game.user.id) {
                   // Small delay to ensure message is fully created
                   setTimeout(() => {
                     DragonbaneActionRules.spellLibrary.applySpellEffect(
