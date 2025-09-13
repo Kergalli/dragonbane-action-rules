@@ -1,14 +1,34 @@
 # Dragonbane Combat Assistant
 
-![Version](https://img.shields.io/badge/version-1.4.0-blue)
+![Version](https://img.shields.io/badge/version-2.0.0-blue)
 ![Foundry Version](https://img.shields.io/badge/foundry-v12%20%7C%20v13-green)
 ![System](https://img.shields.io/badge/system-dragonbane-orange)
 
 ## What This Module Does
 
-**Dragonbane Combat Assistant** enhances melee/ranged combat and character management in seven powerful ways:
+**Dragonbane Combat Assistant** enhances both melee/ranged combat AND spellcasting with comprehensive validation and automation in eight powerful ways:
 
-### 🎯 **Attack Validation (Before Roll)**
+### ✨ **Universal Spell Support for Automated Animations (NEW in v2.0)**
+
+- **All spells trigger animations** - Extends Automated Animations beyond just damage spells to include buffs, debuffs, utility spells, and Magic Tricks
+- **Manual control options** - User-controlled buttons to enable or disable AA support as needed
+- **Zero impact on existing spells** - Damage spells continue working exactly as before
+
+### 🎯 **Spell Validation (NEW in v2.0)**
+
+- **Target selection enforcement** - Range and touch spells require exactly one target, personal spells auto-target the caster
+- **Smart spell range checking** - Validates spell ranges before casting
+- **Template spell handling** - Template spells (cones, spheres) auto-target caster for visual effects while deferring area targeting
+- **Spell exclusion setting** - Simple comma-separated list to exclude specific spells from validation while keeping animations
+
+### 🎭 **Automatic Status Effect Application (NEW in v2.0)**
+
+- **Smart effect targeting** - Successful spells apply appropriate status effects to the correct target (self-buffs to caster, debuffs to target)
+- **Dragonbane Status Effects integration** - Uses DSE module icons when available, with intelligent fallbacks
+- **Template spell intelligence** - Template spells skip auto-effects (awaiting proper area targeting in future versions)
+- **Effect ownership tracking** - Applied effects properly track the caster as origin for clean management
+
+### 🎯 **Attack Validation (Enhanced)**
 
 - **Enforces target selection** - No more accidental attacks into empty space
 - **Smart weapon range validation** - Prevents impossible attacks before they happen
@@ -64,13 +84,6 @@
 - **Smart exclusions** - Ignores damage rolls, healing, reaction spells, and other non-action activities
 - **Override control** - Alt+V shortcut for manual control when automatic detection needs adjustment
 
-### 🃏 **Optional Rule Reminders**
-
-- **Shove mechanics** - Contextual reminders when STR damage bonus allows shoving targets 2m during damage-dealing attacks
-- **Parry movement** - Optional reminders about the 2m movement option on successful parries
-- **Dodge movement** - Helpful reminders about dodge movement options on successful EVADE rolls
-- **Intelligent conditions** - Only shows when rules actually apply (right weapon types, STR advantages, etc.)
-
 ---
 
 ## Installation
@@ -84,6 +97,18 @@
 ## Configuration
 
 Access settings through **Configure Settings → Module Settings → Dragonbane Combat Assistant**:
+
+### Universal Spell Support (NEW)
+
+- **Enable Universal Spell Automated Animations** - Makes all spells compatible with Automated Animations module
+- **Manual AA Enhancement Control** - User-controlled buttons to enable/disable AA support for all spells
+- **Spell Exclusions** - Comma-separated list of spell names to exclude from validation (they still get animations)
+- **Enable Automatic Status Effects** - Apply appropriate status effects when spells succeed
+
+### Spell Validation (NEW)
+
+- **Enable Spell Target Validation** - Requires target selection for range/touch spells, auto-targets caster for personal spells
+- **Enable Spell Range Validation** - Validates spell casting distances before allowing the roll
 
 ### Attack Validation
 
@@ -100,7 +125,7 @@ Access settings through **Configure Settings → Module Settings → Dragonbane 
 - **Enable Shove Reminders** - Shows shove opportunities when conditions are met
 - **Enable Parry Movement Reminders** - Shows movement options on successful parries
 - **Enable Dodge Movement Reminders** - Shows movement options on successful EVADE rolls
-- **Monster Action Prevention** - Interrupts disarm and parry attacks against mosnters with confirmation dialog
+- **Monster Action Prevention** - Interrupts disarm and parry attacks against monsters with confirmation dialog
 
 ### Encumbrance Monitoring
 
@@ -138,6 +163,24 @@ Fully customizable through **Configure Controls** in Foundry.
 
 ## Usage Examples
 
+### Universal Spell Support (NEW)
+
+- **Enabling AA Support**: Use the "Enable AA Support for All Spells" button in module settings to make all spells compatible with Automated Animations
+- **Manual Control**: Use "Disable AA Support" button if you need to roll back the enhancement
+
+### Spell Validation (NEW)
+
+- **Range Spells**: Attempting to cast "Fireball" without selecting a target shows warning and prevents the cast
+- **Touch Spells**: Trying to cast "Heal Wound" on a distant target shows range violation and suggests closer targets
+- **Personal Spells**: Casting "Birdsong" automatically targets yourself (no selection needed)
+- **Template Spells**: Casting "Ensnaring Roots" auto-targets you for visual effects while awaiting proper area targeting
+
+### Automatic Status Effects (NEW)
+
+- **Self-Buffs**: Successfully casting "Protector" applies the Protector status effect to target
+- **Target Debuffs**: Successfully casting "Sleep" applies the Sleeping effect to your target
+- **DSE Integration**: Uses Dragonbane Status Effects module icons when available
+
 ### Attack Validation
 
 - **Target Required**: Attempting to attack without a target shows warning and prevents the roll
@@ -168,7 +211,7 @@ When you successfully parry, topple, disarm, or find a weak spot, the relevant r
 
 ### Unforgiving Grudge Tracking
 
-- Allows Dwarf charaters to add an enemy to their "Grudge List" via a chat button when they suffer damage
+- Allows Dwarf characters to add an enemy to their "Grudge List" via a chat button when they suffer damage
 - Automatically creates and maintains personalized grudge journals for each character
 - Tracks date, enemy name, damage dealt, critical hits, and scene name
 
@@ -179,6 +222,12 @@ When you successfully parry, topple, disarm, or find a weak spot, the relevant r
 - **Smart Detection**: Ignores damage rolls, healing, and advancement - only tracks actual combat actions
 
 ## Special Cases & Tips
+
+**Spell Exclusions:** Add spell names to the exclusion list (comma-separated) to skip validation while keeping animations. Example: `Protector, Heal Wound, Fireball`
+
+**Manual AA Control:** If automatic spell enhancement causes issues, use the "Disable AA Support" button in settings, then re-enable when ready.
+
+**Template Spells:** Template spells (Engulfing Forest, Frost, Gust of Wind) currently auto-target the caster for visual effects. Proper area targeting will be added in a future version.
 
 **Parrying Ranged Attacks with a Weapon or Shield:** Target yourself when parrying a ranged attack with a weapon or shield. The range validation will understand you're defending at your position.
 
@@ -206,7 +255,11 @@ Death Roll, Light Test, Lantern Test, Oil Lamp Test, Candle Test, Torch Test, Se
 
 ## Known Issues
 
-**Thrown Weapons vs Large Tokens:** In the core Dragonbane module, thrown weapons measure distance to a single reference grid square (upper left) instead of using token bounds. This causes attacks with thrown weapons against large and huge tokens to default to the Throw dialog when attacking from anywhere not adjacent to the upper left grid square of the enemy. This is a limitation of the core system's distance calculation and is outside the scope of this module to fix. **NOTE: This should be fixed in the next version of the core Dragonbane system.**
+**Template Spell Area Targeting:** Template spells currently auto-target the caster for visual effects rather than placing templates for area targeting. This is intentional for v2.0 - proper template placement will be added in v2.1.
+
+**Socketlib Dependency:** Automatic status effect application requires the socketlib module for proper cross-client communication. If socketlib is not installed, status effects will still work but may not sync properly across all clients.
+
+**Thrown Weapons vs Large Tokens:** In the core Dragonbane module, thrown weapons measure distance to a single reference grid square (upper left) instead of using token bounds. This causes attacks with thrown weapons against large and huge tokens to default to the Throw dialog when attacking from anywhere not adjacent to the upper left grid square of the enemy. This is a limitation of the core system's distance calculation and is outside the scope of this module to fix. **This will be fixed in Dragonbane v2.6**.
 
 ## Technical Details
 
@@ -219,6 +272,13 @@ Death Roll, Light Test, Lantern Test, Oil Lamp Test, Candle Test, Torch Test, Se
 - Year Zero Engine Combat module
 - Dragonbane Character Sheet
 - Dragonbane Status Effects
+- Automated Animations (enhanced support)
+- socketlib (required for status effects)
+
+**Dependencies:**
+
+- **socketlib** (required for automatic status effect application)
+- **Automated Animations** (optional, but provides the spell animations that universal support enables)
 
 **Localization:**
 

@@ -1,5 +1,72 @@
 # Changelog
 
+## [2.0.0] - 2025-09-13
+
+**Dragonbane Combat Assistant v2.0.0** transforms the module from a combat-focused tool into a **combat AND spellcasting assistant**, extending all functionality to spells.
+
+### **✨ Universal Spell Support for Automated Animations**
+
+- **Animation Enhancement System**
+
+  - Automatically makes all non-damage spells compatible with Automated Animations
+  - Intelligent background enhancement that preserves original spell appearance
+  - Hidden button system maintains clean UI while enabling AA `data-spell-id` attributes
+  - Zero breaking changes to existing damage spells
+
+- **Manual AA Control System**
+  - User-controlled "Enable AA Support" and "Disable AA Support" buttons in settings
+  - Clean rollback capability for users who need to disable enhancements
+
+### **🎯 Comprehensive Spell Validation System**
+
+- **Smart Target Validation**
+
+  - **Range spells** Require exactly 1 target selection
+  - **Touch spells** Require exactly 1 target selection
+  - **Personal spells** Automatically target the caster
+  - **Template spells** Auto-target caster for AA animations
+
+- **Spell Range Validation**
+  - **Touch spells** → Must be adjacent (within 2m)
+  - **Range spells** → Must be within spell's listed range
+  - **Template/Personal spells** → Skip range validation
+
+### **🎭 Automatic Status Effect Application**
+
+- **Effect Targeting**
+
+  - **Self-targeting spells** Apply effects to the caster
+  - **Target spells** Apply effects to the selected target
+  - **Template spells** → Skip automatic effects
+
+- **Dragonbane Status Effects Integration**
+
+  - Seamlessly uses DSE module icons and descriptions when available
+  - Fallback system with appropriate Foundry icons when DSE not present
+  - Effect origin tracking properly identifies the caster for clean effect management
+
+- **Socketlib Integration**
+  - Proper cross-client communication for GM and player casting scenarios
+  - Permission-aware effect application respects user roles and ownership
+  - Prevents race conditions and duplicate effect application
+
+### **⚙️ Enhanced Configuration System**
+
+- **Spell-Specific Settings**
+  - **Enable Universal Spell Automated Animations** - Master toggle for AA compatibility
+  - **Enable Spell Target Validation** - Smart target selection enforcement
+  - **Enable Spell Range Validation** - Distance checking for spell casting
+  - **Enable Automatic Status Effects** - Apply appropriate effects on successful casts
+  - **Spell Exclusions** - Simple comma-separated list to skip validation while keeping animations
+
+### **🏆 Techinical Improvements **
+
+- **Enhanced Stability for Existing Systems**
+  - **Encumbrance Monitor improvements** - Benefited from enhanced error handling and streamlined hook management
+  - **Grudge Tracker reliability** - Improved cross-version compatibility and more robust journal operations
+
+---
+
 ## [1.4.0] - 2025-09-01
 
 ### Code Quality & Stability Improvements
