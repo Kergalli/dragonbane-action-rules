@@ -96,6 +96,11 @@
         "name": "Disable AA Support",
         "label": "Disable Automated Animations",
         "hint": "Remove compatibility data from enhanced spells to disable Automated Animations. This removes 'n/a' from spell damage fields that were added by the enable function."
+      },
+      "setupGrudgeFolders": {
+        "name": "Setup Grudge Folders",
+        "label": "Setup Grudge Folders for All PCs",
+        "hint": "Create grudge folders and journals for all player characters with the Unforgiving ability. Run this once when starting your game or when new PCs join."
       }
     },
     "actions": {
@@ -269,6 +274,12 @@
         "warningLabel": "Warning:",
         "disableButton": "Disable AA Support",
         "cancelButton": "Cancel"
+      },
+      "setupGrudgeFolders": {
+        "title": "Setup Grudge Folders",
+        "content": "This will create grudge folders and journals for all player characters with the Unforgiving ability. Any existing journals will be preserved.",
+        "info": "Only characters with the Unforgiving kin ability will have journals created.",
+        "setupButton": "Create Folders & Journals"
       }
     },
     "grudgeTracker": {
@@ -287,6 +298,7 @@
       "locationColumn": "Location",
       "unknownLocation": "Unknown Location",
       "addedToGrudgeList": "{attackerName} added to {actorName}'s grudge list",
+      "setupComplete": "Created {count} grudge journals for characters with Unforgiving ability.",
       "confirmDelete": {
         "title": "Delete Grudge Entry",
         "content": "Are you sure you want to delete this grudge entry? This action cannot be undone.",
@@ -299,6 +311,7 @@
         "addFailed": "Failed to add entry to grudge list",
         "journalCreateFailed": "Failed to create grudge list journal",
         "journalNotFound": "Grudge journal not found",
+        "journalNotSetup": "No grudge journal found for {actorName}. Please ask the GM to run 'Setup Grudge Folders' from the module settings.",
         "deleteFailed": "Failed to delete grudge entry"
       }
     }

@@ -96,6 +96,11 @@
         "name": "Inaktivera AA-stöd",
         "label": "Inaktivera Automated Animations",
         "hint": "Ta bort kompatibilitetsdata från förbättrade besvärjelser för att inaktivera Automated Animations. Detta tar bort 'n/a' från besvärjelseskadesfält som lades till av aktiveringsfunktionen."
+      },
+      "setupGrudgeFolders": {
+        "name": "Skapa Aggmappar",
+        "label": "Skapa Aggmappar för alla SCs",
+        "hint": "Skapa aggmappar och journaler för alla spelarkaraktärer med förmågan Oförlåtande. Kör detta en gång när du startar ditt spel eller när nya SCs ansluter sig."
       }
     },
     "actions": {
@@ -269,6 +274,11 @@
         "warningLabel": "Varning:",
         "disableButton": "Inaktivera AA-stöd",
         "cancelButton": "Avbryt"
+      },
+      "setupGrudgeFolders": {
+        "name": "Konfigurera Agg-mappar",
+        "label": "Konfigurera Agg-mappar för alla PC:er",
+        "hint": "Skapa agg-journaler för alla spelare med Obarmhärtig-förmåga (endast GM)"
       }
     },
     "grudgeTracker": {
@@ -299,6 +309,7 @@
         "addFailed": "Misslyckades med att lägga till post i grudglistan",
         "journalCreateFailed": "Misslyckades med att skapa grudglista-journal",
         "journalNotFound": "Agg-journal hittades inte",
+        "journalNotSetup": "Ingen aggjournal hittades för {actorName}. Be SM:en att köra 'Skapa Aggmappar' från modulinställningarna.",
         "deleteFailed": "Misslyckades med att ta bort agg-post"
       }
     }

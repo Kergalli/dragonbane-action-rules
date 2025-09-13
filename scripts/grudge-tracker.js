@@ -18,6 +18,8 @@ export class DragonbaneGrudgeTracker {
    */
   onChatMessage(message) {
     try {
+      // Only GM processes grudge tracking
+      if (!game.user.isGM) return;
       // Skip if grudge tracking is disabled
       if (
         !DragonbaneUtils.getSetting(this.moduleId, "enableGrudgeTracking", true)
@@ -93,9 +95,19 @@ export class DragonbaneGrudgeTracker {
         // Get attacker info
         const attackerId = message.speaker?.actor || message.speaker?.token;
 
-        // Get target info from current targets
-        const targets = Array.from(game.user.targets);
-        const targetId = targets.length === 1 ? targets[0].actor?.uuid : null;
+        // ✅ FIX: Extract target from message content instead of game.user.targets
+        let targetId = null;
+
+        // Try to extract target from attack roll message
+        const content = message.content;
+        const targetMatch = content.match(/data-target-id="([^"]+)"/);
+        if (targetMatch) {
+          targetId = targetMatch[1];
+        } else {
+          // Fallback: try current targets (for backward compatibility)
+          const targets = Array.from(game.user.targets);
+          targetId = targets.length === 1 ? targets[0].actor?.uuid : null;
+        }
 
         if (attackerId && targetId) {
           const attackKey = `${attackerId}-${targetId}`;
@@ -227,13 +239,28 @@ export class DragonbaneGrudgeTracker {
   }
 
   /**
-   * Extract target UUID from damage roll (challenging without targeting info)
+   * Extract target UUID from damage roll message content
    */
   _extractTargetFromDamageRoll(message) {
-    // This is difficult without explicit targeting info
-    // Best we can do is use current targets at time of roll
-    const targets = Array.from(game.user.targets);
-    return targets.length === 1 ? targets[0].actor?.uuid : null;
+    try {
+      const content = message.content;
+
+      // Look for data-target-id="Actor.uuid" in the damage roll
+      const targetMatch = content.match(/data-target-id="([^"]+)"/);
+      if (targetMatch) {
+        console.log(`${this.moduleId} | Found target ID:`, targetMatch[1]);
+        return targetMatch[1];
+      }
+
+      console.log(`${this.moduleId} | No target ID found in damage roll`);
+      return null;
+    } catch (error) {
+      console.error(
+        `${this.moduleId} | Error extracting target from damage roll:`,
+        error
+      );
+      return null;
+    }
   }
 
   /**
@@ -243,25 +270,17 @@ export class DragonbaneGrudgeTracker {
     try {
       const content = message.content;
 
-      // Extract target actor UUID (should be in the message)
-      const actorMatch = content.match(/data-actor-id="([^"]+)"/);
+      // Extract target actor UUID from data-actor-id attribute (Dragonbane format)
+      const actorMatch = content.match(/data-actor-id="(Actor\.[^"]+)"/);
       if (!actorMatch) return null;
 
       const targetId = actorMatch[1];
 
-      // Try multiple damage patterns
+      // Extract final damage from data-damage attribute
       let finalDamage = 0;
-
-      // Pattern 1: data-damage="8"
-      let damageMatch = content.match(/data-damage="(\d+)"/);
+      const damageMatch = content.match(/data-damage="(\d+)"/);
       if (damageMatch) {
         finalDamage = parseInt(damageMatch[1]);
-      } else {
-        // Pattern 2: Traditional "X damage" text
-        damageMatch = content.match(/(\d+)\s*damage/i);
-        if (damageMatch) {
-          finalDamage = parseInt(damageMatch[1]);
-        }
       }
 
       return {
@@ -513,6 +532,54 @@ export class DragonbaneGrudgeTracker {
           "DRAGONBANE_ACTION_RULES.grudgeTracker.errors.deleteFailed"
         )
       );
+    }
+  }
+
+  async setupAllGrudgeFolders() {
+    try {
+      if (!game.user.isGM) {
+        ui.notifications.warn("Only GMs can set up grudge folders");
+        return 0;
+      }
+
+      // Find all PCs with Unforgiving ability
+      const unforgivingPCs = game.actors.filter((actor) => {
+        return (
+          actor.type === "character" &&
+          actor.hasPlayerOwner &&
+          this._hasUnforgivingAbility(actor)
+        );
+      });
+
+      let createdCount = 0;
+
+      // Create journals for each Unforgiving PC using your original method
+      for (const actor of unforgivingPCs) {
+        const journalName = game.i18n.format(
+          "DRAGONBANE_ACTION_RULES.grudgeTracker.journalName",
+          { actorName: actor.name }
+        );
+
+        // Skip if already exists
+        if (game.journal.getName(journalName)) continue;
+
+        // Use your original _getOrCreateGrudgeJournal method
+        const journal = await this._getOrCreateGrudgeJournal(actor);
+        if (journal) createdCount++;
+      }
+
+      const message =
+        createdCount > 0
+          ? `Created grudge journals for ${createdCount} Unforgiving characters`
+          : "All grudge journals already exist or no Unforgiving characters found";
+
+      ui.notifications.info(message);
+      return createdCount;
+    } catch (error) {
+      ui.notifications.error(
+        "Failed to set up grudge folders. Check console for details."
+      );
+      return 0;
     }
   }
 

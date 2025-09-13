@@ -115,24 +115,51 @@ class DragonbaneActionRules {
         DragonbaneActionRules.encumbranceMonitor?.initialize();
         DragonbaneActionRules.yzeIntegration?.initialize();
 
-        // Socket setup using socketlib (replaces the game.socket.on approach)
-        if (game.modules.get("socketlib")?.active) {
-          DragonbaneActionRules.socket = socketlib.registerModule(
-            "dragonbane-action-rules"
-          );
+        // Socket setup using socketlib - with proper error handling
+        try {
+          if (game.modules.get("socketlib")?.active) {
+            // Wait for socketlib to be fully ready
+            Hooks.once("socketlib.ready", () => {
+              try {
+                DragonbaneActionRules.socket = socketlib.registerModule(
+                  "dragonbane-action-rules"
+                );
 
-          // Register the applyStatusEffect function for GM execution
-          DragonbaneActionRules.socket.register(
-            "applyStatusEffect",
-            async (data) => {
-              const target = await fromUuid(data.targetUuid);
-              if (target) {
-                await target.createEmbeddedDocuments("ActiveEffect", [
-                  data.effectData,
-                ]);
+                // Register the applyStatusEffect function for GM execution
+                DragonbaneActionRules.socket.register(
+                  "applyStatusEffect",
+                  async (data) => {
+                    try {
+                      const target = await fromUuid(data.targetUuid);
+                      if (target) {
+                        await target.createEmbeddedDocuments("ActiveEffect", [
+                          data.effectData,
+                        ]);
+                      }
+                    } catch (error) {
+                      console.error(
+                        "Combat Assistant - applyStatusEffect error:",
+                        error
+                      );
+                    }
+                  }
+                );
+
+                DragonbaneUtils.debugLog(
+                  DragonbaneActionRules.ID,
+                  "Socket",
+                  "Socket handlers registered successfully"
+                );
+              } catch (error) {
+                console.error(
+                  "Combat Assistant - Socket registration error:",
+                  error
+                );
               }
-            }
-          );
+            });
+          }
+        } catch (error) {
+          console.error("Combat Assistant - Socket setup error:", error);
         }
       });
 

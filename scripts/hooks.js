@@ -31,8 +31,13 @@ export function registerHooks(moduleId) {
       }
 
       // Grudge tracker processing
-      if (DragonbaneActionRules.grudgeTracker?.onChatMessage) {
-        DragonbaneActionRules.grudgeTracker.onChatMessage(message);
+      if (
+        DragonbaneUtils.getSetting(moduleId, "enableGrudgeTracking", true) &&
+        game.user.isGM
+      ) {
+        if (DragonbaneActionRules.grudgeTracker?.onChatMessage) {
+          DragonbaneActionRules.grudgeTracker.onChatMessage(message);
+        }
       }
 
       // Spell status effect application for NEW messages only
@@ -67,8 +72,8 @@ export function registerHooks(moduleId) {
                 .filter((s) => s.length > 0);
 
               if (!excludedSpells.includes(spell.name)) {
-                // SURGICAL FIX: Only the message creator processes the effect
-                if (message.user.id === game.user.id) {
+                // Only the message creator processes the effect
+                if (message.author.id === game.user.id) {
                   // Small delay to ensure message is fully created
                   setTimeout(() => {
                     DragonbaneActionRules.spellLibrary.applySpellEffect(
