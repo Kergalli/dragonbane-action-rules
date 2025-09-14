@@ -255,7 +255,8 @@ export class SpellLibrary {
           "applyStatusEffect",
           {
             targetUuid: target.uuid,
-            effectData: effectData,
+            casterUuid: caster ? caster.uuid : null,
+            config: config, // Pass the spell config instead of pre-built effectData
           }
         );
       }

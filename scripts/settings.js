@@ -621,11 +621,13 @@ class DisableAADialog extends FormApplication {
             <p>${game.i18n.localize(
               "DRAGONBANE_ACTION_RULES.dialogs.disableAA.content"
             )}</p>
-            <div style="background: #fff3cd; border: 1px solid #ffeeba; padding: 10px; margin: 10px 0; border-radius: 4px;">
-              <i class="fas fa-info-circle" style="color: #856404; margin-right: 8px;"></i>
-              ${game.i18n.localize(
-                "DRAGONBANE_ACTION_RULES.dialogs.disableAA.info"
-              )}
+            <div style="background: #ffe6e6; border: 1px solid #ff9999; padding: 10px; margin: 10px 0; border-radius: 4px;">
+              <i class="fas fa-exclamation-triangle" style="color: #cc0000; margin-right: 8px;"></i>
+              <strong>${game.i18n.localize(
+                "DRAGONBANE_ACTION_RULES.dialogs.disableAA.warningLabel"
+              )}</strong> ${game.i18n.localize(
+          "DRAGONBANE_ACTION_RULES.dialogs.disableAA.warning"
+        )}
             </div>
           </div>
         `,

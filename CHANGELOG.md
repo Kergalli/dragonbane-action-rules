@@ -86,6 +86,7 @@
 - **Easy grudge maintenance** - Delete buttons in journals for removing settled scores
 - **Critical damage highlighting** - Special indicators (💥) for grudges caused by critical hits
 - **Configurable tracking** - Can be enabled/disabled through module settings
+- **NOTE** - The GM will need to create the folder and Journal before Dwarf players can record grudges. Simply click the **Setup Grudge Folders for All PCs** button in settings once your Dwarf characters have been assigned to players, after that players will be able to record grudges.
 
 ### Simplified Keyboard Controls
 

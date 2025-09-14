@@ -429,7 +429,14 @@ export class DragonbaneRulesDisplay {
       return "";
     if (!actor || DragonbaneUtils.isMonsterActor(actor)) return "";
 
-    const target = DragonbaneUtils.getCurrentTarget();
+    // Get targets from the actual attacking user
+    const attackingUser = message.user;
+    if (!attackingUser) return "";
+
+    const attackerTargets = attackingUser.targets;
+    if (attackerTargets.size !== 1) return "";
+
+    const target = Array.from(attackerTargets)[0]?.actor;
     if (!target || DragonbaneUtils.isMonsterActor(target)) return "";
 
     if (this._canShove(actor, target)) {

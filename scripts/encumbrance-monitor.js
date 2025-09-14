@@ -295,11 +295,44 @@ export class DragonbaneEncumbranceMonitor {
    */
   async addEncumbranceStatusEffect(actor, statusEffectName) {
     try {
-      const success = await DragonbaneUtils.toggleStatusEffect(
-        actor,
-        statusEffectName,
-        true
-      );
+      let success = false;
+
+      // Apply effect directly if user has permission, or via socket if not
+      if (actor.isOwner || game.user.isGM) {
+        // Build effect data locally with proper description
+        const effect = DragonbaneUtils.findStatusEffect(statusEffectName);
+        if (effect) {
+          const effectData = {
+            name: statusEffectName,
+            img: effect.img || effect.icon || "icons/svg/anchor.svg",
+            statuses: [effect.id],
+            origin: actor.uuid,
+          };
+
+          // Add description if it exists
+          if (
+            effect.description &&
+            effect.description !== `${effect.id} status effect`
+          ) {
+            effectData.description = effect.description;
+          }
+
+          await actor.createEmbeddedDocuments("ActiveEffect", [effectData]);
+          success = true;
+        }
+      } else {
+        // Use socket for GM execution
+        if (window.DragonbaneActionRules?.socket) {
+          await window.DragonbaneActionRules.socket.executeAsGM(
+            "applyEncumbranceEffect",
+            {
+              targetUuid: actor.uuid,
+              statusEffectName: statusEffectName,
+            }
+          );
+          success = true;
+        }
+      }
 
       if (success) {
         // Send UI notification with proper values

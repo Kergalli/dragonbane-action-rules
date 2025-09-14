@@ -11,7 +11,7 @@
 ### ✨ **Universal Spell Support for Automated Animations (NEW in v2.0)**
 
 - **All spells trigger animations** - Extends Automated Animations beyond just damage spells to include buffs, debuffs, utility spells, and Magic Tricks
-- **Manual control options** - User-controlled buttons to enable or disable AA support as needed
+- **Manual control options** - User-controlled buttons to enable or disable AA support as needed, disabled by default
 - **Zero impact on existing spells** - Damage spells continue working exactly as before
 
 ### 🎯 **Spell Validation (NEW in v2.0)**
@@ -75,6 +75,7 @@
 - **Journal organization** - Automatically creates organized folders and formatted grudge tables
 - **Easy grudge management** - Delete buttons in journals allow removal of settled grudges
 - **Critical hit indicators** - Special marking (💥) for grudges caused by critical damage
+- **NOTE** - The GM will need to create the folder and Journal before Dwarf players can record grudges. Simply click the **Setup Grudge Folders for All PCs** button in settings once your Dwarf characters have been assigned to players, after that players will be able to record grudges.
 
 ### 🎲 **Year Zero Engine Combat Integration**
 

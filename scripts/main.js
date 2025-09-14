@@ -129,14 +129,106 @@ class DragonbaneActionRules {
               async (data) => {
                 try {
                   const target = await fromUuid(data.targetUuid);
+                  const caster = data.casterUuid
+                    ? await fromUuid(data.casterUuid)
+                    : null;
+
                   if (target) {
+                    // Rebuild effectData on GM side to ensure proper description
+                    const effect = DragonbaneUtils.findStatusEffect(
+                      data.config.effectId
+                    );
+                    if (!effect) return;
+
+                    // Get localized name
+                    let effectName;
+                    if (data.config.effectNameKey) {
+                      effectName = game.i18n.localize(
+                        data.config.effectNameKey
+                      );
+                    } else if (effect.name) {
+                      effectName = game.i18n.localize(effect.name);
+                    } else {
+                      effectName = data.config.effectId
+                        .replace("dse-", "")
+                        .replace(/-/g, " ");
+                      effectName =
+                        effectName.charAt(0).toUpperCase() +
+                        effectName.slice(1);
+                    }
+
+                    const effectData = {
+                      name: effectName,
+                      img: effect.img || effect.icon || "icons/svg/aura.svg",
+                      statuses: [effect.id],
+                      origin: caster ? caster.uuid : target.uuid,
+                    };
+
+                    // Add description if it exists (GM has full access to descriptions)
+                    if (
+                      effect.description &&
+                      effect.description !==
+                        `${data.config.effectId} status effect`
+                    ) {
+                      effectData.description = effect.description;
+                    }
+
+                    // Add duration if specified
+                    if (data.config.duration) {
+                      effectData.duration = {
+                        seconds: data.config.duration,
+                        startTime: game.time.worldTime,
+                      };
+                    }
+
                     await target.createEmbeddedDocuments("ActiveEffect", [
-                      data.effectData,
+                      effectData,
                     ]);
                   }
                 } catch (error) {
                   console.error(
                     "Combat Assistant - applyStatusEffect error:",
+                    error
+                  );
+                }
+              }
+            );
+
+            // Register the applyEncumbranceEffect function for GM execution
+            DragonbaneActionRules.socket.register(
+              "applyEncumbranceEffect",
+              async (data) => {
+                try {
+                  const target = await fromUuid(data.targetUuid);
+                  if (target) {
+                    // Rebuild effect data on GM side to ensure proper description
+                    const effect = DragonbaneUtils.findStatusEffect(
+                      data.statusEffectName
+                    );
+                    if (!effect) return;
+
+                    const effectData = {
+                      name: data.statusEffectName,
+                      img: effect.img || effect.icon || "icons/svg/anchor.svg",
+                      statuses: [effect.id],
+                      origin: target.uuid,
+                    };
+
+                    // Add description if it exists (GM has full access to descriptions)
+                    if (
+                      effect.description &&
+                      effect.description !== `${effect.id} status effect`
+                    ) {
+                      effectData.description = effect.description;
+                    }
+
+                    await target.createEmbeddedDocuments("ActiveEffect", [
+                      effectData,
+                    ]);
+                  }
+                } catch (error) {
+                  console.error(
+                    "Combat Assistant - applyEncumbranceEffect error:",
                     error
                   );
                 }
