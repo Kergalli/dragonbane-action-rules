@@ -469,6 +469,253 @@ export function registerHooks(moduleId) {
     }
   }
 
+  // Setup Token Action HUD integration
+  setupTokenActionHUD(moduleId);
+
+  // Character sheets attack interception
+  Hooks.on("renderActorSheet", (sheet, html, data) => {
+    if (!DragonbaneUtils.getSetting(moduleId, "enabled")) return;
+    if (
+      !DragonbaneUtils.getSetting(moduleId, "enforceTargetSelection") &&
+      !DragonbaneUtils.getSetting(moduleId, "enforceRangeChecking")
+    )
+      return;
+
+    if (sheet.constructor.name !== "DoDCharacterSheet") return;
+
+    try {
+      sheet._dragonbaneHooked = true;
+
+      // PC weapons: .rollable-skill within weapon rows (tr[data-item-id])
+      html.find("tr[data-item-id] .rollable-skill").each((index, element) => {
+        const $element = $(element);
+        const $row = $element.closest("tr[data-item-id]");
+        const itemId = $row.attr("data-item-id");
+
+        if (itemId) {
+          const item = sheet.actor.items.get(itemId);
+
+          if (item?.type === "weapon") {
+            element.addEventListener(
+              "click",
+              async function (event) {
+                // Check if module is enabled
+                if (!DragonbaneUtils.getSetting(moduleId, "enabled")) {
+                  return;
+                }
+
+                if (DragonbaneActionRules?.overrides?.validationBypass) {
+                  return;
+                }
+
+                if (DragonbaneActionRules?.validator?.performWeaponAttack) {
+                  const validation =
+                    await DragonbaneActionRules.validator.performWeaponAttack(
+                      item.name,
+                      sheet.actor
+                    );
+
+                  if (!validation.success) {
+                    event.preventDefault();
+                    event.stopImmediatePropagation();
+                    ui.notifications.warn(validation.message);
+                    return false;
+                  }
+                }
+              },
+              true
+            );
+          }
+
+          if (item?.type === "spell") {
+            element.addEventListener(
+              "click",
+              async function (event) {
+                // Check if module is enabled
+                if (!DragonbaneUtils.getSetting(moduleId, "enabled")) {
+                  return;
+                }
+
+                if (DragonbaneActionRules?.overrides?.validationBypass) {
+                  return;
+                }
+
+                if (DragonbaneActionRules?.validator?.performSpellCast) {
+                  const validation =
+                    await DragonbaneActionRules.validator.performSpellCast(
+                      item.name,
+                      sheet.actor
+                    );
+
+                  if (!validation.success) {
+                    event.preventDefault();
+                    event.stopImmediatePropagation();
+                    ui.notifications.warn(validation.message);
+                    return false;
+                  }
+                }
+              },
+              true
+            );
+          }
+        }
+      });
+
+      // NPC weapons: .rollable-skill elements with data-item-id directly on them
+      html.find(".rollable-skill[data-item-id]").each((index, element) => {
+        const $element = $(element);
+        const itemId = $element.attr("data-item-id");
+
+        if (itemId) {
+          const item = sheet.actor.items.get(itemId);
+
+          if (item?.type === "weapon") {
+            element.addEventListener(
+              "click",
+              async function (event) {
+                // Check if module is enabled
+                if (!DragonbaneUtils.getSetting(moduleId, "enabled")) {
+                  return;
+                }
+
+                if (DragonbaneActionRules?.overrides?.validationBypass) {
+                  return;
+                }
+
+                if (DragonbaneActionRules?.validator?.performWeaponAttack) {
+                  const validation =
+                    await DragonbaneActionRules.validator.performWeaponAttack(
+                      item.name,
+                      sheet.actor
+                    );
+
+                  if (!validation.success) {
+                    event.preventDefault();
+                    event.stopImmediatePropagation();
+                    ui.notifications.warn(validation.message);
+                    return false;
+                  }
+                }
+              },
+              true
+            );
+          }
+
+          if (item?.type === "spell") {
+            element.addEventListener(
+              "click",
+              async function (event) {
+                // Check if module is enabled
+                if (!DragonbaneUtils.getSetting(moduleId, "enabled")) {
+                  return;
+                }
+
+                if (DragonbaneActionRules?.overrides?.validationBypass) {
+                  return;
+                }
+
+                if (DragonbaneActionRules?.validator?.performSpellCast) {
+                  const validation =
+                    await DragonbaneActionRules.validator.performSpellCast(
+                      item.name,
+                      sheet.actor
+                    );
+
+                  if (!validation.success) {
+                    event.preventDefault();
+                    event.stopImmediatePropagation();
+                    ui.notifications.warn(validation.message);
+                    return false;
+                  }
+                }
+              },
+              true
+            );
+          }
+        }
+      });
+    } catch (error) {
+      if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
+        DoD_Utility.WARNING(
+          `Error applying weapon interceptors: ${error.message}`
+        );
+      }
+    }
+  });
+
+  // Encumbrance monitoring hooks
+  Hooks.on("updateActor", (actor, changes, options, userId) => {
+    if (!DragonbaneUtils.getSetting(moduleId, "enableEncumbranceMonitoring"))
+      return;
+
+    if (DragonbaneActionRules.encumbranceMonitor?.onActorUpdate) {
+      DragonbaneActionRules.encumbranceMonitor.onActorUpdate(
+        actor,
+        changes,
+        options,
+        userId
+      );
+    }
+  });
+
+  Hooks.on("deleteActor", (actor, options, userId) => {
+    if (!DragonbaneUtils.getSetting(moduleId, "enableEncumbranceMonitoring"))
+      return;
+
+    if (DragonbaneActionRules.encumbranceMonitor?.onActorDelete) {
+      DragonbaneActionRules.encumbranceMonitor.onActorDelete(
+        actor,
+        options,
+        userId
+      );
+    }
+  });
+
+  Hooks.on("updateItem", (item, changes, options, userId) => {
+    if (!DragonbaneUtils.getSetting(moduleId, "enableEncumbranceMonitoring"))
+      return;
+
+    if (DragonbaneActionRules.encumbranceMonitor?.onItemUpdate) {
+      DragonbaneActionRules.encumbranceMonitor.onItemUpdate(
+        item,
+        changes,
+        options,
+        userId
+      );
+    }
+  });
+
+  Hooks.on("createItem", (item, options, userId) => {
+    if (!DragonbaneUtils.getSetting(moduleId, "enableEncumbranceMonitoring"))
+      return;
+
+    if (DragonbaneActionRules.encumbranceMonitor?.onItemChange) {
+      DragonbaneActionRules.encumbranceMonitor.onItemChange(
+        item,
+        options,
+        userId
+      );
+    }
+  });
+
+  Hooks.on("deleteItem", (item, options, userId) => {
+    if (!DragonbaneUtils.getSetting(moduleId, "enableEncumbranceMonitoring"))
+      return;
+
+    if (DragonbaneActionRules.encumbranceMonitor?.onItemChange) {
+      DragonbaneActionRules.encumbranceMonitor.onItemChange(
+        item,
+        options,
+        userId
+      );
+    }
+  });
+}
+
+/**
+ * Setup Token Action HUD integration (called on init and when re-enabling)
+ */
+export function setupTokenActionHUD(moduleId) {
   // Token Action HUD integration - hook both rollItem (weapons) and useItem (spells)
   if (game.dragonbane?.rollItem && !originalMethods.has("rollItem")) {
     originalMethods.set("rollItem", game.dragonbane.rollItem);
@@ -712,225 +959,6 @@ export function registerHooks(moduleId) {
         .call(this, itemName, itemType, ...args);
     };
   }
-
-  // Character sheets attack interception
-  Hooks.on("renderActorSheet", (sheet, html, data) => {
-    if (!DragonbaneUtils.getSetting(moduleId, "enabled")) return;
-    if (
-      !DragonbaneUtils.getSetting(moduleId, "enforceTargetSelection") &&
-      !DragonbaneUtils.getSetting(moduleId, "enforceRangeChecking")
-    )
-      return;
-
-    if (sheet.constructor.name !== "DoDCharacterSheet") return;
-
-    try {
-      sheet._dragonbaneHooked = true;
-
-      // PC weapons: .rollable-skill within weapon rows (tr[data-item-id])
-      html.find("tr[data-item-id] .rollable-skill").each((index, element) => {
-        const $element = $(element);
-        const $row = $element.closest("tr[data-item-id]");
-        const itemId = $row.attr("data-item-id");
-
-        if (itemId) {
-          const item = sheet.actor.items.get(itemId);
-
-          if (item?.type === "weapon") {
-            element.addEventListener(
-              "click",
-              async function (event) {
-                if (DragonbaneActionRules?.overrides?.validationBypass) {
-                  return;
-                }
-
-                if (DragonbaneActionRules?.validator?.performWeaponAttack) {
-                  const validation =
-                    await DragonbaneActionRules.validator.performWeaponAttack(
-                      item.name,
-                      sheet.actor
-                    );
-
-                  if (!validation.success) {
-                    event.preventDefault();
-                    event.stopImmediatePropagation();
-                    ui.notifications.warn(validation.message);
-                    return false;
-                  }
-                }
-              },
-              true
-            );
-          }
-
-          if (item?.type === "spell") {
-            element.addEventListener(
-              "click",
-              async function (event) {
-                if (DragonbaneActionRules?.overrides?.validationBypass) {
-                  return;
-                }
-
-                if (DragonbaneActionRules?.validator?.performSpellCast) {
-                  const validation =
-                    await DragonbaneActionRules.validator.performSpellCast(
-                      item.name,
-                      sheet.actor
-                    );
-
-                  if (!validation.success) {
-                    event.preventDefault();
-                    event.stopImmediatePropagation();
-                    ui.notifications.warn(validation.message);
-                    return false;
-                  }
-                }
-              },
-              true
-            );
-          }
-        }
-      });
-
-      // NPC weapons: .rollable-skill elements with data-item-id directly on them
-      html.find(".rollable-skill[data-item-id]").each((index, element) => {
-        const $element = $(element);
-        const itemId = $element.attr("data-item-id");
-
-        if (itemId) {
-          const item = sheet.actor.items.get(itemId);
-
-          if (item?.type === "weapon") {
-            element.addEventListener(
-              "click",
-              async function (event) {
-                if (DragonbaneActionRules?.overrides?.validationBypass) {
-                  return;
-                }
-
-                if (DragonbaneActionRules?.validator?.performWeaponAttack) {
-                  const validation =
-                    await DragonbaneActionRules.validator.performWeaponAttack(
-                      item.name,
-                      sheet.actor
-                    );
-
-                  if (!validation.success) {
-                    event.preventDefault();
-                    event.stopImmediatePropagation();
-                    ui.notifications.warn(validation.message);
-                    return false;
-                  }
-                }
-              },
-              true
-            );
-          }
-
-          if (item?.type === "spell") {
-            element.addEventListener(
-              "click",
-              async function (event) {
-                if (DragonbaneActionRules?.overrides?.validationBypass) {
-                  return;
-                }
-
-                if (DragonbaneActionRules?.validator?.performSpellCast) {
-                  const validation =
-                    await DragonbaneActionRules.validator.performSpellCast(
-                      item.name,
-                      sheet.actor
-                    );
-
-                  if (!validation.success) {
-                    event.preventDefault();
-                    event.stopImmediatePropagation();
-                    ui.notifications.warn(validation.message);
-                    return false;
-                  }
-                }
-              },
-              true
-            );
-          }
-        }
-      });
-    } catch (error) {
-      if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
-        DoD_Utility.WARNING(
-          `Error applying weapon interceptors: ${error.message}`
-        );
-      }
-    }
-  });
-
-  // Encumbrance monitoring hooks
-  Hooks.on("updateActor", (actor, changes, options, userId) => {
-    if (!DragonbaneUtils.getSetting(moduleId, "enableEncumbranceMonitoring"))
-      return;
-
-    if (DragonbaneActionRules.encumbranceMonitor?.onActorUpdate) {
-      DragonbaneActionRules.encumbranceMonitor.onActorUpdate(
-        actor,
-        changes,
-        options,
-        userId
-      );
-    }
-  });
-
-  Hooks.on("deleteActor", (actor, options, userId) => {
-    if (!DragonbaneUtils.getSetting(moduleId, "enableEncumbranceMonitoring"))
-      return;
-
-    if (DragonbaneActionRules.encumbranceMonitor?.onActorDelete) {
-      DragonbaneActionRules.encumbranceMonitor.onActorDelete(
-        actor,
-        options,
-        userId
-      );
-    }
-  });
-
-  Hooks.on("updateItem", (item, changes, options, userId) => {
-    if (!DragonbaneUtils.getSetting(moduleId, "enableEncumbranceMonitoring"))
-      return;
-
-    if (DragonbaneActionRules.encumbranceMonitor?.onItemUpdate) {
-      DragonbaneActionRules.encumbranceMonitor.onItemUpdate(
-        item,
-        changes,
-        options,
-        userId
-      );
-    }
-  });
-
-  Hooks.on("createItem", (item, options, userId) => {
-    if (!DragonbaneUtils.getSetting(moduleId, "enableEncumbranceMonitoring"))
-      return;
-
-    if (DragonbaneActionRules.encumbranceMonitor?.onItemChange) {
-      DragonbaneActionRules.encumbranceMonitor.onItemChange(
-        item,
-        options,
-        userId
-      );
-    }
-  });
-
-  Hooks.on("deleteItem", (item, options, userId) => {
-    if (!DragonbaneUtils.getSetting(moduleId, "enableEncumbranceMonitoring"))
-      return;
-
-    if (DragonbaneActionRules.encumbranceMonitor?.onItemChange) {
-      DragonbaneActionRules.encumbranceMonitor.onItemChange(
-        item,
-        options,
-        userId
-      );
-    }
-  });
 }
 
 /**

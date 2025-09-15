@@ -8,6 +8,7 @@ import {
   cleanupCharacterSheets,
   disableTokenActionHUD,
   registerHooks,
+  setupTokenActionHUD,
 } from "./hooks.js";
 import { DragonbanePatternManager } from "./pattern-manager.js";
 import { DragonbaneRulesDisplay } from "./rules-display.js";
@@ -284,15 +285,43 @@ class DragonbaneActionRules {
   /**
    * Enable the module - no complex hook management needed
    */
-  static enableModule() {}
+  static enableModule() {
+    try {
+      // Re-establish Token Action HUD integration
+      setupTokenActionHUD(DragonbaneActionRules.ID);
+
+      // Reinitialize components that need setup when re-enabled
+      DragonbaneActionRules.encumbranceMonitor?.initialize();
+      DragonbaneActionRules.yzeIntegration?.initialize();
+
+      DragonbaneUtils.debugLog(
+        DragonbaneActionRules.ID,
+        "Main",
+        `${game.i18n.localize("DRAGONBANE_ACTION_RULES.console.moduleEnabled")}`
+      );
+    } catch (error) {
+      if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
+        DoD_Utility.WARNING(`Failed to enable module: ${error.message}`);
+      }
+    }
+  }
 
   /**
-   * Disable the module - cleanup external integrations
+   * Disable the module - just cleanup external integrations
    */
   static disableModule() {
     try {
+      // Clean up external integrations
       disableTokenActionHUD();
       cleanupCharacterSheets();
+
+      if (DragonbaneUtils.isDebugMode(DragonbaneActionRules.ID)) {
+        console.log(
+          `${DragonbaneActionRules.ID} | ${game.i18n.localize(
+            "DRAGONBANE_ACTION_RULES.console.moduleDisabled"
+          )}`
+        );
+      }
     } catch (error) {
       if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
         DoD_Utility.WARNING(`Failed to disable module: ${error.message}`);
