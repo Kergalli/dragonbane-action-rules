@@ -112,6 +112,11 @@ export class DragonbaneEncumbranceMonitor {
 
     const targetFolder = this.getSetting("encumbranceMonitorFolder", "Party");
 
+    if (targetFolder === "") {
+      // Empty target folder means monitor all characters
+      return true;
+    }
+
     // Handle both folder object and folder ID cases
     let actorFolder = null;
     if (actor.folder) {
@@ -128,9 +133,9 @@ export class DragonbaneEncumbranceMonitor {
       }
     }
 
-    if (targetFolder === "") {
-      // Empty target folder means monitor all characters
-      return true;
+    // Target folder is configured but this actor is not in a folder
+    if (!actorFolder) {
+      return false;
     }
 
     return actorFolder.name === targetFolder;
