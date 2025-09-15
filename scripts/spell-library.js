@@ -161,12 +161,36 @@ export class SpellLibrary {
 
       const rangeType = spell.system.rangeType;
 
-      // Skip template spells for now (future v2.1 implementation)
+      // Handle simple protective zone spells using effect keys
       if (this.TEMPLATE_RANGE_TYPES.includes(rangeType)) {
-        console.log(
-          `Combat Assistant: Skipping status effect for template spell ${spell.name} (template placement not yet implemented)`
-        );
-        return false;
+        const config = this.getEffectForSpell(spell.name);
+
+        if (config && config.effectNameKey) {
+          const simpleZoneEffects = [
+            "DRAGONBANE_ACTION_RULES.effects.heat",
+            "DRAGONBANE_ACTION_RULES.effects.chill",
+          ];
+
+          if (simpleZoneEffects.includes(config.effectNameKey)) {
+            // These create protective zones - apply effect to caster, let AA show aura
+            console.log(
+              `Combat Assistant: Applying zone effect ${spell.name} to caster`
+            );
+            // Continue with normal processing (target already set to caster from validation)
+          } else {
+            // Defer complex area effects like Engulfing Forest and Frost
+            console.log(
+              `Combat Assistant: Skipping complex area effect for template spell ${spell.name} (area targeting not yet implemented)`
+            );
+            return false;
+          }
+        } else {
+          // No effect configuration found, skip
+          console.log(
+            `Combat Assistant: No effect configuration for template spell ${spell.name}`
+          );
+          return false;
+        }
       }
 
       // Determine target based on spell type

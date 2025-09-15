@@ -99,7 +99,7 @@
       },
       "setupGrudgeFolders": {
         "name": "Skapa Aggmappar",
-        "label": "Skapa Aggmappar för alla SCs",
+        "label": "Skapa Aggmappar",
         "hint": "Skapa aggmappar och journaler för alla spelarkaraktärer med förmågan Oförlåtande. Kör detta en gång när du startar ditt spel eller när nya SCs ansluter sig."
       }
     },

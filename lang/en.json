@@ -99,7 +99,7 @@
       },
       "setupGrudgeFolders": {
         "name": "Setup Grudge Folders",
-        "label": "Setup Grudge Folders for All PCs",
+        "label": "Setup Grudge Folders",
         "hint": "Create grudge folders and journals for all player characters with the Unforgiving ability. Run this once when starting your game or when new PCs join."
       }
     },
