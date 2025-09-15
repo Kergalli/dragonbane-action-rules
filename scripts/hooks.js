@@ -1001,6 +1001,9 @@ function hideEnhancedSpellButtons(html) {
  */
 async function enhanceAllNonDamageSpells() {
   try {
+    let enhancedCount = 0;
+    let excludedCount = 0;
+
     // Get excluded spells list
     const excludedSpells = DragonbaneUtils.getSetting(
       "dragonbane-action-rules",
@@ -1021,21 +1024,21 @@ async function enhanceAllNonDamageSpells() {
         ) {
           // Check if this spell is excluded
           const isExcluded = excludedSpells.includes(item.name);
+          if (isExcluded) excludedCount++;
 
           // Always enhance for AA (even excluded spells get animations)
           await item.update({ "system.damage": "n/a" });
-
-          // Log enhancement with exclusion status
-          DragonbaneUtils.debugLog(
-            "dragonbane-action-rules",
-            "SpellEnhancement",
-            `Enhanced ${item.name} for AA${
-              isExcluded ? " (validation excluded)" : ""
-            }`
-          );
+          enhancedCount++;
         }
       }
     }
+
+    // Single summary log instead of individual logs
+    DragonbaneUtils.debugLog(
+      "dragonbane-action-rules",
+      "SpellEnhancement",
+      `Enhanced ${enhancedCount} spells for AA (${excludedCount} validation excluded)`
+    );
   } catch (error) {
     if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
       DoD_Utility.WARNING(`Error enhancing spells for AA: ${error.message}`);
@@ -1243,20 +1246,17 @@ async function disableAllSpellEnhancements() {
         if (item.type === "spell" && item.system.damage === "n/a") {
           await item.update({ "system.damage": "" });
           enhancedCount++;
-          DragonbaneUtils.debugLog(
-            "dragonbane-action-rules",
-            "SpellEnhancement",
-            `Removed AA enhancement from ${item.name}`
-          );
         }
       }
     }
 
+    // Single summary log instead of individual logs
     DragonbaneUtils.debugLog(
       "dragonbane-action-rules",
       "SpellEnhancement",
       `Disabled AA support for ${enhancedCount} spells`
     );
+
     return enhancedCount;
   } catch (error) {
     if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
