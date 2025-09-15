@@ -74,6 +74,10 @@ export class DragonbaneYZEIntegration {
     if (!this.isEnabled()) return;
     if (!DragonbaneUtils.isCombatActive()) return;
 
+    if (message.user.id !== game.user.id) {
+      return;
+    }
+
     try {
       const actor = DragonbaneUtils.getActorFromMessage(message);
       if (!actor) return;
