@@ -11,7 +11,7 @@ import {
 } from "./hooks.js";
 import { DragonbanePatternManager } from "./pattern-manager.js";
 import { DragonbaneRulesDisplay } from "./rules-display.js";
-import { isDebugMode, registerSettings, SETTINGS } from "./settings.js";
+import { registerSettings, SETTINGS } from "./settings.js";
 import { SpellLibrary } from "./spell-library.js";
 import { DragonbaneUtils } from "./utils.js";
 import { DragonbaneValidator } from "./validation.js";
@@ -186,10 +186,14 @@ class DragonbaneActionRules {
                     ]);
                   }
                 } catch (error) {
-                  console.error(
-                    "Combat Assistant - applyStatusEffect error:",
-                    error
-                  );
+                  if (
+                    typeof DoD_Utility !== "undefined" &&
+                    DoD_Utility.WARNING
+                  ) {
+                    DoD_Utility.WARNING(
+                      `applyStatusEffect error: ${error.message}`
+                    );
+                  }
                 }
               }
             );
@@ -227,10 +231,14 @@ class DragonbaneActionRules {
                     ]);
                   }
                 } catch (error) {
-                  console.error(
-                    "Combat Assistant - applyEncumbranceEffect error:",
-                    error
-                  );
+                  if (
+                    typeof DoD_Utility !== "undefined" &&
+                    DoD_Utility.WARNING
+                  ) {
+                    DoD_Utility.WARNING(
+                      `applyEncumbranceEffect error: ${error.message}`
+                    );
+                  }
                 }
               }
             );
@@ -242,7 +250,9 @@ class DragonbaneActionRules {
             );
           }
         } catch (error) {
-          console.error("Combat Assistant - Socket setup error:", error);
+          if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
+            DoD_Utility.WARNING(`Socket setup error: ${error.message}`);
+          }
         }
       });
 
@@ -287,37 +297,18 @@ class DragonbaneActionRules {
    * Enable the module - no complex hook management needed
    */
   static enableModule() {
-    try {
-      if (isDebugMode(DragonbaneActionRules.ID)) {
-        console.log(
-          `${DragonbaneActionRules.ID} | ${game.i18n.localize(
-            "DRAGONBANE_ACTION_RULES.console.moduleEnabled"
-          )}`
-        );
-      }
-    } catch (error) {
-      if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
-        DoD_Utility.WARNING(`Failed to enable module: ${error.message}`);
-      }
-    }
+    // Currently no initialization needed - components handle their own setup
+    // This method exists for the settings onChange handler and future expansion
   }
 
   /**
-   * Disable the module - just cleanup external integrations
+   * Disable the module - cleanup external integrations
    */
   static disableModule() {
     try {
       // Clean up external integrations
       disableTokenActionHUD();
       cleanupCharacterSheets();
-
-      if (isDebugMode(DragonbaneActionRules.ID)) {
-        console.log(
-          `${DragonbaneActionRules.ID} | ${game.i18n.localize(
-            "DRAGONBANE_ACTION_RULES.console.moduleDisabled"
-          )}`
-        );
-      }
     } catch (error) {
       if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
         DoD_Utility.WARNING(`Failed to disable module: ${error.message}`);

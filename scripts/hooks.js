@@ -144,14 +144,20 @@ export function registerHooks(moduleId) {
               content: newContent,
             });
 
-            console.log(
-              `Combat Assistant v2.0: Added early AA button for Magic Trick: ${spell.name}`
+            DragonbaneUtils.debugLog(
+              "dragonbane-action-rules",
+              "MagicTrick",
+              `Added early AA button for Magic Trick: ${spell.name}`
             );
           }
         }
       }
     } catch (error) {
-      console.error("Error adding early Magic Trick buttons:", error);
+      if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
+        DoD_Utility.WARNING(
+          `Error adding early Magic Trick buttons: ${error.message}`
+        );
+      }
     }
   }
 
@@ -449,10 +455,6 @@ export function registerHooks(moduleId) {
     });
 
     if (proceed) {
-      console.log(
-        `${moduleId} | User proceeded with ${action} against monster`
-      );
-
       // Mark as processed to prevent infinite loop re-triggering
       document.updateSource({
         flags: {
@@ -464,8 +466,6 @@ export function registerHooks(moduleId) {
 
       // Now recreate the message - it will skip the prevention check
       await ChatMessage.create(document.toObject());
-    } else {
-      console.log(`${moduleId} | User cancelled ${action} against monster`);
     }
   }
 
@@ -474,10 +474,6 @@ export function registerHooks(moduleId) {
     originalMethods.set("rollItem", game.dragonbane.rollItem);
 
     game.dragonbane.rollItem = async (itemName, itemType, ...args) => {
-      console.log(
-        `DEBUG: Token Action HUD rollItem called - Item: ${itemName}, Type: ${itemType}`
-      );
-
       // Skip if module disabled or validation disabled
       if (!DragonbaneUtils.getSetting(moduleId, "enabled")) {
         return originalMethods
@@ -516,11 +512,6 @@ export function registerHooks(moduleId) {
             if (item.system?.school?.toLowerCase() === "general") rank = 0;
 
             if (rank === 0) {
-              // It's a Magic Trick - redirect to useItem for proper dialog
-              console.log(
-                `Combat Assistant: Detected Magic Trick "${itemName}", redirecting to useItem for proper dialog`
-              );
-
               // Check if it's a personal spell and auto-target (v12/v13 compatible with UI fix)
               if (item.system?.rangeType === "personal") {
                 const casterToken = selectedToken;
@@ -557,14 +548,20 @@ export function registerHooks(moduleId) {
                       game.user.updateTokenTargets([casterToken.id]);
                     }
 
-                    console.log(
-                      `Combat Assistant: Auto-targeted ${selectedToken.actor.name} for personal Magic Trick: ${itemName}`
+                    DragonbaneUtils.debugLog(
+                      "dragonbane-action-rules",
+                      "TokenActionHUD",
+                      `Auto-targeted ${selectedToken.actor.name} for personal Magic Trick: ${itemName}`
                     );
                   } catch (error) {
-                    console.warn(
-                      `Combat Assistant: Auto-targeting failed for ${itemName}:`,
-                      error
-                    );
+                    if (
+                      typeof DoD_Utility !== "undefined" &&
+                      DoD_Utility.WARNING
+                    ) {
+                      DoD_Utility.WARNING(
+                        `Auto-targeting failed for ${itemName}: ${error.message}`
+                      );
+                    }
                   }
                 }
               }
@@ -635,10 +632,6 @@ export function registerHooks(moduleId) {
     originalMethods.set("useItem", game.dragonbane.useItem);
 
     game.dragonbane.useItem = async (itemName, itemType, ...args) => {
-      console.log(
-        `DEBUG: Token Action HUD useItem called - Item: ${itemName}, Type: ${itemType}`
-      );
-
       // Skip if module disabled or validation disabled
       if (!DragonbaneUtils.getSetting(moduleId, "enabled")) {
         return originalMethods
@@ -938,8 +931,6 @@ export function registerHooks(moduleId) {
       );
     }
   });
-
-  console.log(`${moduleId} | Simplified hook system registered`);
 }
 
 /**
@@ -1007,8 +998,10 @@ async function enhanceAllNonDamageSpells() {
           await item.update({ "system.damage": "n/a" });
 
           // Log enhancement with exclusion status
-          console.log(
-            `Combat Assistant v2.0: Enhanced ${item.name} for AA${
+          DragonbaneUtils.debugLog(
+            "dragonbane-action-rules",
+            "SpellEnhancement",
+            `Enhanced ${item.name} for AA${
               isExcluded ? " (validation excluded)" : ""
             }`
           );
@@ -1096,14 +1089,18 @@ function handleGrudgeJournalSheet(moduleId, sheetOrJournal, html, paths) {
         const journalId = button.dataset.journalId;
 
         if (!rowId || !journalId) {
-          console.warn("Grudge delete: Missing row or journal ID");
+          if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
+            DoD_Utility.WARNING("Grudge delete: Missing row or journal ID");
+          }
           return;
         }
 
         if (!DragonbaneActionRules?.grudgeTracker?.deleteGrudgeEntry) {
-          console.warn(
-            "Grudge delete: Module not ready or missing grudgeTracker"
-          );
+          if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
+            DoD_Utility.WARNING(
+              "Grudge delete: Module not ready or missing grudgeTracker"
+            );
+          }
           ui.notifications.warn(
             "Module not ready. Please try again in a moment."
           );
@@ -1147,7 +1144,11 @@ function handleGrudgeJournalSheet(moduleId, sheetOrJournal, html, paths) {
               rowId
             );
           } catch (error) {
-            console.error("Error deleting grudge entry:", error);
+            if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
+              DoD_Utility.WARNING(
+                `Error deleting grudge entry: ${error.message}`
+              );
+            }
             ui.notifications.error("Failed to delete grudge entry");
           }
         }
@@ -1214,19 +1215,27 @@ async function disableAllSpellEnhancements() {
         if (item.type === "spell" && item.system.damage === "n/a") {
           await item.update({ "system.damage": "" });
           enhancedCount++;
-          console.log(
-            `Combat Assistant: Removed AA enhancement from ${item.name}`
+          DragonbaneUtils.debugLog(
+            "dragonbane-action-rules",
+            "SpellEnhancement",
+            `Removed AA enhancement from ${item.name}`
           );
         }
       }
     }
 
-    console.log(
-      `Combat Assistant: Disabled AA support for ${enhancedCount} spells`
+    DragonbaneUtils.debugLog(
+      "dragonbane-action-rules",
+      "SpellEnhancement",
+      `Disabled AA support for ${enhancedCount} spells`
     );
     return enhancedCount;
   } catch (error) {
-    console.error("Error disabling spell enhancements:", error);
+    if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
+      DoD_Utility.WARNING(
+        `Error disabling spell enhancements: ${error.message}`
+      );
+    }
     throw error;
   }
 }

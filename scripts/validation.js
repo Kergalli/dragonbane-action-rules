@@ -72,7 +72,9 @@ export class DragonbaneValidator {
 
       return { success: true };
     } catch (error) {
-      console.error(`${this.moduleId} | Error in weapon validation:`, error);
+      if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
+        DoD_Utility.WARNING(`Error in weapon validation: ${error.message}`);
+      }
       return { success: true };
     }
   }
@@ -122,7 +124,9 @@ export class DragonbaneValidator {
       const validation = validateSpellTarget(spell, selectedActor);
       return validation;
     } catch (error) {
-      console.error(`${this.moduleId} | Error in spell validation:`, error);
+      if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
+        DoD_Utility.WARNING(`Error in spell validation: ${error.message}`);
+      }
       return { success: true };
     }
   }
@@ -306,7 +310,9 @@ export class DragonbaneValidator {
 
       return { success: true };
     } catch (error) {
-      console.error(`${this.moduleId} | Error in range validation:`, error);
+      if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
+        DoD_Utility.WARNING(`Error in range validation: ${error.message}`);
+      }
       return { success: true }; // Allow attack on error
     }
   }
@@ -389,14 +395,17 @@ function validateSpellTarget(spell, actor = null) {
         game.user.updateTokenTargets([casterToken.id]);
       }
 
-      console.log(
-        `Combat Assistant v2.0: Auto-targeted ${actor.name} for ${rangeType} spell: ${spell.name}`
+      DragonbaneUtils.debugLog(
+        this.moduleId,
+        "Validation",
+        `Auto-targeted ${actor.name} for ${rangeType} spell: ${spell.name}`
       );
     } catch (error) {
-      console.warn(
-        `Combat Assistant v2.0: Auto-targeting failed for ${spell.name}, proceeding anyway:`,
-        error
-      );
+      if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
+        DoD_Utility.WARNING(
+          `Auto-targeting failed for ${spell.name}, proceeding anyway: ${error.message}`
+        );
+      }
     }
 
     return { success: true };

@@ -36,8 +36,6 @@ export const SETTINGS = {
  * Register all module settings
  */
 export function registerSettings(moduleId) {
-  console.log(`${moduleId} | Registering settings`);
-
   // Main module enable/disable setting with onChange handler
   game.settings.register(moduleId, SETTINGS.ENABLED, {
     name: game.i18n.localize("DRAGONBANE_ACTION_RULES.settings.enabled.name"),
@@ -58,9 +56,11 @@ export function registerSettings(moduleId) {
               DragonbaneActionRules.disableModule();
             }
           } else {
-            console.warn(
-              `${moduleId} | DragonbaneActionRules not available for settings onChange`
-            );
+            if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
+              DoD_Utility.WARNING(
+                `DragonbaneActionRules not available for settings onChange`
+              );
+            }
           }
         } catch (error) {
           if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
@@ -453,8 +453,6 @@ export function registerSettings(moduleId) {
     type: DisableAADialog,
     restricted: true,
   });
-
-  console.log(`${moduleId} | Settings registered`);
 }
 
 /**
@@ -471,7 +469,9 @@ export function getSetting(moduleId, settingName) {
   try {
     return game.settings.get(moduleId, settingName);
   } catch (error) {
-    console.warn(`Setting ${settingName} not found, using default`);
+    if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
+      DoD_Utility.WARNING(`Setting ${settingName} not found, using default`);
+    }
     return undefined;
   }
 }

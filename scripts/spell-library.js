@@ -173,22 +173,22 @@ export class SpellLibrary {
 
           if (simpleZoneEffects.includes(config.effectNameKey)) {
             // These create protective zones - apply effect to caster, let AA show aura
-            console.log(
-              `Combat Assistant: Applying zone effect ${spell.name} to caster`
+            DragonbaneUtils.debugLog(
+              "dragonbane-action-rules",
+              "SpellLibrary",
+              `Applying zone effect ${spell.name} to caster`
             );
             // Continue with normal processing (target already set to caster from validation)
           } else {
             // Defer complex area effects like Engulfing Forest and Frost
-            console.log(
-              `Combat Assistant: Skipping complex area effect for template spell ${spell.name} (area targeting not yet implemented)`
+            DragonbaneUtils.debugLog(
+              "dragonbane-action-rules",
+              "SpellLibrary",
+              `Skipping complex area effect for template spell ${spell.name} (area targeting not yet implemented)`
             );
             return false;
           }
         } else {
-          // No effect configuration found, skip
-          console.log(
-            `Combat Assistant: No effect configuration for template spell ${spell.name}`
-          );
           return false;
         }
       }
@@ -205,9 +205,9 @@ export class SpellLibrary {
       // Standard effect application - pass caster for origin
       return await this.applyEffect(config, target, caster);
     } catch (error) {
-      console.error(
-        `Combat Assistant v2.3 | Error applying spell effect: ${error.message}`
-      );
+      if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
+        DoD_Utility.WARNING(`Error applying spell effect: ${error.message}`);
+      }
       return false;
     }
   }
