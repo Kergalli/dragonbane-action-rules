@@ -248,17 +248,26 @@ export class DragonbaneGrudgeTracker {
       // Look for data-target-id="Actor.uuid" in the damage roll
       const targetMatch = content.match(/data-target-id="([^"]+)"/);
       if (targetMatch) {
-        console.log(`${this.moduleId} | Found target ID:`, targetMatch[1]);
+        DragonbaneUtils.debugLog(
+          this.moduleId,
+          "GrudgeTracker",
+          `Found target ID: ${targetMatch[1]}`
+        );
         return targetMatch[1];
       }
 
-      console.log(`${this.moduleId} | No target ID found in damage roll`);
+      DragonbaneUtils.debugLog(
+        this.moduleId,
+        "GrudgeTracker",
+        "No target ID found in damage roll"
+      );
       return null;
     } catch (error) {
-      console.error(
-        `${this.moduleId} | Error extracting target from damage roll:`,
-        error
-      );
+      if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
+        DoD_Utility.WARNING(
+          `Error extracting target from damage roll: ${error.message}`
+        );
+      }
       return null;
     }
   }
