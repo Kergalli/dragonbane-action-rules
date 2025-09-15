@@ -46,10 +46,10 @@ class DragonbaneActionRules {
   static initialize() {
     try {
       if (game.system.id !== "dragonbane") {
-        console.warn(
-          `${DragonbaneActionRules.ID} | ${game.i18n.localize(
-            "DRAGONBANE_ACTION_RULES.console.wrongSystem"
-          )}`
+        DragonbaneUtils.debugLog(
+          DragonbaneActionRules.ID,
+          "Main",
+          `${game.i18n.localize("DRAGONBANE_ACTION_RULES.console.wrongSystem")}`
         );
         return;
       }

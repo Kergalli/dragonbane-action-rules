@@ -94,9 +94,10 @@ export class DragonbaneYZEIntegration {
 
       await this.onActionTaken(actor, actionType, tokenInfo);
     } catch (error) {
-      console.error(
-        `${this.moduleId} | Error in YZE chat message processing:`,
-        error
+      DragonbaneUtils.debugLog(
+        this.moduleId,
+        "YZEIntegration",
+        `Error in YZE chat message processing: ${error.message}`
       );
     }
   }
