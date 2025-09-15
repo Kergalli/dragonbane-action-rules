@@ -230,7 +230,7 @@ export class DragonbaneUtils {
 
       if (active && !hasEffect) {
         const effectData = {
-          name: game.i18n.localize(effect.name || effectName),
+          name: game.i18n.localize(effect.label || effect.name || effectName),
           img: effect.img || effect.icon || "icons/svg/aura.svg",
           statuses: [effect.id],
           origin: actor.uuid,
