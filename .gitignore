@@ -9,6 +9,3 @@ npm-debug.log*
 # OS files
 .DS_Store
 Thumbs.db
-
-# Development scripts (optional)
-scripts/link-module.js

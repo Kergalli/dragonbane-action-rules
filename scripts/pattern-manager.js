@@ -1,5 +1,5 @@
 /**
- * Dragonbane Combat Assistant - Pattern Management (Simplified)
+ * Dragonbane Combat Assistant - Pattern Management
  */
 
 import { DragonbaneUtils } from "./utils.js";
@@ -8,7 +8,6 @@ export class DragonbanePatternManager {
   constructor(moduleId) {
     this.moduleId = moduleId;
 
-    // Compiled patterns
     this.compiledPatterns = {
       // Rules display patterns (essential - keep all)
       actions: null,
@@ -16,15 +15,13 @@ export class DragonbanePatternManager {
       failure: null,
       allowedShove: null,
       excludedShove: null,
-      // YZE integration patterns (simplified - only what matters)
+      // YZE integration patterns
       dice: null,
       exclusions: null,
     };
 
-    // Raw terms cache
     this._rawTerms = {};
 
-    // Initialize patterns when ready
     Hooks.once("ready", () => this.initializePatterns());
   }
 
@@ -45,7 +42,6 @@ export class DragonbanePatternManager {
    * Build localized patterns using simple game.i18n.localize() calls
    */
   _buildLocalizedPatterns() {
-    // Simple localized terms with basic fallbacks
     const terms = {
       // Rules display terms (essential)
       parry: game.i18n.localize("DoD.attackTypes.parry") || "parry",
@@ -67,9 +63,8 @@ export class DragonbanePatternManager {
     const cleanFailure = terms.failure.replace(/[.!]$/, "");
     const dragonWord = terms.dragon.split(" ")[0] || "dragon";
 
-    // Build pattern arrays - simplified to only essential patterns
+    // Build pattern arrays
     this._rawTerms = {
-      // Rules Display patterns (essential)
       actions: [terms.parry, terms.topple, terms.disarm, terms.weakpoint],
       success: [cleanSuccess, dragonWord],
       failure: [cleanFailure],
@@ -121,7 +116,6 @@ export class DragonbanePatternManager {
   _compilePatterns() {
     if (!this._rawTerms) return;
 
-    // Compile each pattern type
     Object.keys(this.compiledPatterns).forEach((patternType) => {
       const terms = this._rawTerms[patternType];
       this.compiledPatterns[patternType] = this._compileTermsToRegex(terms);
@@ -146,8 +140,6 @@ export class DragonbanePatternManager {
   _escapeRegex(string) {
     return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   }
-
-  // === RULES DISPLAY INTERFACE (Essential - Keep All) ===
 
   /**
    * Get action match from content
@@ -184,16 +176,12 @@ export class DragonbanePatternManager {
 
     if (!allowedPattern || !excludedPattern) return false;
 
-    // First check if any excluded attack types are present
     if (excludedPattern.test(content)) {
       return false;
     }
 
-    // Then check if any allowed attack types are present
     return allowedPattern.test(content);
   }
-
-  // === YZE INTEGRATION INTERFACE ===
 
   /**
    * Check if content matches a specific pattern type
@@ -214,14 +202,10 @@ export class DragonbanePatternManager {
    * Check if content indicates any action roll
    */
   isAction(content) {
-    // Skip excluded rolls first
     if (this.isExcludedRoll(content)) return false;
 
-    // Any dice roll is likely an action worth tracking
     return this.hasPattern(content, "dice");
   }
-
-  // === PATTERN REFRESH ===
 
   /**
    * Refresh patterns when settings change

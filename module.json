@@ -31,12 +31,6 @@
       "path": "lang/sv.json"
     }
   ],
-  "flags": {
-    "hotReload": {
-      "extensions": ["css", "js", "json"],
-      "paths": ["scripts", "styles", "lang"]
-    }
-  },
   "relationships": {
     "systems": [
       {
@@ -53,6 +47,18 @@
     "optional": [
       {
         "id": "autoanimations",
+        "type": "module"
+      },
+      {
+        "id": "dragonbane-status-effects",
+        "type": "module"
+      },
+      {
+        "id": "token-action-hud-dragonbane",
+        "type": "module"
+      },
+      {
+        "id": "yze-combat",
         "type": "module"
       }
     ]

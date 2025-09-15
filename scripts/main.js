@@ -54,15 +54,12 @@ class DragonbaneActionRules {
         return;
       }
 
-      // Register settings using the new simplified function
       registerSettings(DragonbaneActionRules.ID);
 
-      // Initialize core components first
       DragonbaneActionRules.patternManager = new DragonbanePatternManager(
         DragonbaneActionRules.ID
       );
 
-      // Initialize other components with pattern manager dependency
       DragonbaneActionRules.validator = new DragonbaneValidator(
         DragonbaneActionRules.ID
       );
@@ -83,7 +80,6 @@ class DragonbaneActionRules {
       // Direct hook and keybind registration
       DragonbaneActionRules.registerHooksAndKeybinds();
 
-      // Debug initialization message
       DragonbaneUtils.debugLog(
         DragonbaneActionRules.ID,
         "Main",
@@ -103,27 +99,19 @@ class DragonbaneActionRules {
 
   static registerHooksAndKeybinds() {
     try {
-      // Main ready hook for module activation
       Hooks.once("ready", () => {
-        // Enable module if it's set to enabled in settings
         if (game.settings.get(DragonbaneActionRules.ID, SETTINGS.ENABLED)) {
           DragonbaneActionRules.enableModule();
         }
 
-        // Initialize components that need ready state
         DragonbaneActionRules.encumbranceMonitor?.initialize();
         DragonbaneActionRules.yzeIntegration?.initialize();
 
-        // Socket setup using socketlib - with proper error handling
-        // Socket setup using socketlib - CORRECTED VERSION
         try {
           if (game.modules.get("socketlib")?.active) {
-            // DIRECT registration - no waiting for socketlib.ready hook
             DragonbaneActionRules.socket = socketlib.registerModule(
               "dragonbane-action-rules"
             );
-
-            // Register the applyStatusEffect function for GM execution
             DragonbaneActionRules.socket.register(
               "applyStatusEffect",
               async (data) => {
@@ -296,17 +284,13 @@ class DragonbaneActionRules {
   /**
    * Enable the module - no complex hook management needed
    */
-  static enableModule() {
-    // Currently no initialization needed - components handle their own setup
-    // This method exists for the settings onChange handler and future expansion
-  }
+  static enableModule() {}
 
   /**
    * Disable the module - cleanup external integrations
    */
   static disableModule() {
     try {
-      // Clean up external integrations
       disableTokenActionHUD();
       cleanupCharacterSheets();
     } catch (error) {
