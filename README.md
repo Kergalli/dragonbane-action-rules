@@ -1,6 +1,6 @@
 # Dragonbane Combat Assistant
 
-![Version](https://img.shields.io/badge/version-2.0.1-blue)
+![Version](https://img.shields.io/badge/version-2.0.2-blue)
 ![Foundry Version](https://img.shields.io/badge/foundry-v12%20%7C%20v13-green)
 ![System](https://img.shields.io/badge/system-dragonbane-orange)
 
@@ -20,6 +20,7 @@
 - **Smart spell range checking** - Validates spell ranges before casting
 - **Template spell handling** - Template spells (cones, spheres) auto-target caster for visual effects while deferring area targeting
 - **Spell exclusion setting** - Simple comma-separated list to exclude specific spells from validation while keeping animations
+- **Ranged spells without a definded target** - Spells like Animal Whisperer, Gnome, etc can simply target the caster
 
 ### 🎭 **Automatic Status Effect Application (NEW in v2.0)**
 
