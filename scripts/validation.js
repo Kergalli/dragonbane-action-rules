@@ -458,13 +458,21 @@ function validateSpellRange(spell, actor) {
   }
 
   if (rangeType === "range" && targetToken.id === casterToken.id) {
-    return {
-      success: false,
-      message: game.i18n.format(
-        "DRAGONBANE_ACTION_RULES.validation.spellCannotTargetSelf",
-        { spell: spell.name }
-      ),
-    };
+    // Only block self-targeting for ranged spells that deal damage
+    const spellDamage = spell.system.damage;
+    if (
+      spellDamage &&
+      spellDamage.trim() !== "" &&
+      spellDamage.trim().toLowerCase() !== "n/a"
+    ) {
+      return {
+        success: false,
+        message: game.i18n.format(
+          "DRAGONBANE_ACTION_RULES.validation.spellCannotTargetSelf",
+          { spell: spell.name }
+        ),
+      };
+    }
   }
 
   // Calculate distance using same method as weapons
