@@ -11,7 +11,6 @@ const originalMethods = new Map();
  * Register all module hooks
  */
 export function registerHooks(moduleId) {
-  // Main chat message processing hook
   Hooks.on("createChatMessage", async (message) => {
     if (!DragonbaneUtils.getSetting(moduleId, "enabled")) return;
 
@@ -165,9 +164,14 @@ export function registerHooks(moduleId) {
   Hooks.on("renderChatMessage", (message, html, data) => {
     if (!DragonbaneUtils.getSetting(moduleId, "enabled")) return;
 
-    // Hide fake damage buttons from enhanced spells
+    // Fix enhanced spell issues:
+    // 1. Hide "Roll Damage" buttons but preserve "Choose" buttons
     hideEnhancedSpellButtons(html);
 
+    // 2. Fix critical effects for enhanced spells (remove double damage + add Choose button)
+    fixEnhancedSpellCriticalEffects(html);
+
+    // Continue with existing logic for rules messages
     if (!message.getFlag(moduleId, "dragonbaneRulesMessage")) return;
 
     try {
@@ -962,8 +966,7 @@ export function setupTokenActionHUD(moduleId) {
 }
 
 /**
- * Hide Roll Damage buttons from enhanced non-damage spells
- * Enhanced spells have "n/a" in their damage field to trigger AA, but users shouldn't see the button
+ * Hide ONLY "Roll Damage" buttons from enhanced spells, preserve "Choose" buttons
  */
 function hideEnhancedSpellButtons(html) {
   try {
@@ -973,16 +976,35 @@ function hideEnhancedSpellButtons(html) {
       const button = $(this);
       const spellId = button.attr("data-spell-id");
       const actorId = button.attr("data-actor-id");
+      const buttonText = button.text().trim();
 
+      // Only process buttons that have data-spell-id (these are "Roll Damage" buttons)
+      // "Choose" buttons don't have data-spell-id so they'll be preserved
       if (spellId && actorId) {
         const cleanActorId = actorId.replace("Actor.", "");
         const actor = game.actors.get(cleanActorId);
         const spell = actor?.items.get(spellId);
 
-        // Hide buttons for spells with "n/a" damage (our enhancement marker)
-        if (spell && spell.system.damage === "n/a") {
+        // Hide only "Roll Damage" buttons for enhanced spells
+        if (
+          spell &&
+          spell.system.damage === "n/a" &&
+          buttonText === "Roll Damage"
+        ) {
           button.hide();
+          DragonbaneUtils.debugLog(
+            "dragonbane-action-rules",
+            "EnhancedSpellButtons",
+            `Hidden "Roll Damage" button for enhanced spell: ${spell.name}`
+          );
         }
+      } else {
+        // This is likely a "Choose" button (no data-spell-id) - preserve it
+        DragonbaneUtils.debugLog(
+          "dragonbane-action-rules",
+          "EnhancedSpellButtons",
+          `Preserved button without spell-id: "${buttonText}"`
+        );
       }
     });
   } catch (error) {
@@ -995,9 +1017,89 @@ function hideEnhancedSpellButtons(html) {
 }
 
 /**
+ * Enhanced spells: Remove "Double damage" option AND add missing "Choose" button
+ */
+function fixEnhancedSpellCriticalEffects(html) {
+  try {
+    // Look for critical effects sections
+    const criticalSections = html.find(".form-group").filter(function () {
+      return $(this).find("label").first().text().includes("Critical effect");
+    });
+
+    if (criticalSections.length > 0) {
+      criticalSections.each(function () {
+        const section = $(this);
+        const formFields = section.find(".form-fields");
+
+        // Check if this message is for an enhanced spell by looking for Roll Damage button
+        const messageDiv = section.closest(".message-content");
+        const rollDamageButton = messageDiv
+          .find("button.magic-roll")
+          .filter(function () {
+            return (
+              $(this).attr("data-spell-id") &&
+              $(this).text().trim() === "Roll Damage"
+            );
+          });
+
+        // If we found a Roll Damage button, this is an enhanced spell
+        if (rollDamageButton.length > 0) {
+          const doubleDamageInput = formFields.find(
+            'input[value="doubleDamage"]'
+          );
+          if (doubleDamageInput.length > 0) {
+            doubleDamageInput.closest("label").remove();
+            DragonbaneUtils.debugLog(
+              "dragonbane-action-rules",
+              "CriticalEffects",
+              "Removed 'Double damage' option from enhanced spell"
+            );
+          }
+
+          const existingChooseButton = messageDiv
+            .find("button")
+            .filter(function () {
+              const buttonText = $(this).text().trim();
+              const chooseText = game.i18n.localize("DoD.ui.chat.choose");
+              return (
+                buttonText === chooseText && !$(this).attr("data-spell-id")
+              );
+            });
+
+          if (existingChooseButton.length === 0) {
+            const actorId = rollDamageButton.attr("data-actor-id");
+            const wpCost = rollDamageButton.attr("data-wp-cost");
+            const chooseButtonWithDivider = $(`
+              <hr>
+              <button class="chat-button magic-roll" data-actor-id="${actorId}" data-is-magic-crit="true" data-wp-cost="${wpCost}">
+                ${game.i18n.localize("DoD.ui.chat.choose")}
+              </button>
+            `);
+
+            section.nextAll("hr").first().remove();
+
+            section.after(chooseButtonWithDivider);
+
+            DragonbaneUtils.debugLog(
+              "dragonbane-action-rules",
+              "CriticalEffects",
+              "Added missing 'Choose' button for enhanced spell"
+            );
+          }
+        }
+      });
+    }
+  } catch (error) {
+    if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
+      DoD_Utility.WARNING(
+        `Error fixing enhanced spell critical effects: ${error.message}`
+      );
+    }
+  }
+}
+
+/**
  * Enhance all non-damage spells for Automated Animations compatibility
- * Adds "n/a" to damage field to make spells appear as "isDamaging" so they generate Roll buttons
- * This allows AA to detect and trigger animations for buff/debuff/utility spells
  */
 async function enhanceAllNonDamageSpells() {
   try {
@@ -1233,7 +1335,6 @@ function normalizeAction(action) {
 
 /**
  * Disable all spell enhancements for Automated Animations
- * Removes "n/a" from damage field to restore original spell state
  */
 async function disableAllSpellEnhancements() {
   try {
