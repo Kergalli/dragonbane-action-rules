@@ -1,5 +1,24 @@
 # Changelog
 
+## [2.0.1] - 2025-09-15
+
+### Bug Fixes
+
+- **Fixed Enhanced Spell Critical Effects Display**
+
+  - Resolved issue where "Choose" button was incorrectly hidden for enhanced non-damage spells with dragon rolls
+  - Enhanced spells now properly display critical effects selection interface identical to non-enhanced spells
+
+- **Removed Invalid Critical Effects for Non-Damage Spells**
+
+  - "Double damage" option no longer appears in critical effects list for enhanced non-damage spells
+
+- **Fixed Encumbrance Validator for Root Actors**
+
+  - Now properly handles named folder and actors outside named folder. Moved condition check earlier - thanks to dgladov for catching that!
+
+---
+
 ## [2.0.0] - 2025-09-13
 
 **Dragonbane Combat Assistant v2.0.0** transforms the module from a combat-focused tool into a **combat AND spellcasting assistant**, extending all functionality to spells.

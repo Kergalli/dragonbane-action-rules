@@ -979,7 +979,6 @@ function hideEnhancedSpellButtons(html) {
       const buttonText = button.text().trim();
 
       // Only process buttons that have data-spell-id (these are "Roll Damage" buttons)
-      // "Choose" buttons don't have data-spell-id so they'll be preserved
       if (spellId && actorId) {
         const cleanActorId = actorId.replace("Actor.", "");
         const actor = game.actors.get(cleanActorId);
@@ -999,7 +998,6 @@ function hideEnhancedSpellButtons(html) {
           );
         }
       } else {
-        // This is likely a "Choose" button (no data-spell-id) - preserve it
         DragonbaneUtils.debugLog(
           "dragonbane-action-rules",
           "EnhancedSpellButtons",

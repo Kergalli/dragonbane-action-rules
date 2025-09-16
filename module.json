@@ -2,7 +2,7 @@
   "id": "dragonbane-action-rules",
   "title": "Dragonbane Combat Assistant",
   "description": "Enhancement for Dragonbane combat and character management. Enforces target selection and weapon range for all attacks (including contextual thrown weapon support), automatically displays combat action rules when special attacks succeed, and provides event-driven encumbrance monitoring with instant notifications. Includes interactive weapon management, enhanced weapon feature display, configurable status effects for over-encumbered characters, optional rule reminders for shove and movement mechanics, EVADE skill enhancements, seamless integration with Year Zero Engine Combat module for single action tracking, monster action prevention with confirmation dialogs for Parry/Disarm attempts, and keyboard shortcuts for temporarily overriding validation rules during gameplay.",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "socket": true,
   "compatibility": {
     "minimum": "12",
