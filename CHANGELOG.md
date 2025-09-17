@@ -1,5 +1,15 @@
 # Changelog
 
+## [2.0.2] - 2025-09-16
+
+### Bug Fixes
+
+- **Fixed Ranged Spell Self-Targeting for Non-Damage Spells**
+  - Ranged utility spells (Animal Whisperer, Gnome, Salamander, Undine, Sylph, etc.) can now properly target the caster
+  - **Logic Update**: Only ranged spells WITH damage are blocked from self-targeting (prevents shooting yourself with Fireball)
+  - **Utility Spells Allowed**: Ranged spells with blank or "n/a" damage fields can now target the caster (allows beneficial self-buffs)
+  - **No Breaking Changes**: All existing spell behavior preserved, only removes incorrect restriction
+
 ## [2.0.1] - 2025-09-15
 
 ### Bug Fixes
@@ -78,7 +88,7 @@
   - **Enable Automatic Status Effects** - Apply appropriate effects on successful casts
   - **Spell Exclusions** - Simple comma-separated list to skip validation while keeping animations
 
-### **🏆 Techinical Improvements **
+### **🏆 Technical Improvements **
 
 - **Enhanced Stability for Existing Systems**
   - **Encumbrance Monitor improvements** - Benefited from enhanced error handling and streamlined hook management
