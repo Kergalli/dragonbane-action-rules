@@ -1029,7 +1029,7 @@ function fixEnhancedSpellCriticalEffects(html) {
         const section = $(this);
         const formFields = section.find(".form-fields");
 
-        // Check if this message is for an enhanced spell by looking for Roll Damage button
+        // Check if this message is for a spell by looking for Roll Damage button
         const messageDiv = section.closest(".message-content");
         const rollDamageButton = messageDiv
           .find("button.magic-roll")
@@ -1040,49 +1040,61 @@ function fixEnhancedSpellCriticalEffects(html) {
             );
           });
 
-        // If we found a Roll Damage button, this is an enhanced spell
+        // If we found a Roll Damage button, check if it's an enhanced spell
         if (rollDamageButton.length > 0) {
-          const doubleDamageInput = formFields.find(
-            'input[value="doubleDamage"]'
-          );
-          if (doubleDamageInput.length > 0) {
-            doubleDamageInput.closest("label").remove();
-            DragonbaneUtils.debugLog(
-              "dragonbane-action-rules",
-              "CriticalEffects",
-              "Removed 'Double damage' option from enhanced spell"
-            );
-          }
+          const spellId = rollDamageButton.attr("data-spell-id");
+          const actorId = rollDamageButton.attr("data-actor-id");
 
-          const existingChooseButton = messageDiv
-            .find("button")
-            .filter(function () {
-              const buttonText = $(this).text().trim();
-              const chooseText = game.i18n.localize("DoD.ui.chat.choose");
-              return (
-                buttonText === chooseText && !$(this).attr("data-spell-id")
+          if (spellId && actorId) {
+            const cleanActorId = actorId.replace("Actor.", "");
+            const actor = game.actors.get(cleanActorId);
+            const spell = actor?.items.get(spellId);
+
+            // Only process enhanced non-damage spells (damage === "n/a")
+            if (spell && spell.system.damage === "n/a") {
+              // Remove "Double damage" option
+              const doubleDamageInput = formFields.find(
+                'input[value="doubleDamage"]'
               );
-            });
+              if (doubleDamageInput.length > 0) {
+                doubleDamageInput.closest("label").remove();
+                DragonbaneUtils.debugLog(
+                  "dragonbane-action-rules",
+                  "CriticalEffects",
+                  "Removed 'Double damage' option from enhanced spell"
+                );
+              }
 
-          if (existingChooseButton.length === 0) {
-            const actorId = rollDamageButton.attr("data-actor-id");
-            const wpCost = rollDamageButton.attr("data-wp-cost");
-            const chooseButtonWithDivider = $(`
-              <hr>
-              <button class="chat-button magic-roll" data-actor-id="${actorId}" data-is-magic-crit="true" data-wp-cost="${wpCost}">
-                ${game.i18n.localize("DoD.ui.chat.choose")}
-              </button>
-            `);
+              // Add missing "Choose" button
+              const existingChooseButton = messageDiv
+                .find("button")
+                .filter(function () {
+                  const buttonText = $(this).text().trim();
+                  const chooseText = game.i18n.localize("DoD.ui.chat.choose");
+                  return (
+                    buttonText === chooseText && !$(this).attr("data-spell-id")
+                  );
+                });
 
-            section.nextAll("hr").first().remove();
+              if (existingChooseButton.length === 0) {
+                const wpCost = rollDamageButton.attr("data-wp-cost");
+                const chooseButtonWithDivider = $(`
+                  <hr>
+                  <button class="chat-button magic-roll" data-actor-id="${actorId}" data-is-magic-crit="true" data-wp-cost="${wpCost}">
+                    ${game.i18n.localize("DoD.ui.chat.choose")}
+                  </button>
+                `);
 
-            section.after(chooseButtonWithDivider);
+                section.nextAll("hr").first().remove();
+                section.after(chooseButtonWithDivider);
 
-            DragonbaneUtils.debugLog(
-              "dragonbane-action-rules",
-              "CriticalEffects",
-              "Added missing 'Choose' button for enhanced spell"
-            );
+                DragonbaneUtils.debugLog(
+                  "dragonbane-action-rules",
+                  "CriticalEffects",
+                  "Added missing 'Choose' button for enhanced spell"
+                );
+              }
+            }
           }
         }
       });
