@@ -209,19 +209,30 @@ export function registerHooks(moduleId) {
 
           const weapon = actor.items.get(weaponId);
           if (!weapon) {
-            ui.notifications.error("Weapon not found");
+            ui.notifications.error(
+              game.i18n.localize(
+                "DRAGONBANE_ACTION_RULES.weaponBroken.errors.weaponNotFound"
+              )
+            );
             return;
           }
 
           if (!actor.isOwner && !game.user.isGM) {
             ui.notifications.warn(
-              "You don't have permission to modify this weapon"
+              game.i18n.localize(
+                "DRAGONBANE_ACTION_RULES.weaponBroken.errors.noPermission"
+              )
             );
             return;
           }
 
           if (weapon.system.broken) {
-            ui.notifications.info(`${weapon.name} is already broken`);
+            ui.notifications.info(
+              game.i18n.format(
+                "DRAGONBANE_ACTION_RULES.weaponBroken.errors.alreadyBroken",
+                { weaponName: weapon.name }
+              )
+            );
             return;
           }
 
@@ -283,7 +294,11 @@ export function registerHooks(moduleId) {
           if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
             DoD_Utility.WARNING(errorMsg);
           }
-          ui.notifications.error("Failed to mark weapon broken");
+          ui.notifications.error(
+            game.i18n.localize(
+              "DRAGONBANE_ACTION_RULES.weaponBroken.errors.updateFailed"
+            )
+          );
         }
       });
     } catch (error) {
@@ -342,7 +357,11 @@ export function registerHooks(moduleId) {
                 `Error adding to grudge list: ${error.message}`
               );
             }
-            ui.notifications.error("Failed to add to grudge list");
+            ui.notifications.error(
+              game.i18n.localize(
+                "DRAGONBANE_ACTION_RULES.grudgeTracker.errors.addFailed"
+              )
+            );
           }
         } else {
           if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
@@ -1256,9 +1275,7 @@ function handleGrudgeJournalSheet(moduleId, sheetOrJournal, html, paths) {
               "Grudge delete: Module not ready or missing grudgeTracker"
             );
           }
-          ui.notifications.warn(
-            "Module not ready. Please try again in a moment."
-          );
+          ui.notifications.warn(game.i18n.localize("DRAGONBANE_ACTION_RULES.grudgeTracker.errors.moduleNotReady"));
           return;
         }
 
@@ -1304,7 +1321,11 @@ function handleGrudgeJournalSheet(moduleId, sheetOrJournal, html, paths) {
                 `Error deleting grudge entry: ${error.message}`
               );
             }
-            ui.notifications.error("Failed to delete grudge entry");
+            ui.notifications.error(
+              game.i18n.localize(
+                "DRAGONBANE_ACTION_RULES.grudgeTracker.errors.deleteFailed"
+              )
+            );
           }
         }
       });

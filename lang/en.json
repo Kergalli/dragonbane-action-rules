@@ -312,6 +312,7 @@
         "journalCreateFailed": "Failed to create grudge list journal",
         "journalNotFound": "Grudge journal not found",
         "journalNotSetup": "No grudge journal found for {actorName}. Please ask the GM to run 'Setup Grudge Folders' from the module settings.",
+        "moduleNotReady": "Module not ready. Please try again in a moment.",
         "deleteFailed": "Failed to delete grudge entry"
       }
     }
