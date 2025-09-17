@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.0.3] - 2025-09-16
+
+### Bug Fixes
+
+- **Fixed Critical Effects for Damage Spells**
+  - **Double Damage Option**: Resolved issue where "Double damage" option was incorrectly removed from ALL spells during critical hit resolution
+  - **Logic Correction**: "Double damage" option is now only removed from enhanced non-damage spells
+  - **Choose Button Creation**: Fixed bug where "Choose" button was being added to all spells with critical hits
+  - **Targeted Behavior**: "Choose" button is now only added for enhanced non-damage spells that need it
+
+---
+
 ## [2.0.2] - 2025-09-16
 
 ### Bug Fixes
@@ -9,6 +21,8 @@
   - **Logic Update**: Only ranged spells WITH damage are blocked from self-targeting (prevents shooting yourself with Fireball)
   - **Utility Spells Allowed**: Ranged spells with blank or "n/a" damage fields can now target the caster (allows beneficial self-buffs)
   - **No Breaking Changes**: All existing spell behavior preserved, only removes incorrect restriction
+
+---
 
 ## [2.0.1] - 2025-09-15
 
