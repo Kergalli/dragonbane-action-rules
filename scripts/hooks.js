@@ -970,6 +970,7 @@ export function setupTokenActionHUD(moduleId) {
  */
 function hideEnhancedSpellButtons(html) {
   try {
+    const rollDamageText = game.i18n.localize("DoD.ui.chat.rollDamage");
     const magicButtons = html.find(".magic-roll");
 
     magicButtons.each(function () {
@@ -988,7 +989,7 @@ function hideEnhancedSpellButtons(html) {
         if (
           spell &&
           spell.system.damage === "n/a" &&
-          buttonText === "Roll Damage"
+          buttonText === rollDamageText
         ) {
           button.hide();
           DragonbaneUtils.debugLog(
@@ -1034,9 +1035,10 @@ function fixEnhancedSpellCriticalEffects(html) {
         const rollDamageButton = messageDiv
           .find("button.magic-roll")
           .filter(function () {
+            const rollDamageText = game.i18n.localize("DoD.ui.chat.rollDamage");
             return (
               $(this).attr("data-spell-id") &&
-              $(this).text().trim() === "Roll Damage"
+              $(this).text().trim() === rollDamageText
             );
           });
 
