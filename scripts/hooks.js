@@ -1020,9 +1020,12 @@ function hideEnhancedSpellButtons(html) {
  */
 function fixEnhancedSpellCriticalEffects(html) {
   try {
-    // Look for critical effects sections
+    // Properly localized critical effects detection
+    const criticalEffectLabel = game.i18n.localize(
+      "DoD.magicCritChoices.choiceLabel"
+    );
     const criticalSections = html.find(".form-group").filter(function () {
-      return $(this).find("label").first().text().includes("Critical effect");
+      return $(this).find("label").first().text().includes(criticalEffectLabel);
     });
 
     if (criticalSections.length > 0) {
@@ -1032,10 +1035,10 @@ function fixEnhancedSpellCriticalEffects(html) {
 
         // Check if this message is for a spell by looking for Roll Damage button
         const messageDiv = section.closest(".message-content");
+        const rollDamageText = game.i18n.localize("DoD.ui.chat.rollDamage");
         const rollDamageButton = messageDiv
           .find("button.magic-roll")
           .filter(function () {
-            const rollDamageText = game.i18n.localize("DoD.ui.chat.rollDamage");
             return (
               $(this).attr("data-spell-id") &&
               $(this).text().trim() === rollDamageText
@@ -1054,10 +1057,17 @@ function fixEnhancedSpellCriticalEffects(html) {
 
             // Only process enhanced non-damage spells (damage === "n/a")
             if (spell && spell.system.damage === "n/a") {
-              // Remove "Double damage" option
-              const doubleDamageInput = formFields.find(
-                'input[value="doubleDamage"]'
+              // Remove "Double damage" option using proper localization
+              const doubleDamageText = game.i18n.localize(
+                "DoD.magicCritChoices.doubleDamage"
               );
+              const doubleDamageInput = formFields
+                .find('input[type="radio"]')
+                .filter(function () {
+                  const label = $(this).closest("label");
+                  return label.text().trim().includes(doubleDamageText);
+                });
+
               if (doubleDamageInput.length > 0) {
                 doubleDamageInput.closest("label").remove();
                 DragonbaneUtils.debugLog(
