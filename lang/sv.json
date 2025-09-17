@@ -276,9 +276,10 @@
         "cancelButton": "Avbryt"
       },
       "setupGrudgeFolders": {
-        "name": "Konfigurera Agg-mappar",
-        "label": "Konfigurera Agg-mappar för alla PC:er",
-        "hint": "Skapa agg-journaler för alla spelare med Obarmhärtig-förmåga (endast GM)"
+        "title": "Konfigurera Agg-mappar",
+        "content": "Detta kommer att skapa agg-mappar och journaler för alla spelarkaraktärer med förmågan Obarmhärtig. Eventuella befintliga journaler kommer att bevaras.",
+        "info": "Endast karaktärer med släktförmågan Obarmhärtig får journaler skapade.",
+        "setupButton": "Skapa Mappar & Journaler"
       }
     },
     "grudgeTracker": {
@@ -297,6 +298,7 @@
       "locationColumn": "Plats",
       "unknownLocation": "Okänd Plats",
       "addedToGrudgeList": "{attackerName} tillagd i {actorName}s grudglista",
+      "setupComplete": "Skapade {count} agg-journaler för karaktärer med förmågan Obarmhärtig.",
       "confirmDelete": {
         "title": "Ta bort Agg-post",
         "content": "Är du säker på att du vill ta bort denna agg-post? Denna åtgärd kan inte ångras.",
