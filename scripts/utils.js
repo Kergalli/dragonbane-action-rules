@@ -161,15 +161,13 @@ export class DragonbaneUtils {
   /**
    * Detect dragon roll in message
    */
-  static detectDragonRoll(message) {
-    if (!message || !message.content) return false;
+static detectDragonRoll(message) {
+  if (!message || !message.content) return false;
 
-    const dragonTerm = game.i18n.localize("DoD.roll.dragon") || "dragon";
-    const dragonWord = dragonTerm.split(" ")[0] || "dragon";
-
-    // Simple case-insensitive search
-    return message.content.toLowerCase().includes(dragonWord.toLowerCase());
-  }
+  const dragonTerm = game.i18n.localize("DoD.roll.dragon") || "dragon";
+  
+  return message.content.toLowerCase().includes(dragonTerm.toLowerCase());
+}
 
   /**
    * Check if combat is currently active and started
