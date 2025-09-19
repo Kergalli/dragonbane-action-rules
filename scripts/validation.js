@@ -217,11 +217,8 @@ export class DragonbaneValidator {
         return { success: true }; // Skip validation if missing data
       }
 
-      // Calculate distance using standard Foundry method
-      const distance = canvas.grid.measurePath([
-        attackerToken,
-        targetToken,
-      ]).distance;
+      // Calculate distance using custom function
+      const distance = computeTokenDistance(attackerToken, targetToken);
 
       // Use core Dragonbane system methods for weapon detection
       const isThrownWeapon =
@@ -476,7 +473,7 @@ function validateSpellRange(spell, actor) {
   }
 
   // Calculate distance using same method as weapons
-  const distance = canvas.grid.measurePath([casterToken, targetToken]).distance;
+  const distance = computeTokenDistance(casterToken, targetToken);
 
   let maxRange;
   let errorMessage;
@@ -508,4 +505,34 @@ function validateSpellRange(spell, actor) {
   }
 
   return { success: true };
+}
+
+/**
+ * Computes the shortest distance in grid units required for one token to enter the bounding box of another, taking token size into consideration.
+ * Returns zero if tokens already overlap partially or completely.
+ * In game terms this can represent attack distance, where attack is a "step" into the nearest grid cell of the target token.
+ * Works only for square grids.
+ *
+ * @param {foundry.canvas.placeables.Token} token1 - First token {x, y, w, h}
+ * @param {foundry.canvas.placeables.Token} token2 - Second token {x, y, w, h}
+ * @returns {number} Distance in grid units
+ */
+function computeTokenDistance(token1, token2) {
+  const r1 = { left: token1.x, right: token1.x + token1.w, top: token1.y, bottom: token1.y + token1.h };
+  const r2 = { left: token2.x, right: token2.x + token2.w, top: token2.y, bottom: token2.y + token2.h };
+  
+  // Return zero distance for full or partial overlap
+  const horizontalOverlap = Math.min(r1.right, r2.right) - Math.max(r1.left, r2.left);
+  const verticalOverlap   = Math.min(r1.bottom, r2.bottom) - Math.max(r1.top, r2.top);
+  if (horizontalOverlap > 0 && verticalOverlap > 0) {
+    return 0;
+  }
+  
+  // Calculate horizontal and vertical distance
+  const dx = r1.right < r2.left ? r2.left - r1.right : r1.left - r2.right;
+  const dy = r1.bottom < r2.top ? r2.top - r1.bottom : r1.top - r2.bottom;
+  
+  // Chebyshev (chess board) distance plus one.
+  // Plus one represents the extra step to enter the token space.
+  return (Math.max(dx, dy) / canvas.grid.size + 1) * canvas.grid.distance;
 }
