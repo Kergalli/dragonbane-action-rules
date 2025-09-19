@@ -261,7 +261,7 @@ Death Roll, Light Test, Lantern Test, Oil Lamp Test, Candle Test, Torch Test, Se
 
 **Socketlib Dependency:** Automatic status effect application requires the socketlib module for proper cross-client communication. If socketlib is not installed, status effects will still work but may not sync properly across all clients.
 
-**Thrown Weapons vs Large Tokens:** In the core Dragonbane module, thrown weapons measure distance to a single reference grid square (upper left) instead of using token bounds. This causes attacks with thrown weapons against large and huge tokens to default to the Throw dialog when attacking from anywhere not adjacent to the upper left grid square of the enemy. This is a limitation of the core system's distance calculation and is outside the scope of this module to fix. **This will be fixed in Dragonbane v2.6**.
+**Ranged and Thrown Weapons vs Large Tokens:** In the core Dragonbane module, ranged and thrown weapons measure distance to a single reference grid square (upper left) instead of using token bounds. This causes attacks with thrown weapons against large and huge tokens to default to the Throw dialog when attacking from anywhere not adjacent to the upper left grid square of the enemy. This is a limitation of the core system's distance calculation and is outside the scope of this module to fix. **This will be fixed in Dragonbane v2.6**.
 
 ## Technical Details
 
