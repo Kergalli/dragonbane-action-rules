@@ -30,6 +30,7 @@ export const SETTINGS = {
   ENABLE_SPELL_VALIDATION: "enableSpellValidation",
   EXCLUDED_SPELLS: "excludedSpells",
   ENABLE_SPELL_STATUS_EFFECTS: "enableSpellStatusEffects",
+  AOE_RULE_REMINDER: "aoeRuleReminder",
 };
 
 /**
@@ -452,6 +453,16 @@ export function registerSettings(moduleId) {
     icon: "fas fa-undo",
     type: DisableAADialog,
     restricted: true,
+  });
+
+  // AOE Rule Reminder
+  game.settings.register(moduleId, SETTINGS.AOE_RULE_REMINDER, {
+    name: `DRAGONBANE_ACTION_RULES.settings.${SETTINGS.AOE_RULE_REMINDER}.name`,
+    hint: `DRAGONBANE_ACTION_RULES.settings.${SETTINGS.AOE_RULE_REMINDER}.hint`,
+    scope: "client",
+    config: true,
+    type: Boolean,
+    default: true,
   });
 }
 

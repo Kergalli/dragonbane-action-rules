@@ -101,6 +101,10 @@
         "name": "Skapa Aggmappar",
         "label": "Skapa Aggmappar",
         "hint": "Skapa aggmappar och journaler för alla spelarkaraktärer med förmågan Oförlåtande. Kör detta en gång när du startar ditt spel eller när nya SCs ansluter sig."
+      },
+      "aoeRuleReminder": {
+        "name": "Påminnelse om Områdeseffekt-regler",
+        "hint": "Visa regelpåminnelser innan områdeseffekt-besvärjelser kastas (sfär- och kon-besvärjelser)"
       }
     },
     "actions": {
@@ -280,6 +284,14 @@
         "content": "Detta kommer att skapa agg-mappar och journaler för alla spelarkaraktärer med förmågan Obarmhärtig. Eventuella befintliga journaler kommer att bevaras.",
         "info": "Endast karaktärer med släktförmågan Obarmhärtig får journaler skapade.",
         "setupButton": "Skapa Mappar & Journaler"
+      },
+      "aoeReminder": {
+        "title": "Påminnelser för Områdeseffekt-besvärjelser",
+        "dodgeRule": "Områdeseffekt-besvärjelser kan undvikas men inte pareras, om inte annat anges.",
+        "exemptRule": "Du kan undanta ett eller flera mål inom området från besvärjelsens effekter, men då får du en bane på slaget.",
+        "cast": "Kasta Besvärjelse",
+        "cancel": "Avbryt",
+        "cancelled": "Besvärjelsekastning avbruten."
       }
     },
     "grudgeTracker": {

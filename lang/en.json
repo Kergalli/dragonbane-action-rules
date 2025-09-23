@@ -101,6 +101,10 @@
         "name": "Setup Grudge Folders",
         "label": "Setup Grudge Folders",
         "hint": "Create grudge folders and journals for all player characters with the Unforgiving ability. Run this once when starting your game or when new PCs join."
+      },
+      "aoeRuleReminder": {
+        "name": "AOE Rule Reminder",
+        "hint": "Show rule reminders before casting area of effect spells (sphere and cone spells)"
       }
     },
     "actions": {
@@ -280,6 +284,14 @@
         "content": "This will create grudge folders and journals for all player characters with the Unforgiving ability. Any existing journals will be preserved.",
         "info": "Only characters with the Unforgiving kin ability will have journals created.",
         "setupButton": "Create Folders & Journals"
+      },
+      "aoeReminder": {
+        "title": "Area of Effect Spell Reminders",
+        "dodgeRule": "Area of effect spells can be dodged but not parried, unless stated otherwise.",
+        "exemptRule": "You can exempt one or more targets within the area from the spell's effects, but you then get a bane on the roll.",
+        "cast": "Cast Spell",
+        "cancel": "Cancel",
+        "cancelled": "Spell casting cancelled."
       }
     },
     "grudgeTracker": {

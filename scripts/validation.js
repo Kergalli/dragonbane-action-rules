@@ -120,6 +120,58 @@ export class DragonbaneValidator {
         return { success: true };
       }
 
+      // Simple AOE rule reminder for sphere and cone spells
+      if (
+        DragonbaneUtils.getSetting(this.moduleId, "aoeRuleReminder") &&
+        (spell.system?.rangeType === "sphere" ||
+          spell.system?.rangeType === "cone")
+      ) {
+        const proceed = await new Promise((resolve) => {
+          new Dialog({
+            title: game.i18n.localize(
+              "DRAGONBANE_ACTION_RULES.dialogs.aoeReminder.title"
+            ),
+            content: `
+        <div>
+          <p>${game.i18n.localize(
+            "DRAGONBANE_ACTION_RULES.dialogs.aoeReminder.dodgeRule"
+          )}</p>
+          <p>${game.i18n.localize(
+            "DRAGONBANE_ACTION_RULES.dialogs.aoeReminder.exemptRule"
+          )}</p>
+        </div>
+      `,
+            buttons: {
+              proceed: {
+                icon: '<i class="fas fa-check"></i>',
+                label: game.i18n.localize(
+                  "DRAGONBANE_ACTION_RULES.dialogs.aoeReminder.cast"
+                ),
+                callback: () => resolve(true),
+              },
+              cancel: {
+                icon: '<i class="fas fa-times"></i>',
+                label: game.i18n.localize(
+                  "DRAGONBANE_ACTION_RULES.dialogs.aoeReminder.cancel"
+                ),
+                callback: () => resolve(false),
+              },
+            },
+            default: "proceed",
+            close: () => resolve(false),
+          }).render(true);
+        });
+
+        if (!proceed) {
+          return {
+            success: false,
+            message: game.i18n.localize(
+              "DRAGONBANE_ACTION_RULES.dialogs.aoeReminder.cancelled"
+            ),
+          };
+        }
+      }
+
       // Perform target validation
       const validation = validateSpellTarget(spell, selectedActor);
       return validation;
@@ -518,20 +570,32 @@ function validateSpellRange(spell, actor) {
  * @returns {number} Distance in grid units
  */
 function computeTokenDistance(token1, token2) {
-  const r1 = { left: token1.x, right: token1.x + token1.w, top: token1.y, bottom: token1.y + token1.h };
-  const r2 = { left: token2.x, right: token2.x + token2.w, top: token2.y, bottom: token2.y + token2.h };
-  
+  const r1 = {
+    left: token1.x,
+    right: token1.x + token1.w,
+    top: token1.y,
+    bottom: token1.y + token1.h,
+  };
+  const r2 = {
+    left: token2.x,
+    right: token2.x + token2.w,
+    top: token2.y,
+    bottom: token2.y + token2.h,
+  };
+
   // Return zero distance for full or partial overlap
-  const horizontalOverlap = Math.min(r1.right, r2.right) - Math.max(r1.left, r2.left);
-  const verticalOverlap   = Math.min(r1.bottom, r2.bottom) - Math.max(r1.top, r2.top);
+  const horizontalOverlap =
+    Math.min(r1.right, r2.right) - Math.max(r1.left, r2.left);
+  const verticalOverlap =
+    Math.min(r1.bottom, r2.bottom) - Math.max(r1.top, r2.top);
   if (horizontalOverlap > 0 && verticalOverlap > 0) {
     return 0;
   }
-  
+
   // Calculate horizontal and vertical distance
   const dx = r1.right < r2.left ? r2.left - r1.right : r1.left - r2.right;
   const dy = r1.bottom < r2.top ? r2.top - r1.bottom : r1.top - r2.bottom;
-  
+
   // Chebyshev (chess board) distance plus one.
   // Plus one represents the extra step to enter the token space.
   return (Math.max(dx, dy) / canvas.grid.size + 1) * canvas.grid.distance;
