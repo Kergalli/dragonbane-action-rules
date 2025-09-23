@@ -1,6 +1,6 @@
 # Dragonbane Combat Assistant
 
-![Version](https://img.shields.io/badge/version-2.0.3-blue)
+![Version](https://img.shields.io/badge/version-2.0.4-blue)
 ![Foundry Version](https://img.shields.io/badge/foundry-v12%20%7C%20v13-green)
 ![System](https://img.shields.io/badge/system-dragonbane-orange)
 
@@ -49,6 +49,7 @@
 - **Weapon durability when parrying** - Shows weapon durability in chat for easy comparison
 - **Weapon feature bonuses** - Displays topple weapon bonuses (+1 Boon) automatically
 - **Mark Weapon Broken button** - Appears on parry rules for easy weapon damage tracking, updates character sheet directly from chat
+- **AOE Rule Reminder (NEW in v2.0.4)** - Reminds players that AOE spells can be dodged but not parried and that targets can be exempted from AOE effects by taking a bane
 
 ### 🛡️ **Monster Action Prevention**
 

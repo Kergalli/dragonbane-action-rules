@@ -1,5 +1,22 @@
 # Changelog
 
+## [2.0.4] - 2025-09-23
+
+### New Features
+
+- **AOE Rule Reminder Dialog**
+  - Added optional rule reminder dialog for area of effect spells (sphere and cone spells)
+  - Shows before spell casting to remind players about dodge vs parry rules and target exemption mechanics
+  - Configurable setting to enable/disable the reminder dialog
+
+### Enhancements
+
+- **Large and Huge Token Targeting**
+
+  - Adjusted the way large and huge tokens are targeted and validated when being attacked with melee weapons and spells. Ranged and thrown weapons will still require a core Dragonbane update (coming in v2.6). Thanks to dgladkov for the assist on this one!
+
+---
+
 ## [2.0.3] - 2025-09-16
 
 ### Bug Fixes
