@@ -264,26 +264,39 @@ Death Roll, Light Test, Lantern Test, Oil Lamp Test, Candle Test, Torch Test, Se
 
 **Ranged and Thrown Weapons vs Large Tokens:** In the core Dragonbane module, ranged and thrown weapons measure distance to a single reference grid square (upper left) instead of using token bounds. This causes attacks with thrown weapons against large and huge tokens to default to the Throw dialog when attacking from anywhere not adjacent to the upper left grid square of the enemy. This is a limitation of the core system's distance calculation and is outside the scope of this module to fix. **This will be fixed in Dragonbane v2.6**.
 
-## Technical Details
+## System Requirements & Dependencies
 
-**Compatible With:**
+### Required
 
-- Foundry VTT v12 and v13
-- Dragonbane system only
-- Token Action HUD Dragonbane
-- Argon - Combat HUD (DRAGONBANE)
-- Year Zero Engine Combat module
-- Dragonbane Character Sheet
-- Dragonbane Status Effects
-- Automated Animations (enhanced support)
-- socketlib (required for status effects)
+| Requirement           | Version | Notes                                                                           |
+| --------------------- | ------- | ------------------------------------------------------------------------------- |
+| **Foundry VTT**       | v12-v13 | Verified on both versions                                                       |
+| **Dragonbane System** | v2.0.0+ | Required for spell support and full functionality                               |
+| **socketlib**         | Latest  | Required for automatic status effect application and cross-client communication |
 
-**Dependencies:**
+### Recommended
 
-- **socketlib** (required for automatic status effect application)
-- **Automated Animations** (optional, but provides the spell animations that universal support enables)
+| Module                        | Purpose               | Benefit                                                                                                 |
+| ----------------------------- | --------------------- | ------------------------------------------------------------------------------------------------------- |
+| **Dragonbane Status Effects** | Enhanced status icons | Provides thematic status effect icons and visual enhancements when automatically applying spell effects |
+| **Automated Animations**      | Spell animations      | Enables visual animations for all spells; without this module, Universal Spell AA Support has no effect |
 
-**Localization:**
+### Optional Integrations
+
+| Module                              | Purpose          | Integration Details                                                                                     |
+| ----------------------------------- | ---------------- | ------------------------------------------------------------------------------------------------------- |
+| **Year Zero Engine Combat**         | Action tracking  | Automatic single/multiple action tracking during combat; seamlessly integrates with YZE's action system |
+| **Token Action HUD Dragonbane**     | Quick actions    | Enhanced compatibility with Token Action HUD for streamlined gameplay                                   |
+| **Argon - Combat HUD (DRAGONBANE)** | Combat interface | Compatible with Argon's enhanced combat interface                                                       |
+
+### Installation Notes
+
+- **socketlib** is mandatory - the module will not function properly without it
+- Install **Dragonbane Status Effects** before enabling automatic status effects for optimal visual experience
+- **Automated Animations** should be installed and configured if you plan to use Universal Spell AA Support
+- All optional integrations work independently - install only what you need
+
+## Localization
 
 - Full support for English and Swedish
 - Dynamic pattern generation based on current Dragonbane system language

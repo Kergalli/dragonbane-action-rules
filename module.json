@@ -35,31 +35,45 @@
     "systems": [
       {
         "id": "dragonbane",
-        "type": "system"
+        "type": "system",
+        "compatibility": {
+          "minimum": "2.0.0"
+        }
       }
     ],
     "requires": [
       {
         "id": "socketlib",
-        "type": "module"
+        "type": "module",
+        "manifest": "https://raw.githubusercontent.com/manuelVo/foundryvtt-socketlib/master/module.json",
+        "compatibility": {
+          "minimum": "1.0.0"
+        }
+      }
+    ],
+    "recommends": [
+      {
+        "id": "dragonbane-status-effects",
+        "type": "module",
+        "manifest": "https://github.com/Kergalli/dragonbane-status-effects/releases/latest/download/module.json",
+        "reason": "Provides thematic status effect icons and visual enhancements for automatic spell effect application"
+      },
+      {
+        "id": "autoanimations",
+        "type": "module",
+        "reason": "Enables visual animations for all spells when Universal Spell AA Support is active"
       }
     ],
     "optional": [
       {
-        "id": "autoanimations",
-        "type": "module"
-      },
-      {
-        "id": "dragonbane-status-effects",
-        "type": "module"
-      },
-      {
         "id": "token-action-hud-dragonbane",
-        "type": "module"
+        "type": "module",
+        "reason": "Enhanced compatibility for quick combat actions"
       },
       {
         "id": "yze-combat",
-        "type": "module"
+        "type": "module",
+        "reason": "Seamless integration for automatic action tracking during combat"
       }
     ]
   },
