@@ -1,6 +1,6 @@
 # Dragonbane Combat Assistant
 
-![Version](https://img.shields.io/badge/version-2.0.4-blue)
+![Version](https://img.shields.io/badge/version-2.1.0-blue)
 ![Foundry Version](https://img.shields.io/badge/foundry-v12%20%7C%20v13-green)
 ![System](https://img.shields.io/badge/system-dragonbane-orange)
 
@@ -262,8 +262,6 @@ Death Roll, Light Test, Lantern Test, Oil Lamp Test, Candle Test, Torch Test, Se
 
 **Socketlib Dependency:** Automatic status effect application requires the socketlib module for proper cross-client communication. If socketlib is not installed, status effects will still work but may not sync properly across all clients.
 
-**Ranged and Thrown Weapons vs Large Tokens:** In the core Dragonbane module, ranged and thrown weapons measure distance to a single reference grid square (upper left) instead of using token bounds. This causes attacks with thrown weapons against large and huge tokens to default to the Throw dialog when attacking from anywhere not adjacent to the upper left grid square of the enemy. This is a limitation of the core system's distance calculation and is outside the scope of this module to fix. **This will be fixed in Dragonbane v2.6**.
-
 ## System Requirements & Dependencies
 
 ### Required
@@ -271,7 +269,7 @@ Death Roll, Light Test, Lantern Test, Oil Lamp Test, Candle Test, Torch Test, Se
 | Requirement           | Version | Notes                                                                           |
 | --------------------- | ------- | ------------------------------------------------------------------------------- |
 | **Foundry VTT**       | v12-v13 | Verified on both versions                                                       |
-| **Dragonbane System** | v2.0.0+ | Required for spell support and full functionality                               |
+| **Dragonbane System** | v2.6.0+ | Required for dynamic range calculation and full functionality                               |
 | **socketlib**         | Latest  | Required for automatic status effect application and cross-client communication |
 
 ### Recommended

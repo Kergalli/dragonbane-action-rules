@@ -5,6 +5,19 @@
 import { SETTINGS, getSetting } from "./settings.js";
 import { DragonbaneUtils } from "./utils.js";
 
+/**
+ * Get weapon range using v2.6 dynamic calculation or fallback to cached value
+ */
+function getWeaponRange(weapon) {
+  // Try v2.6 dynamic calculation first
+  if (weapon.calculateRange && typeof weapon.calculateRange === "function") {
+    return weapon.calculateRange();
+  }
+
+  // Fallback to cached value for older versions
+  return weapon.system.calculatedRange || 0;
+}
+
 export class DragonbaneValidator {
   constructor(moduleId) {
     this.moduleId = moduleId;
@@ -278,14 +291,14 @@ export class DragonbaneValidator {
       const isRangedWeapon = weapon.isRangedWeapon;
       const isLongWeapon =
         weapon.hasWeaponFeature && weapon.hasWeaponFeature("long");
-      const isMeleeWeapon = !isThrownWeapon && !isRangedWeapon;
 
       let maxRange;
       let weaponType;
 
       if (isRangedWeapon) {
-        // Ranged weapon - use calculated range
-        maxRange = (weapon.system.calculatedRange || 0) * 2; // Allow 2x range
+        // Ranged weapon - use dynamic calculated range
+        const weaponRange = getWeaponRange(weapon);
+        maxRange = weaponRange * 2; // Allow 2x range
         weaponType = "ranged weapon";
       } else if (isThrownWeapon) {
         // Thrown weapon - contextual range (melee range or thrown range)
@@ -297,16 +310,15 @@ export class DragonbaneValidator {
           weaponType = "thrown weapon (melee range)";
         } else {
           // Beyond melee range - use thrown range (2x calculated range)
-          maxRange = (weapon.system.calculatedRange || 0) * 2;
+          const weaponRange = getWeaponRange(weapon);
+          maxRange = weaponRange * 2;
           weaponType = "thrown weapon (thrown range)";
         }
       } else {
-        // Melee weapon - use calculated range with appropriate fallback
-        if (
-          weapon.system.calculatedRange &&
-          weapon.system.calculatedRange > 0
-        ) {
-          maxRange = weapon.system.calculatedRange;
+        // Melee weapon - use dynamic calculated range with appropriate fallback
+        const weaponRange = getWeaponRange(weapon);
+        if (weaponRange && weaponRange > 0) {
+          maxRange = weaponRange;
         } else {
           // Fallback: long weapons can reach 4m, regular melee weapons 2m
           maxRange = isLongWeapon ? 4 : 2;
@@ -570,6 +582,23 @@ function validateSpellRange(spell, actor) {
  * @returns {number} Distance in grid units
  */
 function computeTokenDistance(token1, token2) {
+  // Use core Dragonbane v2.6 distance calculation if available
+  if (
+    typeof DoD_Utility !== "undefined" &&
+    DoD_Utility.calculateDistanceBetweenTokens
+  ) {
+    try {
+      return DoD_Utility.calculateDistanceBetweenTokens(token1, token2);
+    } catch (error) {
+      if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
+        DoD_Utility.WARNING(
+          `Core distance calculation failed, using fallback: ${error.message}`
+        );
+      }
+    }
+  }
+
+  // Fallback using your proven Chebyshev calculation
   const r1 = {
     left: token1.x,
     right: token1.x + token1.w,
@@ -597,6 +626,5 @@ function computeTokenDistance(token1, token2) {
   const dy = r1.bottom < r2.top ? r2.top - r1.bottom : r1.top - r2.bottom;
 
   // Chebyshev (chess board) distance plus one.
-  // Plus one represents the extra step to enter the token space.
   return (Math.max(dx, dy) / canvas.grid.size + 1) * canvas.grid.distance;
 }

@@ -1,5 +1,40 @@
 # Changelog
 
+## [2.1.0] - 2025-01-21
+
+### Major Compatibility Update
+
+- **Dragonbane v2.6 Compatibility**
+  - Uses core v2.6 distance calculation for dynamic range calculation and consistency with combat system
+  - Supports active effects that modify weapon ranges
+  - Improved accuracy for large tokens (resolves known issue)
+  - Preserves custom Chebyshev distance calculation as fallback to maintain correct diagonal range calculation (4m for 2 squares diagonally vs Foundry's 5.66m)
+
+### Enhanced User Experience
+
+- **Thrown Weapon Attack Dialog Notes**
+  - Melee actions are no longer hidden when attacking from a distance (v2.6 core change)
+  - Players can now switch from thrown attacks to melee attacks after range validation passes
+  - Thrown weapons default to "throw" action when attacking at range, but melee options remain available
+
+### Bug Fixes
+
+- Fixed ranged weapons showing "maximum range of 0m"
+- Thrown weapons now work correctly at all distances with large tokens
+- Active effects on character attributes now affect weapon ranges dynamically
+
+### Technical Improvements
+
+- Distance calculation now prioritizes core Dragonbane v2.6 method when available
+- Maintains backwards compatibility with proven grid-based distance fallback
+
+### System Requirements
+
+- **Breaking Change**: Now requires Dragonbane v2.6.0 or higher
+- Previous versions should continue using Combat Assistant v2.0.4
+
+---
+
 ## [2.0.4] - 2025-09-23
 
 ### New Features
