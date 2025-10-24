@@ -72,8 +72,8 @@
         "hint": "Ytterligare ord/fraser/UUIDs att utesluta från handlingsspårning (kommaseparerade). Dessa tärningskast kommer inte att utlösa handlings-statuseffekter. Se README.md för några exempel. Obs: Reaktions-trollformler undantas automatiskt genom att kontrollera deras kasttid."
       },
       "enableGrudgeTracking": {
-        "name": "Aktivera Obarmhärtighetsspårare",
-        "hint": "Spåra automatiskt skada som tillfogats dvärgkaraktärer med Obarmhärtig släktförmåga. Skapar journaler för grudglistor."
+        "name": "Aktivera Långsintsspårare",
+        "hint": "Spåra automatiskt skada som tillfogats dvärgkaraktärer med släktförmågan Långsint. Skapar journal med de du hyser agg till."
       },
       "enableSpellValidation": {
         "name": "Aktivera besvärjelse mål- och avståndvalidering",
@@ -100,11 +100,11 @@
       "setupGrudgeFolders": {
         "name": "Skapa Aggmappar",
         "label": "Skapa Aggmappar",
-        "hint": "Skapa aggmappar och journaler för alla spelarkaraktärer med förmågan Oförlåtande. Kör detta en gång när du startar ditt spel eller när nya SCs ansluter sig."
+        "hint": "Skapa aggmappar och journaler för alla spelarkaraktärer med förmågan Långsint. Kör detta en gång när du startar ditt spel eller när nya spelarkaraktärer ansluter."
       },
       "aoeRuleReminder": {
-        "name": "Påminnelse om Områdeseffekt-regler",
-        "hint": "Visa regelpåminnelser innan områdeseffekt-besvärjelser kastas (sfär- och kon-besvärjelser)"
+        "name": "Påminnelse om regler om Ytverkan",
+        "hint": "Visa regelpåminnelser innan besvärjelser med ytverkan kastas (sfär- och kon-besvärjelser)"
       }
     },
     "actions": {
@@ -330,3 +330,4 @@
     }
   }
 }
+
