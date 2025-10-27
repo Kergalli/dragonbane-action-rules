@@ -71,6 +71,10 @@
         "name": "YZE Action Exclusions",
         "hint": "Additional words/phrases/UUIDs to exclude from action tracking (comma-separated). These dice rolls will not trigger action status effects. See README.md for some examples. Note: Reaction spells are automatically excluded by checking their casting time."
       },
+      "yzeAbilityInclusions": {
+        "name": "YZE Action Inclusions - Abilities",
+        "hint": "Heroic and Kin abilities that should count as actions (comma-separated). When these abilities are used, they will trigger action status effects. Examples: Battle Cry, Berserker, Companion, Master Carpenter, Musician, Body Slam, Hunting Instincts, Raise Spirits"
+      },
       "enableGrudgeTracking": {
         "name": "Enable Unforgiving Tracker",
         "hint": "Automatically track damage dealt to Dwarf characters with Unforgiving kin ability. Creates journals for grudge lists."

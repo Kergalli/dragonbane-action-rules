@@ -1,6 +1,6 @@
 # Dragonbane Combat Assistant
 
-![Version](https://img.shields.io/badge/version-2.1.0-blue)
+![Version](https://img.shields.io/badge/version-2.1.1-blue)
 ![Foundry Version](https://img.shields.io/badge/foundry-v12%20%7C%20v13-green)
 ![System](https://img.shields.io/badge/system-dragonbane-orange)
 
@@ -145,6 +145,21 @@ Access settings through **Configure Settings → Module Settings → Dragonbane 
 
 - **Enable YZE Integration** - Automatic action tracking with Year Zero Engine Combat module
 - **YZE Action Exclusions** - Configure rolls to exclude from action tracking (see tips below), you can also exclude almost anything by UUID
+- **YZE Action Inclusions - Abilities** - Specify heroic and kin abilities that should count as actions (comma-separated). Examples: Battle Cry, Berserker, Companion, Master Carpenter, Musician, Body Slam, Hunting Instincts, Raise Spirits
+
+**Example YZE Action Exclusions (if using Token Action HUD Dragonbane):**
+
+```
+English: Death Roll, Light Test, Lantern, Oil Lamp, Tallow Candle, Torch, Severe Injury Test
+Swedish: Dödsslag, Fackla, Ljustest, Lykta, Oljelampa, Svår Skada, Talgljus
+```
+
+**Example YZE Action Inclusions - Abilities:**
+
+```
+English: Battle Cry, Berserker, Companion, Master Carpenter, Musician, Body Slam, Hunting Instincts, Raise Spirits
+Swedish: Bärsärk, Följeslagare, Jaktsinne, Mästersnickare, Stridsrop, Tackling, Tonkonst, Uppmuntra
+```
 
 ### Advanced
 
@@ -163,66 +178,6 @@ Temporarily disable all validation rules with keyboard shortcut:
 Fully customizable through **Configure Controls** in Foundry.
 
 ---
-
-## Usage Examples
-
-### Universal Spell Support (NEW)
-
-- **Enabling AA Support**: Use the "Enable AA Support for All Spells" button in module settings to make all spells compatible with Automated Animations
-- **Manual Control**: Use "Disable AA Support" button if you need to roll back the enhancement
-
-### Spell Validation (NEW)
-
-- **Range Spells**: Attempting to cast "Fireball" without selecting a target shows warning and prevents the cast
-- **Touch Spells**: Trying to cast "Heal Wound" on a distant target shows range violation and suggests closer targets
-- **Personal Spells**: Casting "Birdsong" automatically targets yourself (no selection needed)
-- **Template Spells**: Casting "Ensnaring Roots" auto-targets you for visual effects while awaiting proper area targeting
-
-### Automatic Status Effects (NEW)
-
-- **Self-Buffs**: Successfully casting "Protector" applies the Protector status effect to target
-- **Target Debuffs**: Successfully casting "Sleep" applies the Sleeping effect to your target
-- **DSE Integration**: Uses Dragonbane Status Effects module icons when available
-
-### Attack Validation
-
-- **Target Required**: Attempting to attack without a target shows warning and prevents the roll
-- **Range Checking**: Attacking beyond weapon range shows distance violation and suggests valid targets
-- **Thrown Weapons**: Automatically detects context - uses melee range when adjacent, thrown range when distant
-
-### Rules Display
-
-When you successfully parry, topple, disarm, or find a weak spot, the relevant rules appear automatically with:
-
-- Clear rule descriptions and mechanical effects
-- Weapon durability (for parries) to compare against attacker's damage
-- "Mark Weapon Broken" button for easy weapon damage tracking
-- Weapon feature bonuses (e.g., "+1 Boon for Toppling weapons")
-
-### Monster Action Prevention
-
-- **Attempting Disarm on Monster**: Dialog appears explaining "Monsters cannot be disarmed. Are you sure you want to attempt this disarm against [Monster Name]?"
-- **User Options**: Click "Cancel" to prevent the roll entirely, or "Proceed" to allow the action for edge cases
-- **Clean Flow**: Single dialog → decision → complete action without additional interruptions
-
-### Encumbrance Monitoring
-
-- Automatically applies customizable status effects when characters exceed carry capacity
-- Provides immediate notifications when encumbrance status changes
-- Optional chat reminders about required STR rolls for over-encumbered characters
-- Works seamlessly with Dragonbane Status Effects module if installed
-
-### Unforgiving Grudge Tracking
-
-- Allows Dwarf characters to add an enemy to their "Grudge List" via a chat button when they suffer damage
-- Automatically creates and maintains personalized grudge journals for each character
-- Tracks date, enemy name, damage dealt, critical hits, and scene name
-
-### YZE Integration
-
-- **First Action**: Character makes an attack → automatically applies "Single Action" status effect
-- **Subsequent Actions**: Additional attacks show contextual notifications and apply "Multiple Actions" effect
-- **Smart Detection**: Ignores damage rolls, healing, and advancement - only tracks actual combat actions
 
 ## Special Cases & Tips
 
@@ -250,17 +205,11 @@ When you successfully parry, topple, disarm, or find a weak spot, the relevant r
 
 **Monster Action Prevention:** Prevention dialogs only appear for Parry and Disarm attempts against monsters. All other actions proceed normally.
 
-**Token Action HUD + YZE Integration:** If using the Token Action HUD Dragonbane module, consider adding these exclusions to **YZE Action Exclusions** setting for better action tracking accuracy:
-
-```
-Death Roll, Light Test, Lantern Test, Oil Lamp Test, Candle Test, Torch Test, Severe Injury Test
-```
+**Token Action HUD + YZE Integration:** If using the Token Action HUD Dragonbane module, consider adding **YZE Action Exclusions**, **YZE Action Inclusions - Abilities**, and **Excluded Spells** for better action tracking accuracy.
 
 ## Known Issues
 
 **Template Spell Area Targeting:** Template spells currently auto-target the caster for visual effects rather than placing templates for area targeting. This is intentional for v2.0 - proper template placement will be added in v2.1.
-
-**Socketlib Dependency:** Automatic status effect application requires the socketlib module for proper cross-client communication. If socketlib is not installed, status effects will still work but may not sync properly across all clients.
 
 ## System Requirements & Dependencies
 
@@ -269,7 +218,7 @@ Death Roll, Light Test, Lantern Test, Oil Lamp Test, Candle Test, Torch Test, Se
 | Requirement           | Version | Notes                                                                           |
 | --------------------- | ------- | ------------------------------------------------------------------------------- |
 | **Foundry VTT**       | v12-v13 | Verified on both versions                                                       |
-| **Dragonbane System** | v2.6.0+ | Required for dynamic range calculation and full functionality                               |
+| **Dragonbane System** | v2.6.0+ | Required for dynamic range calculation and full functionality                   |
 | **socketlib**         | Latest  | Required for automatic status effect application and cross-client communication |
 
 ### Recommended
@@ -297,8 +246,12 @@ Death Roll, Light Test, Lantern Test, Oil Lamp Test, Candle Test, Torch Test, Se
 ## Localization
 
 - Full support for English and Swedish
-- Dynamic pattern generation based on current Dragonbane system language
 - Language-agnostic operation using official Dragonbane translation keys
+
+### Community Contributors
+
+- **dgladkov** - Encumbrance fixes and distance calculations to large and huge tokens
+- **xdy** - Swedish language improvements and localization fixes
 
 ## Support & Issues
 
@@ -309,3 +262,7 @@ Death Roll, Light Test, Lantern Test, Oil Lamp Test, Candle Test, Torch Test, Se
 ## License
 
 This module is licensed under the MIT License. See [LICENSE](LICENSE) for details.
+
+## Disclaimer
+
+This is an unofficial, fan-created module. Not affiliated with Free League Publishing. Dragonbane™ is a trademark of Free League Publishing.

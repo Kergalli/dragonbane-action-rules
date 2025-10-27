@@ -1,5 +1,24 @@
 # Changelog
 
+## [2.1.1] - 2025-10-26
+
+### New Features
+
+- **YZE Action Inclusions - Abilities**
+  - New setting to specify heroic and kin abilities that should count as actions for YZE Combat integration
+  - Automatically detects ability usage from chat messages using UUID parsing
+  - Configurable multiline text field with default examples: Battle Cry, Berserker, Companion, Master Carpenter, Musician, Body Slam, Hunting Instincts, Raise Spirits
+  - Complements existing YZE Action Exclusions for comprehensive action tracking control
+
+### Localization Improvements
+
+#### 🇸🇪 Swedish Language Enhancements
+
+- **Swedish Language Fixes**: Various improvements and corrections to Swedish translations (courtesy of **xdy**)
+- **Enhanced Localization**: Better language support and more accurate translations throughout the module
+
+---
+
 ## [2.1.0] - 2025-01-21
 
 ### Major Compatibility Update

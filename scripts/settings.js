@@ -25,6 +25,7 @@ export const SETTINGS = {
   // YZE integration settings
   ENABLE_YZE_INTEGRATION: "enableYZEIntegration",
   YZE_CUSTOM_EXCLUSIONS: "yzeCustomExclusions",
+  YZE_ABILITY_INCLUSIONS: "yzeAbilityInclusions",
   // Grudge tracking settings
   ENABLE_GRUDGE_TRACKING: "enableGrudgeTracking",
   ENABLE_SPELL_VALIDATION: "enableSpellValidation",
@@ -338,6 +339,36 @@ export function registerSettings(moduleId) {
     config: true,
     type: String,
     default: "",
+    onChange: () => {
+      setTimeout(() => {
+        try {
+          const DragonbaneActionRules = window.DragonbaneActionRules;
+          if (DragonbaneActionRules?.patternManager?.refreshPatterns) {
+            DragonbaneActionRules.patternManager.refreshPatterns();
+          }
+        } catch (error) {
+          if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
+            DoD_Utility.WARNING(`Error refreshing patterns: ${error.message}`);
+          }
+        }
+      }, 100);
+    },
+  });
+
+  game.settings.register(moduleId, SETTINGS.YZE_ABILITY_INCLUSIONS, {
+    name: game.i18n.localize(
+      "DRAGONBANE_ACTION_RULES.settings.yzeAbilityInclusions.name"
+    ),
+    hint: game.i18n.localize(
+      "DRAGONBANE_ACTION_RULES.settings.yzeAbilityInclusions.hint"
+    ),
+    scope: "world",
+    config: true,
+    type: String,
+    default:
+      "Battle Cry, Berserker, Companion, Master Carpenter, Musician, Body Slam, Hunting Instincts, Raise Spirits",
+    filePicker: false,
+    input: HTMLTextAreaElement, // This makes it a multiline textbox
     onChange: () => {
       setTimeout(() => {
         try {

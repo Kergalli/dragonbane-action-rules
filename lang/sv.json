@@ -71,6 +71,10 @@
         "name": "YZE Handlings-undantag",
         "hint": "Ytterligare ord/fraser/UUIDs att utesluta från handlingsspårning (kommaseparerade). Dessa tärningskast kommer inte att utlösa handlings-statuseffekter. Se README.md för några exempel. Obs: Reaktions-trollformler undantas automatiskt genom att kontrollera deras kasttid."
       },
+      "yzeAbilityInclusions": {
+        "name": "YZE Åtgärd Inkluderingar - Förmågor",
+        "hint": "Heroiska och Släktförmågor som ska räknas som åtgärder (kommaseparerade). När dessa förmågor används kommer de att utlösa åtgärdsstatuseffekter. Exempel: Bärsärk, Följeslagare, Jaktsinne, Mästersnickare, Stridsrop, Tackling, Tonkonst, Uppmuntra"
+      },
       "enableGrudgeTracking": {
         "name": "Aktivera Långsintsspårare",
         "hint": "Spåra automatiskt skada som tillfogats dvärgkaraktärer med släktförmågan Långsint. Skapar journal med de du hyser agg till."
@@ -330,4 +334,3 @@
     }
   }
 }
-

@@ -177,6 +177,16 @@ export class DragonbaneYZEIntegration {
       return null;
     }
 
+    // Check for ability inclusions (before general pattern matching)
+    if (this._matchesAbilityInclusions(message)) {
+      DragonbaneUtils.debugLog(
+        this.moduleId,
+        "YZEIntegration",
+        "Detected ability action from inclusions list"
+      );
+      return "ability";
+    }
+
     // Simplified: Any dice roll that passes the filters is an action
     const content = message.content;
     if (this.patternManager.isAction(content)) {
@@ -220,6 +230,56 @@ export class DragonbaneYZEIntegration {
     const content = message.content.toLowerCase();
 
     return exclusionPatterns.some((pattern) => content.includes(pattern));
+  }
+
+  /**
+   * Check if message contains an ability that should count as an action
+   */
+  _matchesAbilityInclusions(message) {
+    const inclusions = DragonbaneUtils.getSetting(
+      this.moduleId,
+      "yzeAbilityInclusions",
+      ""
+    );
+    if (!inclusions.trim()) return false;
+
+    const inclusionList = inclusions
+      .split(",")
+      .map((e) => e.trim().toLowerCase())
+      .filter((e) => e);
+
+    const content = message.content;
+
+    // Check if this is an ability usage message
+    if (!content.includes('class="ability-use"')) {
+      return false;
+    }
+
+    try {
+      // Find UUID using string methods
+      const uuidStart = content.indexOf("@UUID[");
+      if (uuidStart === -1) return false;
+
+      const uuidEnd = content.indexOf("]", uuidStart);
+      if (uuidEnd === -1) return false;
+
+      const uuid = content.substring(uuidStart + 6, uuidEnd);
+
+      // Get the actual item from the UUID
+      const item = fromUuidSync(uuid);
+      if (!item || item.type !== "ability") {
+        return false;
+      }
+
+      const abilityName = item.name.toLowerCase();
+
+      // Check if this ability is in our inclusions list
+      return inclusionList.some((ability) =>
+        abilityName.includes(ability.toLowerCase())
+      );
+    } catch (error) {
+      return false;
+    }
   }
 
   /**
