@@ -73,11 +73,11 @@
       },
       "yzeAbilityInclusions": {
         "name": "YZE Åtgärd Inkluderingar - Förmågor",
-        "hint": "Heroiska och Släktförmågor som ska räknas som åtgärder (kommaseparerade). När dessa förmågor används kommer de att utlösa åtgärdsstatuseffekter. Exempel: Bärsärk, Följeslagare, Jaktsinne, Mästersnickare, Stridsrop, Tackling, Tonkonst, Uppmuntra"
+        "hint": "Heroiska och Släktesförmågor som ska räknas som åtgärder (kommaseparerade). När dessa förmågor används kommer de att utlösa åtgärdsstatuseffekter. Exempel: Bärsärk, Följeslagare, Jaktsinne, Mästersnickare, Stridsrop, Tackling, Tonkonst, Uppmuntra"
       },
       "enableGrudgeTracking": {
         "name": "Aktivera Långsintsspårare",
-        "hint": "Spåra automatiskt skada som tillfogats dvärgkaraktärer med släktförmågan Långsint. Skapar journal med de du hyser agg till."
+        "hint": "Spåra automatiskt skada som tillfogats dvärgkaraktärer med släktesförmågan Långsint. Skapar journal med de du hyser agg till."
       },
       "enableSpellValidation": {
         "name": "Aktivera besvärjelse mål- och avståndvalidering",
@@ -255,16 +255,16 @@
       "birdsong": "Fågelsång",
       "powerFist": "Kraftnäve",
       "enchantWeapon": "Förtrolla vapen",
-      "engulfingForest": "Snärja",
-      "ensnaringRoots": "Snärja",
+      "engulfingForest": "Snärjd",
+      "ensnaringRoots": "Snärjd",
       "flight": "Flygande",
-      "longstrider": "Långsteg",
+      "longstrider": "Långstige",
       "sleep": "Sovande",
-      "stoneSkin": "Stenhud",
-      "chill": "Kyla",
-      "cold": "Köld",
-      "frost": "Frusen",
-      "heat": "Värme"
+      "stoneSkin": "Stenhudad",
+      "chill": "Kyld",
+      "cold": "Kall",
+      "frost": "Fryst",
+      "heat": "Värmd"
     },
     "dialogs": {
       "enableAA": {
@@ -285,8 +285,8 @@
       },
       "setupGrudgeFolders": {
         "title": "Konfigurera Agg-mappar",
-        "content": "Detta kommer att skapa agg-mappar och journaler för alla spelarkaraktärer med förmågan Obarmhärtig. Eventuella befintliga journaler kommer att bevaras.",
-        "info": "Endast karaktärer med släktförmågan Obarmhärtig får journaler skapade.",
+        "content": "Detta kommer att skapa agg-mappar och journaler för alla spelarkaraktärer med förmågan Långsint. Eventuella befintliga journaler kommer att bevaras.",
+        "info": "Endast karaktärer med släktesförmågan Långsint får journaler skapade.",
         "setupButton": "Skapa Mappar & Journaler"
       },
       "aoeReminder": {
@@ -299,22 +299,22 @@
       }
     },
     "grudgeTracker": {
-      "speakerName": "Obarmhärtighetsspårare",
+      "speakerName": "Långsinthetsspårare",
       "damageReceived": "{actorName} har tagit {damage} skada från {attackerName}.",
-      "addToGrudgeList": "Lägg till i Grudglista",
-      "buttonTextCompleted": "Tillagt i Grudglista",
+      "addToGrudgeList": "Lägg till i agg-lista",
+      "buttonTextCompleted": "Tillagt i agg-lista",
       "deleteEntry": "Ta bort denna agg-post",
       "entryDeleted": "Agg-post borttagen",
       "journalName": "{actorName}'s Agg",
       "folderName": "Oförlåtande Spårare",
-      "pageTitle": "Oförlåtande Spårare",
+      "pageTitle": "Långsinthetsspårare",
       "dateColumn": "Datum",
       "enemyColumn": "Fiende",
       "damageColumn": "Skada",
       "locationColumn": "Plats",
       "unknownLocation": "Okänd Plats",
-      "addedToGrudgeList": "{attackerName} tillagd i {actorName}s grudglista",
-      "setupComplete": "Skapade {count} agg-journaler för karaktärer med förmågan Obarmhärtig.",
+      "addedToGrudgeList": "{attackerName} tillagd i {actorName}s agg-lista",
+      "setupComplete": "Skapade {count} agg-journaler för karaktärer med förmågan Långsint.",
       "confirmDelete": {
         "title": "Ta bort Agg-post",
         "content": "Är du säker på att du vill ta bort denna agg-post? Denna åtgärd kan inte ångras.",
@@ -323,9 +323,9 @@
       },
       "errors": {
         "actorNotFound": "Aktör hittades inte",
-        "noPermission": "Du har inte behörighet att ändra denna karaktärs grudglista",
-        "addFailed": "Misslyckades med att lägga till post i grudglistan",
-        "journalCreateFailed": "Misslyckades med att skapa grudglista-journal",
+        "noPermission": "Du har inte behörighet att ändra denna karaktärs agg-lista",
+        "addFailed": "Misslyckades med att lägga till post i agg-listan",
+        "journalCreateFailed": "Misslyckades med att skapa agg-liste-journal",
         "journalNotFound": "Agg-journal hittades inte",
         "journalNotSetup": "Ingen aggjournal hittades för {actorName}. Be SM:en att köra 'Skapa Aggmappar' från modulinställningarna.",
         "moduleNotReady": "Modulen är inte redo. Vänligen försök igen om ett ögonblick.",
@@ -334,3 +334,4 @@
     }
   }
 }
+
