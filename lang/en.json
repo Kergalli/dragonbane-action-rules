@@ -299,6 +299,7 @@
       }
     },
     "grudgeTracker": {
+      "allGrudgeJournalsExist": "All grudge journals already exist or no Unforgiving characters found",
       "speakerName": "Unforgiving Tracker",
       "damageReceived": "{actorName} has taken {damage} damage from {attackerName}.",
       "addToGrudgeList": "Add to Grudge List",

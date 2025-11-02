@@ -1,5 +1,19 @@
 # Changelog
 
+## [2.1.2] - 2025-11-02
+
+### Localization Improvements
+
+- **Fixed hardcoded text in grudge tracker** - Replaced remaining hardcoded English strings in `grudge-tracker.js` with proper localization keys (courtesy of **xdy**)
+- **Improved internationalization consistency** - All grudge tracker messages now properly support multiple languages
+
+### 🇸🇪 Swedish Language Enhancements
+
+- **Swedish Language Fixes**: Various improvements and corrections to Swedish translations (courtesy of **xdy**)
+- **Enhanced Localization**: Better language support and more accurate translations throughout the module
+
+---
+
 ## [2.1.1] - 2025-10-26
 
 ### New Features

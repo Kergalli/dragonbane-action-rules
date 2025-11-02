@@ -299,6 +299,7 @@
       }
     },
     "grudgeTracker": {
+      "allGrudgeJournalsExist": "Alla agg-journaler existerar redan eller inga Långsinta karaktärer hittades",
       "speakerName": "Långsinthetsspårare",
       "damageReceived": "{actorName} har tagit {damage} skada från {attackerName}.",
       "addToGrudgeList": "Lägg till i agg-lista",
@@ -334,4 +335,3 @@
     }
   }
 }
-

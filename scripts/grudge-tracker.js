@@ -577,8 +577,15 @@ export class DragonbaneGrudgeTracker {
 
       const message =
         createdCount > 0
-          ? `Created grudge journals for ${createdCount} Unforgiving characters`
-          : "All grudge journals already exist or no Unforgiving characters found";
+          ? game.i18n.format(
+              "DRAGONBANE_ACTION_RULES.grudgeTracker.setupComplete",
+              {
+                count: createdCount,
+              }
+            )
+          : game.i18n.localize(
+              "DRAGONBANE_ACTION_RULES.grudgeTracker.allGrudgeJournalsExist"
+            );
 
       ui.notifications.info(message);
       return createdCount;
