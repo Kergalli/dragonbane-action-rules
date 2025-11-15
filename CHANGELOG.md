@@ -57,7 +57,10 @@
     </table>
 </div>
 
-Replace the top <div>, replace <thead> and </thead> with <tbody> and </tbody>, change <th> and </th> tags to <td> and </td>, remove the delete button column line: <th style="color: white; text-align: center; width: 40px;"></th>
+- Replace the top <div>
+- Replace <thead> and </thead> with <tbody> and </tbody>
+- Replace <th> and </th> tags with <td> and </td>
+- Remove the delete button column line: <th style="color: white; text-align: center; width: 40px;"></th>
 ```
 
 ---
