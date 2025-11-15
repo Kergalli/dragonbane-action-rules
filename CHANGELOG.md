@@ -18,7 +18,7 @@
 ### Migration Notes
 
 - **Existing Grudge Journals** - Will continue to work normally, but delete buttons and editing features in old entries will not function
-- **Recreate the Grudge Journals** - Easist thing to do is delete the old Unforgiving Tracker folder and grudge journals and recreate them
+- **Recreate the Grudge Journals** - Easiest thing to do is delete the old Unforgiving Tracker folder and grudge journals and recreate them
 - **Preserving Old Tables** - If you want to preserve the old grudge table, and enable the edit features, you will need to edit the underlying HTML so it looks like this:
 
 ```
