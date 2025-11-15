@@ -6,21 +6,20 @@
 
 - **Simplified Table Management**
 
-  - **Removed delete buttons** - Players can now edit grudge tables directly in the journal editor using standard Foundry tools
-  - **Native Foundry table structure** - Users can add, delete, and modify grudge entries using familiar Foundry table tools
-  - **Cleaner interface** - Eliminated JavaScript dependencies that broke when journals were edited manually
-  - **Improved stability** - No more broken buttons after journal page edits
+  - **Removed Delete Buttons** - Players can now edit grudge tables directly in the journal editor using standard Foundry tools
+  - **Native Foundry Table Structure** - Users can add, delete, and modify grudge entries using familiar Foundry table tools
+  - **Cleaner Interface** - Eliminated JavaScript dependencies that broke when journals were edited manually
+  - **Improved Stability** - No more broken buttons after journal page edits
 
 ### Technical Improvements
 
-- **Bug Fixes**
-  - **Fixed duplicate notifications** - Resolved issue where Grudge Tracker setup button showed success message twice
+- **Fixed Duplicate Notifications** - Resolved issue where Grudge Tracker setup button showed success message twice
 
 ### Migration Notes
 
-- **Existing grudge journals** Will continue to work normally, but delete buttons and editing features in old entries will not function
-- **Recreate the Grudge Journals** Easist thing to do is delete the old Unforgiving Tracker folder and grudge journals and recreate them
-- **Preserving old tables** If you want to preserve the old table, and enable the edit features, you will need to edit the underlying HTML so it looks like this:
+- **Existing Grudge Journals** - Will continue to work normally, but delete buttons and editing features in old entries will not function
+- **Recreate the Grudge Journals** - Easist thing to do is delete the old Unforgiving Tracker folder and grudge journals and recreate them
+- **Preserving Old Tables** - If you want to preserve the old grudge table, and enable the edit features, you will need to edit the underlying HTML so it looks like this:
 
 ```
 <div style="padding-top:15px">
