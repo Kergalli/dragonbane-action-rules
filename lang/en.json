@@ -304,8 +304,6 @@
       "damageReceived": "{actorName} has taken {damage} damage from {attackerName}.",
       "addToGrudgeList": "Add to Grudge List",
       "buttonTextCompleted": "Added to Grudge List",
-      "deleteEntry": "Delete this grudge entry",
-      "entryDeleted": "Grudge entry deleted",
       "journalName": "{actorName}'s Grudges",
       "folderName": "Unforgiving Tracker",
       "pageTitle": "Unforgiving Tracker",
@@ -316,21 +314,13 @@
       "unknownLocation": "Unknown Location",
       "addedToGrudgeList": "{attackerName} added to {actorName}'s grudge list",
       "setupComplete": "Created {count} grudge journals for characters with Unforgiving ability.",
-      "confirmDelete": {
-        "title": "Delete Grudge Entry",
-        "content": "Are you sure you want to delete this grudge entry? This action cannot be undone.",
-        "confirm": "Delete",
-        "cancel": "Cancel"
-      },
       "errors": {
         "actorNotFound": "Actor not found",
         "noPermission": "You don't have permission to modify this character's grudge list",
         "addFailed": "Failed to add entry to grudge list",
         "journalCreateFailed": "Failed to create grudge list journal",
         "journalNotFound": "Grudge journal not found",
-        "journalNotSetup": "No grudge journal found for {actorName}. Please ask the GM to run 'Setup Grudge Folders' from the module settings.",
-        "moduleNotReady": "Module not ready. Please try again in a moment.",
-        "deleteFailed": "Failed to delete grudge entry"
+        "journalNotSetup": "No grudge journal found for {actorName}. Please ask the GM to run 'Setup Grudge Folders' from the module settings."
       }
     }
   }

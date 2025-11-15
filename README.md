@@ -1,6 +1,6 @@
 # Dragonbane Combat Assistant
 
-![Version](https://img.shields.io/badge/version-2.1.2-blue)
+![Version](https://img.shields.io/badge/version-2.1.3-blue)
 ![Foundry Version](https://img.shields.io/badge/foundry-v12%20%7C%20v13-green)
 ![System](https://img.shields.io/badge/system-dragonbane-orange)
 
@@ -75,7 +75,7 @@
 - **One-click grudge addition** - "Add to Grudge List" button appears in chat for qualifying damage events
 - **Detailed grudge entries** - Records attacker name, damage amount, location, date, and critical hit status
 - **Journal organization** - Automatically creates organized folders and formatted grudge tables
-- **Easy grudge management** - Delete buttons in journals allow removal of settled grudges
+- **Native table editing** - Tables use standard Foundry editing tools (add/delete rows)
 - **Critical hit indicators** - Special marking (💥) for grudges caused by critical damage
 - **NOTE** - The GM will need to create the folder and Journal before Dwarf players can record grudges. Simply click the **Setup Grudge Folders for All PCs** button in settings once your Dwarf characters have been assigned to players, after that players will be able to record grudges.
 

@@ -304,8 +304,6 @@
       "damageReceived": "{actorName} har tagit {damage} skada från {attackerName}.",
       "addToGrudgeList": "Lägg till i agg-lista",
       "buttonTextCompleted": "Tillagt i agg-lista",
-      "deleteEntry": "Ta bort denna agg-post",
-      "entryDeleted": "Agg-post borttagen",
       "journalName": "{actorName}'s Agg",
       "folderName": "Oförlåtande Spårare",
       "pageTitle": "Långsinthetsspårare",
@@ -316,21 +314,13 @@
       "unknownLocation": "Okänd Plats",
       "addedToGrudgeList": "{attackerName} tillagd i {actorName}s agg-lista",
       "setupComplete": "Skapade {count} agg-journaler för karaktärer med förmågan Långsint.",
-      "confirmDelete": {
-        "title": "Ta bort Agg-post",
-        "content": "Är du säker på att du vill ta bort denna agg-post? Denna åtgärd kan inte ångras.",
-        "confirm": "Ta bort",
-        "cancel": "Avbryt"
-      },
       "errors": {
         "actorNotFound": "Aktör hittades inte",
         "noPermission": "Du har inte behörighet att ändra denna karaktärs agg-lista",
         "addFailed": "Misslyckades med att lägga till post i agg-listan",
         "journalCreateFailed": "Misslyckades med att skapa agg-liste-journal",
         "journalNotFound": "Agg-journal hittades inte",
-        "journalNotSetup": "Ingen aggjournal hittades för {actorName}. Be SM:en att köra 'Skapa Aggmappar' från modulinställningarna.",
-        "moduleNotReady": "Modulen är inte redo. Vänligen försök igen om ett ögonblick.",
-        "deleteFailed": "Misslyckades med att ta bort agg-post"
+        "journalNotSetup": "Ingen aggjournal hittades för {actorName}. Be SM:en att köra 'Skapa Aggmappar' från modulinställningarna."
       }
     }
   }

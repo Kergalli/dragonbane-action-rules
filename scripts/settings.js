@@ -549,14 +549,8 @@ class SetupGrudgeFoldersDialog extends FormApplication {
           ),
           callback: async () => {
             if (window.DragonbaneActionRules?.grudgeTracker) {
-              const count =
-                await window.DragonbaneActionRules.grudgeTracker.setupAllGrudgeFolders();
-              ui.notifications.info(
-                game.i18n.format(
-                  "DRAGONBANE_ACTION_RULES.grudgeTracker.setupComplete",
-                  { count: count }
-                )
-              );
+              await window.DragonbaneActionRules.grudgeTracker.setupAllGrudgeFolders();
+              // Notification is handled by the method itself
             } else {
               ui.notifications.error("Grudge tracker not initialized");
             }

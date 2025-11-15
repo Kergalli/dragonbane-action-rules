@@ -1,5 +1,68 @@
 # Changelog
 
+## [2.1.3] - 2025-11-15
+
+### Grudge Tracker Improvements
+
+- **Simplified Table Management**
+
+  - **Removed delete buttons** - Players can now edit grudge tables directly in the journal editor using standard Foundry tools
+  - **Native Foundry table structure** - Users can add, delete, and modify grudge entries using familiar Foundry table tools
+  - **Cleaner interface** - Eliminated JavaScript dependencies that broke when journals were edited manually
+  - **Improved stability** - No more broken buttons after journal page edits
+
+### Technical Improvements
+
+- **Bug Fixes**
+  - **Fixed duplicate notifications** - Resolved issue where Grudge Tracker setup button showed success message twice
+
+### Migration Notes
+
+- **Existing grudge journals** Will continue to work normally, but delete buttons and editing features in old entries will not function
+- **Recreate the Grudge Journals** Easist thing to do is delete the old Unforgiving Tracker folder and grudge journals and recreate them
+- **Preserving old tables** If you want to preserve the old table, and enable the edit features, you will need to edit the underlying HTML so it looks like this:
+
+```
+<div style="padding-top:15px">
+    <table>
+        <tbody>
+            <tr style="color: white; background-color: rgba(74, 36, 7, 0.8);">
+                <td style="color:white">
+                    <p>Date</p>
+                </td>
+                <td style="color:white">
+                    <p>Enemy</p>
+                </td>
+                <td style="color:white;text-align:center">
+                    <p>Damage</p>
+                </td>
+                <td style="color:white">
+                    <p>Location</p>
+                </td>
+            </tr>
+            <tr id="grudge-1763185269489-0h0mfqmo8">
+                <td>
+                    <p>11/14/2025</p>
+                </td>
+                <td>
+                    <p><strong>Orc - Warrior</strong></p>
+                </td>
+                <td style="text-align:center">
+                    <p>6</p>
+                </td>
+                <td>
+                    <p>Battlemap - Field (large)</p>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+Replace the top <div>, replace <thead> and </thead> with <tbody> and </tbody>, change <th> and </th> tags to <td> and </td>, remove the delete button column line: <th style="color: white; text-align: center; width: 40px;"></th>
+```
+
+---
+
 ## [2.1.2] - 2025-11-02
 
 ### Localization Improvements

@@ -480,70 +480,6 @@ export class DragonbaneGrudgeTracker {
     }
   }
 
-  /**
-   * Delete a grudge entry from the journal
-   */
-  async deleteGrudgeEntry(journalId, rowId) {
-    try {
-      const journal = game.journal.get(journalId);
-      if (!journal) {
-        ui.notifications.error(
-          game.i18n.localize(
-            "DRAGONBANE_ACTION_RULES.grudgeTracker.errors.journalNotFound"
-          )
-        );
-        return;
-      }
-
-      // Check permissions
-      if (!journal.isOwner && !game.user.isGM) {
-        ui.notifications.warn(
-          game.i18n.localize(
-            "DRAGONBANE_ACTION_RULES.grudgeTracker.errors.noPermission"
-          )
-        );
-        return;
-      }
-
-      const page = journal.pages.contents[0];
-      if (!page) return;
-
-      // Get current content and remove the row
-      const currentContent = page.text.content;
-
-      // Create regex to match the entire row including any whitespace
-      const rowRegex = new RegExp(
-        `\\s*<tr id="${rowId}"[\\s\\S]*?<\\/tr>`,
-        "g"
-      );
-      const updatedContent = currentContent.replace(rowRegex, "");
-
-      // Update journal page
-      await page.update({
-        "text.content": updatedContent,
-      });
-
-      ui.notifications.info(
-        game.i18n.localize("DRAGONBANE_ACTION_RULES.grudgeTracker.entryDeleted")
-      );
-
-      DragonbaneUtils.debugLog(
-        this.moduleId,
-        "GrudgeTracker",
-        `Deleted grudge entry ${rowId} from ${journal.name}`
-      );
-    } catch (error) {
-      if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
-        DoD_Utility.WARNING(`Error deleting grudge entry: ${error.message}`);
-      }
-      ui.notifications.error(
-        game.i18n.localize(
-          "DRAGONBANE_ACTION_RULES.grudgeTracker.errors.deleteFailed"
-        )
-      );
-    }
-  }
-
   async setupAllGrudgeFolders() {
     try {
       if (!game.user.isGM) {
@@ -702,33 +638,30 @@ export class DragonbaneGrudgeTracker {
    * Create initial grudge table HTML
    */
   _createInitialGrudgeTableHTML() {
-    return `<div class="display-generic-table" style="padding-top: 20px;">
-            <table>
-                <thead>
-                    <tr style="color: white; background-color: rgba(74, 36, 7, 0.8);">
-                        <th style="color: white;">${game.i18n.localize(
-                          "DRAGONBANE_ACTION_RULES.grudgeTracker.dateColumn"
-                        )}</th>
-                        <th style="color: white;">${game.i18n.localize(
-                          "DRAGONBANE_ACTION_RULES.grudgeTracker.enemyColumn"
-                        )}</th>
-                        <th style="color: white; text-align: center;">${game.i18n.localize(
-                          "DRAGONBANE_ACTION_RULES.grudgeTracker.damageColumn"
-                        )}</th>
-                        <th style="color: white;">${game.i18n.localize(
-                          "DRAGONBANE_ACTION_RULES.grudgeTracker.locationColumn"
-                        )}</th>
-                        <th style="color: white; text-align: center; width: 40px;"></th>
-                    </tr>
-                </thead>
+    return `<div style="padding-top: 15px;">
+              <table>
                 <tbody>
+                    <tr style="color: white; background-color: rgba(74, 36, 7, 0.8);">
+                        <td style="color: white;">${game.i18n.localize(
+                          "DRAGONBANE_ACTION_RULES.grudgeTracker.dateColumn"
+                        )}</td>
+                        <td style="color: white;">${game.i18n.localize(
+                          "DRAGONBANE_ACTION_RULES.grudgeTracker.enemyColumn"
+                        )}</td>
+                        <td style="color: white; text-align: center;">${game.i18n.localize(
+                          "DRAGONBANE_ACTION_RULES.grudgeTracker.damageColumn"
+                        )}</td>
+                        <td style="color: white;">${game.i18n.localize(
+                          "DRAGONBANE_ACTION_RULES.grudgeTracker.locationColumn"
+                        )}</td>
+                    </tr>
                 </tbody>
-            </table>
-        </div>`;
+              </table>
+            </div>`;
   }
 
   /**
-   * Add new grudge entry to journal table with delete button and critical indicator
+   * Add new grudge entry to journal table with critical indicator
    */
   async _addGrudgeEntry(
     journal,
@@ -740,43 +673,26 @@ export class DragonbaneGrudgeTracker {
     const page = journal.pages.contents[0];
     if (!page) return;
 
-    // Parse current content
     const currentContent = page.text.content;
     const date = new Date().toLocaleDateString();
-
-    // Generate unique ID for this row
-    const rowId = `grudge-${Date.now()}-${Math.random()
-      .toString(36)
-      .substr(2, 9)}`;
 
     // Format damage with critical indicator
     const damageDisplay = isCritical ? `${damage} 💥` : damage.toString();
 
-    // Create new row with delete button
+    // Create simple row without delete button or unique ID
     const newRow = `
-                    <tr id="${rowId}">
-                        <td>${date}</td>
-                        <td><strong>${attackerName}</strong></td>
-                        <td style="text-align: center;">${damageDisplay}</td>
-                        <td>${location}</td>
-                        <td style="text-align: center;">
-                            <button class="grudge-delete-btn" 
-                                    data-row-id="${rowId}" 
-                                    data-journal-id="${journal.id}"
-                                    style="background: #8b2635; color: white; border: 1px solid #5d1a23; border-radius: 3px; width: 20px; height: 20px; cursor: pointer; font-size: 12px; display: flex; align-items: center; justify-content: center; line-height: 1;"
-                                    title="${game.i18n.localize(
-                                      "DRAGONBANE_ACTION_RULES.grudgeTracker.deleteEntry"
-                                    )}">
-                                ✕
-                            </button>
-                        </td>
-                    </tr>`;
+      <tr>
+          <td>${date}</td>
+          <td><strong>${attackerName}</strong></td>
+          <td style="text-align: center;">${damageDisplay}</td>
+          <td>${location}</td>
+      </tr>`;
 
     // Insert new row into table
     const updatedContent = currentContent.replace(
       "</tbody>",
       `${newRow}
-                </tbody>`
+    </tbody>`
     );
 
     // Update journal page
