@@ -71,8 +71,8 @@ Replace the top <div>, replace <thead> and </thead> with <tbody> and </tbody>, c
 
 ### 🇸🇪 Swedish Language Enhancements
 
-- **Swedish Language Fixes**: Various improvements and corrections to Swedish translations (courtesy of **xdy**)
-- **Enhanced Localization**: Better language support and more accurate translations throughout the module
+- **Swedish Language Fixes** - Various improvements and corrections to Swedish translations (courtesy of **xdy**)
+- **Enhanced Localization** - Better language support and more accurate translations throughout the module
 
 ---
 
@@ -90,8 +90,8 @@ Replace the top <div>, replace <thead> and </thead> with <tbody> and </tbody>, c
 
 #### 🇸🇪 Swedish Language Enhancements
 
-- **Swedish Language Fixes**: Various improvements and corrections to Swedish translations (courtesy of **xdy**)
-- **Enhanced Localization**: Better language support and more accurate translations throughout the module
+- **Swedish Language Fixes** - Various improvements and corrections to Swedish translations (courtesy of **xdy**)
+- **Enhanced Localization** - Better language support and more accurate translations throughout the module
 
 ---
 
@@ -125,7 +125,7 @@ Replace the top <div>, replace <thead> and </thead> with <tbody> and </tbody>, c
 
 ### System Requirements
 
-- **Breaking Change**: Now requires Dragonbane v2.6.0 or higher
+- **Breaking Change** - Now requires Dragonbane v2.6.0 or higher
 - Previous versions should continue using Combat Assistant v2.0.4
 
 ---
@@ -152,10 +152,10 @@ Replace the top <div>, replace <thead> and </thead> with <tbody> and </tbody>, c
 ### Bug Fixes
 
 - **Fixed Critical Effects for Damage Spells**
-  - **Double Damage Option**: Resolved issue where "Double damage" option was incorrectly removed from ALL spells during critical hit resolution
-  - **Logic Correction**: "Double damage" option is now only removed from enhanced non-damage spells
-  - **Choose Button Creation**: Fixed bug where "Choose" button was being added to all spells with critical hits
-  - **Targeted Behavior**: "Choose" button is now only added for enhanced non-damage spells that need it
+  - **Double Damage Option** - Resolved issue where "Double damage" option was incorrectly removed from ALL spells during critical hit resolution
+  - **Logic Correction** - "Double damage" option is now only removed from enhanced non-damage spells
+  - **Choose Button Creation** - Fixed bug where "Choose" button was being added to all spells with critical hits
+  - **Targeted Behavior** - "Choose" button is now only added for enhanced non-damage spells that need it
 
 ---
 
@@ -165,9 +165,9 @@ Replace the top <div>, replace <thead> and </thead> with <tbody> and </tbody>, c
 
 - **Fixed Ranged Spell Self-Targeting for Non-Damage Spells**
   - Ranged utility spells (Animal Whisperer, Gnome, Salamander, Undine, Sylph, etc.) can now properly target the caster
-  - **Logic Update**: Only ranged spells WITH damage are blocked from self-targeting (prevents shooting yourself with Fireball)
-  - **Utility Spells Allowed**: Ranged spells with blank or "n/a" damage fields can now target the caster (allows beneficial self-buffs)
-  - **No Breaking Changes**: All existing spell behavior preserved, only removes incorrect restriction
+  - **Logic Update** - Only ranged spells WITH damage are blocked from self-targeting (prevents shooting yourself with Fireball)
+  - **Utility Spells Allowed** - Ranged spells with blank or "n/a" damage fields can now target the caster (allows beneficial self-buffs)
+  - **No Breaking Changes** - All existing spell behavior preserved, only removes incorrect restriction
 
 ---
 
@@ -373,8 +373,8 @@ All notable changes to the Dragonbane Combat Assistant module will be documented
 
 ### Technical Details
 
-- **Prevention Logic**: Uses `preCreateChatMessage` hook to intercept actions before they create chat messages
-- **Pattern Integration**: Leverages existing pattern manager for reliable action detection across languages
+- **Prevention Logic** - Uses `preCreateChatMessage` hook to intercept actions before they create chat messages
+- **Pattern Integration** - Leverages existing pattern manager for reliable action detection across languages
 
 ---
 
@@ -529,7 +529,7 @@ All notable changes to the Dragonbane Combat Assistant module will be documented
 
 ### Known Issues
 
-- **Thrown Weapons vs Large Tokens**: In the core Dragonbane module, thrown weapons measure distance to a single reference grid square (upper left) instead of using token bounds. This causes attacks with thrown weapons against large and huge tokens to default to the Throw dialog when attacking from anywhere not adjacent to the upper left grid square of the enemy. This is a limitation of the core system's distance calculation and is outside the scope of this module to fix.
+- **Thrown Weapons vs Large Tokens** - In the core Dragonbane module, thrown weapons measure distance to a single reference grid square (upper left) instead of using token bounds. This causes attacks with thrown weapons against large and huge tokens to default to the Throw dialog when attacking from anywhere not adjacent to the upper left grid square of the enemy. This is a limitation of the core system's distance calculation and is outside the scope of this module to fix.
 
 ---
 
@@ -679,9 +679,9 @@ Tactical enhancement module for Dragonbane combat.
 
 ### Technical
 
-- **Compatibility**: Foundry VTT v12 and v13
-- **System**: Dragonbane only
-- **Performance**: Minimal resource usage with efficient regex patterns
-- **Localization**: Complete i18n support for future translations
+- **Compatibility** - Foundry VTT v12 and v13
+- **System** - Dragonbane only
+- **Performance** - Minimal resource usage with efficient regex patterns
+- **Localization** - Complete i18n support for future translations
 
 ---
