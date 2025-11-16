@@ -134,7 +134,7 @@ Access settings through **Configure Settings → Module Settings → Dragonbane 
 - **Enable Dodge Movement Reminders** - Shows movement options on successful EVADE rolls
 - **Monster Action Prevention** - Interrupts disarm and parry attacks against monsters with confirmation dialog
 
-### **Custom Weapon Features**
+### Custom Weapon Features
 
 - **Custom Weapon Features** - Add house rule or campaign-specific weapon properties via simple comma-separated list (tracking only, no rules automation)
 
