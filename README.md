@@ -1,12 +1,12 @@
 # Dragonbane Combat Assistant
 
-![Version](https://img.shields.io/badge/version-2.1.3-blue)
+![Version](https://img.shields.io/badge/version-2.2.0-blue)
 ![Foundry Version](https://img.shields.io/badge/foundry-v12%20%7C%20v13-green)
 ![System](https://img.shields.io/badge/system-dragonbane-orange)
 
 ## What This Module Does
 
-**Dragonbane Combat Assistant** enhances both melee/ranged combat AND spellcasting with comprehensive validation and automation in eight powerful ways:
+**Dragonbane Combat Assistant** enhances both melee/ranged combat AND spellcasting with comprehensive validation and automation in several powerful ways:
 
 ### ✨ **Universal Spell Support for Automated Animations (NEW in v2.0)**
 
@@ -50,6 +50,10 @@
 - **Weapon feature bonuses** - Displays topple weapon bonuses (+1 Boon) automatically
 - **Mark Weapon Broken button** - Appears on parry rules for easy weapon damage tracking, updates character sheet directly from chat
 - **AOE Rule Reminder (NEW in v2.0.4)** - Reminds players that AOE spells can be dodged but not parried and that targets can be exempted from AOE effects by taking a bane
+
+### ⚔️ **Custom Weapon Features (NEW in v2.2.0)**
+
+- **Custom Weapon Features** - Add custom weapon features to the system via comma-separated list. These features appear in weapon feature checkboxes for any weapon, allowing tracking of house rules, campaign-specific properties, or variant system features.
 
 ### 🛡️ **Monster Action Prevention**
 
@@ -101,14 +105,14 @@
 
 Access settings through **Configure Settings → Module Settings → Dragonbane Combat Assistant**:
 
-### Universal Spell Support (NEW)
+### Universal Spell Support
 
 - **Enable Universal Spell Automated Animations** - Makes all spells compatible with Automated Animations module
 - **Manual AA Enhancement Control** - User-controlled buttons to enable/disable AA support for all spells
 - **Spell Exclusions** - Comma-separated list of spell names to exclude from validation (they still get animations)
 - **Enable Automatic Status Effects** - Apply appropriate status effects when spells succeed
 
-### Spell Validation (NEW)
+### Spell Validation
 
 - **Enable Spell Target Validation** - Requires target selection for range/touch spells, auto-targets caster for personal spells
 - **Enable Spell Range Validation** - Validates spell casting distances before allowing the roll
@@ -129,6 +133,17 @@ Access settings through **Configure Settings → Module Settings → Dragonbane 
 - **Enable Parry Movement Reminders** - Shows movement options on successful parries
 - **Enable Dodge Movement Reminders** - Shows movement options on successful EVADE rolls
 - **Monster Action Prevention** - Interrupts disarm and parry attacks against monsters with confirmation dialog
+
+### **Custom Weapon Features**
+
+- **Custom Weapon Features** - Add house rule or campaign-specific weapon properties via simple comma-separated list (tracking only, no rules automation)
+
+**Example Custom Features:**
+
+```
+English: Articulated, Heavy, Small, Vampiric, Wounding
+Swedish: Ledad, Tung, Liten, Sårande, Vampyrisk
+```
 
 ### Encumbrance Monitoring
 
@@ -204,6 +219,8 @@ Fully customizable through **Configure Controls** in Foundry.
 - Attacker's STR damage bonus ≥ target's STR damage bonus
 
 **Monster Action Prevention:** Prevention dialogs only appear for Parry and Disarm attempts against monsters. All other actions proceed normally.
+
+**Custom Weapon Features:** Features are for tracking purposes only and do not implement mechanical effects automatically. Use them to mark weapons with house rule properties, campaign-specific traits, or organizational categories. Example: Mark a weapon as "Articulated" to remind players it cannot parry, but the no-parry restriction must be enforced manually during play.
 
 **Token Action HUD + YZE Integration:** If using the Token Action HUD Dragonbane module, consider adding **YZE Action Exclusions**, **YZE Action Inclusions - Abilities**, and **Excluded Spells** for better action tracking accuracy.
 

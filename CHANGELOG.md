@@ -1,5 +1,34 @@
 # Changelog
 
+## [2.2.0] - 2025-11-16
+
+### **New Feature: Custom Weapon Features**
+
+- **Custom Weapon Features Setting** - Add custom weapon features to the system via comma-separated list in module settings
+- **Seamless Integration** - Custom features appear in weapon feature checkboxes alongside core Dragonbane features
+- **Tracking Only** - These features are for organizational and tracking purposes only; they do not automate underlying game rules
+
+### **Usage Examples**
+
+**Setting Input:**
+
+```
+Articulated, Heavy, Small, Wounding
+```
+
+**Result:** All weapons can now be marked with these custom features in their feature checkboxes, allowing GMs and players to track additional weapon properties for house rules, variant systems, or campaign-specific mechanics.
+
+### **💡 Use Cases**
+
+- **House Rules** - Track custom weapon properties for homebrew rules
+- **Campaign Features** - Mark weapons with special campaign-specific properties
+- **Variant Systems** - Support non-standard weapon features from supplements
+- **Organization** - Categorize weapons with additional descriptive features
+
+**Note:** Custom weapon features appear in weapon sheets and are stored in weapon data, but do not automatically apply any mechanical effects. Rule implementation remains manual as intended for maximum flexibility.
+
+---
+
 ## [2.1.3] - 2025-11-15
 
 ### Grudge Tracker Improvements

@@ -32,6 +32,7 @@ export const SETTINGS = {
   EXCLUDED_SPELLS: "excludedSpells",
   ENABLE_SPELL_STATUS_EFFECTS: "enableSpellStatusEffects",
   AOE_RULE_REMINDER: "aoeRuleReminder",
+  CUSTOM_WEAPON_FEATURES: "customWeaponFeatures",
 };
 
 /**
@@ -191,6 +192,24 @@ export function registerSettings(moduleId) {
     config: true,
     type: Boolean,
     default: true,
+  });
+
+  // Custom Weapon Features setting
+  game.settings.register(moduleId, SETTINGS.CUSTOM_WEAPON_FEATURES, {
+    name: game.i18n.localize(
+      "DRAGONBANE_ACTION_RULES.settings.customWeaponFeatures.name"
+    ),
+    hint: game.i18n.localize(
+      "DRAGONBANE_ACTION_RULES.settings.customWeaponFeatures.hint"
+    ),
+    scope: "world",
+    config: true,
+    type: String,
+    default: "",
+    onChange: () => {
+      // Use Foundry's built-in settings reload confirmation
+      SettingsConfig.reloadConfirm();
+    },
   });
 
   // Encumbrance monitoring settings with onChange handlers

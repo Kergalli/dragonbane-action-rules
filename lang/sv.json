@@ -109,6 +109,10 @@
       "aoeRuleReminder": {
         "name": "Påminnelse om regler om Ytverkan",
         "hint": "Visa regelpåminnelser innan besvärjelser med ytverkan kastas (sfär- och kon-besvärjelser)"
+      },
+      "customWeaponFeatures": {
+        "name": "Anpassade Vapenegenskaper",
+        "hint": "Lägg till anpassade vapenegenskaper till systemet (kommaseparerade). Exempel: 'Ledad, Tung, Liten, Snärjande:'. Dessa kommer att visas i vapenegenskapsrutorna för alla vapen."
       }
     },
     "actions": {

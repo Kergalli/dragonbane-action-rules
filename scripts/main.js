@@ -2,6 +2,7 @@
  * Dragonbane Combat Assistant - Main Module
  */
 
+import { CustomWeaponFeaturesManager } from "./custom-weapon-features.js";
 import { DragonbaneEncumbranceMonitor } from "./encumbrance-monitor.js";
 import { DragonbaneGrudgeTracker } from "./grudge-tracker.js";
 import {
@@ -20,7 +21,7 @@ import { DragonbaneYZEIntegration } from "./yze-integration.js";
 
 class DragonbaneActionRules {
   static ID = "dragonbane-action-rules";
-  static VERSION = "2.1.3";
+  static VERSION = "2.2.0";
 
   static FLAGS = {
     RULES_MESSAGE: "dragonbaneRulesMessage",
@@ -33,6 +34,7 @@ class DragonbaneActionRules {
   static yzeIntegration = null;
   static patternManager = null;
   static grudgeTracker = null;
+  static customWeaponFeaturesManager = null;
   static spellLibrary = SpellLibrary;
   static utils = DragonbaneUtils; // Make utils available
 
@@ -77,6 +79,8 @@ class DragonbaneActionRules {
       DragonbaneActionRules.grudgeTracker = new DragonbaneGrudgeTracker(
         DragonbaneActionRules.ID
       );
+      DragonbaneActionRules.customWeaponFeaturesManager =
+        new CustomWeaponFeaturesManager(DragonbaneActionRules.ID);
 
       // Direct hook and keybind registration
       DragonbaneActionRules.registerHooksAndKeybinds();
@@ -107,6 +111,7 @@ class DragonbaneActionRules {
 
         DragonbaneActionRules.encumbranceMonitor?.initialize();
         DragonbaneActionRules.yzeIntegration?.initialize();
+        DragonbaneActionRules.customWeaponFeaturesManager?.initialize();
 
         try {
           if (game.modules.get("socketlib")?.active) {
@@ -337,6 +342,21 @@ class DragonbaneActionRules {
       ? "bypassed"
       : "active";
     ui.notifications.info(`Combat validations ${status}`);
+  }
+
+  /**
+   * Refresh custom weapon features (called by settings onChange)
+   */
+  static refreshCustomWeaponFeatures() {
+    try {
+      DragonbaneActionRules.customWeaponFeaturesManager?.refreshCustomWeaponFeatures();
+    } catch (error) {
+      DragonbaneUtils.debugLog(
+        DragonbaneActionRules.ID,
+        "Main",
+        `Error refreshing custom weapon features: ${error.message}`
+      );
+    }
   }
 }
 

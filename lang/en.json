@@ -109,6 +109,10 @@
       "aoeRuleReminder": {
         "name": "AOE Rule Reminder",
         "hint": "Show rule reminders before casting area of effect spells (sphere and cone spells)"
+      },
+      "customWeaponFeatures": {
+        "name": "Custom Weapon Features",
+        "hint": "Add custom weapon features to the system (comma-separated). Examples: 'Articulated, Heavy, Small, Wounding'. These will appear in weapon feature checkboxes for any weapon."
       }
     },
     "actions": {
