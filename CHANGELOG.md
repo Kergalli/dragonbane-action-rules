@@ -1,6 +1,6 @@
 # Changelog
 
-## [2.2.1] - 2024-12-08
+## [2.2.1] - 2025-12-08
 
 ### Encumbrance Monitor Enhancements
 
