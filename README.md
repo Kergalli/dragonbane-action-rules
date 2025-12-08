@@ -1,6 +1,6 @@
 # Dragonbane Combat Assistant
 
-![Version](https://img.shields.io/badge/version-2.2.0-blue)
+![Version](https://img.shields.io/badge/version-2.2.1-blue)
 ![Foundry Version](https://img.shields.io/badge/foundry-v12%20%7C%20v13-green)
 ![System](https://img.shields.io/badge/system-dragonbane-orange)
 
@@ -65,6 +65,7 @@
 ### ⚖️ **Encumbrance Monitoring**
 
 - **Event-driven monitoring** - Instantly detects when characters become over-encumbered
+- **Comprehensive change detection** - Monitors all encumbrance-affecting changes: coins, item equip/unequip, item addition/removal, item quanity changes, STR attribute changes
 - **Automatic status effects** - Applies configurable status effects when carrying too many items
 - **Smart status effect creation** - Automatically creates custom status effects if they don't exist in the game
 - **Enhanced compatibility** - Works seamlessly with the Dragonbane Status Effects module (uses existing "Over-Encumbered" effect if available)

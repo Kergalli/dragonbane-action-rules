@@ -148,6 +148,7 @@ export class DragonbaneEncumbranceMonitor {
     return (
       updateData.system?.attributes?.str ||
       updateData.system?.encumbrance ||
+      updateData.system?.currency ||
       updateData.items
     );
   }
@@ -158,7 +159,7 @@ export class DragonbaneEncumbranceMonitor {
   isItemUpdateRelevant(updateData) {
     return (
       updateData.system?.quantity !== undefined ||
-      updateData.system?.equipped !== undefined ||
+      updateData.system?.worn !== undefined ||
       updateData.system?.encumbrance !== undefined
     );
   }

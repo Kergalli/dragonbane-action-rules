@@ -1,5 +1,26 @@
 # Changelog
 
+## [2.2.1] - 2024-12-08
+
+### Encumbrance Monitor Enhancements
+
+- **Enhanced Coin Weight Monitoring**
+  - Encumbrance monitor now properly detects changes to gold, silver, and copper coin values
+  - Instant status effect updates when adding or removing coins from character sheet
+  - Works with Dragonbane/Drakar och Demoner v3.0 Coin Encumbrance Actor Setting
+
+- **Fixed Item Equip/Unequip Detection**
+  - Encumbrance monitor now correctly detects when weapons, armor, and helmets are equipped or unequipped
+  - Status effects update immediately when items are moved between equipped and inventory slots
+
+### Technical Improvements
+
+- **Corrected Field Monitoring**
+  - Changed item-level monitoring from `system.equipped` to `system.worn` for proper equip status detection
+  - Improved reliability of encumbrance state change detection
+
+---
+
 ## [2.2.0] - 2025-11-16
 
 ### **New Feature: Custom Weapon Features**
