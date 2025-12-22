@@ -1,5 +1,17 @@
 # Changelog
 
+# Changelog Entry for v2.2.2
+
+## [2.2.2] - 2025-12-22
+
+### Year Zero Engine Combat Integration Enhancement
+
+- **Attribute Tests No Longer Consume Actions**
+  - Attribute rolls (STR, WIL, CON, AGL, INT, CHA) are now properly excluded from YZE action tracking
+  - Aligns with official Dragonbane rulebook clarifications that attribute tests are not considered actions
+  
+---
+
 ## [2.2.1] - 2025-12-08
 
 ### Encumbrance Monitor Enhancements

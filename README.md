@@ -1,6 +1,6 @@
 # Dragonbane Combat Assistant
 
-![Version](https://img.shields.io/badge/version-2.2.1-blue)
+![Version](https://img.shields.io/badge/version-2.2.2-blue)
 ![Foundry Version](https://img.shields.io/badge/foundry-v12%20%7C%20v13-green)
 ![System](https://img.shields.io/badge/system-dragonbane-orange)
 
@@ -89,7 +89,7 @@
 - **Single action tracking** - Seamless integration with YZE Combat module for action management
 - **Automatic detection** - Monitors chat for combat actions using intelligent pattern matching
 - **Token-specific tracking** - Each combatant tracked independently with action numbering
-- **Smart exclusions** - Ignores damage rolls, healing, reaction spells, and other non-action activities
+- **Smart exclusions** - Ignores damage rolls, healing, reaction spells, attribute tests, and other non-action activities
 - **Override control** - Alt+V shortcut for manual control when automatic detection needs adjustment
 
 ---
@@ -161,6 +161,7 @@ Swedish: Ledad, Tung, Liten, Sårande, Vampyrisk
 
 - **Enable YZE Integration** - Automatic action tracking with Year Zero Engine Combat module
 - **YZE Action Exclusions** - Configure rolls to exclude from action tracking (see tips below), you can also exclude almost anything by UUID
+- **Automatically Ecluded** - Attribute rolls, reaction spells, damage rolls, healing rolls
 - **YZE Action Inclusions - Abilities** - Specify heroic and kin abilities that should count as actions (comma-separated). Examples: Battle Cry, Berserker, Companion, Master Carpenter, Musician, Body Slam, Hunting Instincts, Raise Spirits
 
 **Example YZE Action Exclusions (if using Token Action HUD Dragonbane):**

@@ -167,6 +167,16 @@ export class DragonbaneYZEIntegration {
       return null;
     }
 
+    // Skip attribute tests (not actions in combat)
+    if (this._isAttributeTest(message)) {
+      DragonbaneUtils.debugLog(
+        this.moduleId,
+        "YZEIntegration",
+        "Skipping attribute test (not an action)"
+      );
+      return null;
+    }
+
     // Skip messages that match custom exclusions
     if (this._matchesCustomExclusions(message)) {
       DragonbaneUtils.debugLog(
@@ -195,6 +205,7 @@ export class DragonbaneYZEIntegration {
 
     return null;
   }
+
   /**
    * Check if this is a reaction spell
    */
@@ -207,6 +218,51 @@ export class DragonbaneYZEIntegration {
         this.moduleId,
         "YZEIntegration",
         `Error checking reaction spell: ${error.message}`
+      );
+      return false;
+    }
+  }
+
+  /**
+   * Check if this is an attribute test (not an action)
+   */
+  _isAttributeTest(message) {
+    if (!message?.flavor) return false;
+
+    try {
+      const flavor = message.flavor.toLowerCase();
+
+      // Get the localized attribute roll text
+      // English: "Attribute roll for"
+      // Swedish: "Grundegenskapsslag för"
+      const attributeRollText = game.i18n.localize("DoD.roll.attributeRoll");
+
+      if (attributeRollText) {
+        // Extract the first part before the {attribute} placeholder
+        const firstPart = attributeRollText
+          .split("<b>")[0]
+          .trim()
+          .toLowerCase();
+
+        if (firstPart && flavor.includes(firstPart)) {
+          return true;
+        }
+      }
+
+      // Fallback patterns
+      if (
+        flavor.includes("attribute roll") ||
+        flavor.includes("grundegenskapsslag")
+      ) {
+        return true;
+      }
+
+      return false;
+    } catch (error) {
+      DragonbaneUtils.debugLog(
+        this.moduleId,
+        "YZEIntegration",
+        `Error checking attribute test: ${error.message}`
       );
       return false;
     }
