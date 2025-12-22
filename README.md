@@ -161,7 +161,7 @@ Swedish: Ledad, Tung, Liten, Sårande, Vampyrisk
 
 - **Enable YZE Integration** - Automatic action tracking with Year Zero Engine Combat module
 - **YZE Action Exclusions** - Configure rolls to exclude from action tracking (see tips below), you can also exclude almost anything by UUID
-- **Automatically Ecluded** - Attribute rolls, reaction spells, damage rolls, healing rolls
+- **Automatically Excluded** - Attribute rolls, reaction spells, damage rolls, healing rolls
 - **YZE Action Inclusions - Abilities** - Specify heroic and kin abilities that should count as actions (comma-separated). Examples: Battle Cry, Berserker, Companion, Master Carpenter, Musician, Body Slam, Hunting Instincts, Raise Spirits
 
 **Example YZE Action Exclusions (if using Token Action HUD Dragonbane):**
