@@ -134,9 +134,38 @@ export class DragonbaneYZEIntegration {
   }
 
   /**
-   * Determine if message represents an action (simplified)
+   * Determine if message represents an action
    */
   determineActionType(message) {
+    const shouldIgnore = game.user.getFlag(
+      "token-action-hud-dragonbane",
+      "ignoreNextRollForActionCounting"
+    );
+
+    if (shouldIgnore) {
+      DragonbaneUtils.debugLog(
+        this.moduleId,
+        "YZEIntegration",
+        "Skipping roll due to Token Action HUD ignore flag"
+      );
+
+      // Clear the flag since we consumed it
+      game.user
+        .unsetFlag(
+          "token-action-hud-dragonbane",
+          "ignoreNextRollForActionCounting"
+        )
+        .catch((error) => {
+          DragonbaneUtils.debugLog(
+            this.moduleId,
+            "YZEIntegration",
+            `Error clearing ignore flag: ${error.message}`
+          );
+        });
+
+      return null;
+    }
+
     // Skip whispered messages - usually informational, not actions
     if (message.whisper && message.whisper.length > 0) {
       DragonbaneUtils.debugLog(

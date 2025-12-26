@@ -2,6 +2,29 @@
 
 # Changelog Entry for v2.2.2
 
+## [2.2.3] - 2025-12-26
+
+### 🔗 **Enhanced Module Integration**
+
+#### 🎯 **Token Action HUD Ignore Flag Support**
+
+- **Automatic Ignore System**: Added support for `ignoreNextRollForActionCounting` flag from Token Action HUD Dragonbane
+- **Smart Detection**: YZE Integration now automatically excludes utility rolls from Token Action HUD Dragonbane
+  - **Fear Tests**: WIL rolls and Fear Effect table rolls automatically bypassed
+  - **Light Tests**: Light source duration tests automatically bypassed
+  - **Severe Injury Tests**: CON survival tests automatically bypassed
+  - **Death Rolls**: Survival tests automatically bypassed
+- **Flag Cleanup**: Automatic flag consumption and cleanup prevents orphaned flags
+
+### 📚 **Documentation Improvements**
+
+- **README Restructure**: Completely reorganized README.md for improved readability and logical flow
+- **Enhanced Configuration Examples**: Updated examples to reflect automatic Token Action HUD integration
+- **Streamlined Installation Guide**: Clearer requirements and dependency information
+- **Improved Usage Guidance**: Better organization of special cases and integration tips
+
+---
+
 ## [2.2.2] - 2025-12-22
 
 ### Year Zero Engine Combat Integration Enhancement
@@ -9,7 +32,7 @@
 - **Attribute Tests No Longer Consume Actions**
   - Attribute rolls (STR, WIL, CON, AGL, INT, CHA) are now properly excluded from YZE action tracking
   - Aligns with official Dragonbane rulebook clarifications that attribute tests are not considered actions
-  
+
 ---
 
 ## [2.2.1] - 2025-12-08
@@ -17,6 +40,7 @@
 ### Encumbrance Monitor Enhancements
 
 - **Enhanced Coin Weight Monitoring**
+
   - Encumbrance monitor now properly detects changes to gold, silver, and copper coin values
   - Instant status effect updates when adding or removing coins from character sheet
   - Works with Dragonbane/Drakar och Demoner v3.0 Coin Encumbrance Actor Setting
