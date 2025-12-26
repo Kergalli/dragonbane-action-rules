@@ -1,7 +1,5 @@
 # Changelog
 
-# Changelog Entry for v2.2.2
-
 ## [2.2.3] - 2025-12-26
 
 ### 🔗 **Enhanced Module Integration**
