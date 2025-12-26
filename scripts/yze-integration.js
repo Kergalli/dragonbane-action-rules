@@ -176,6 +176,16 @@ export class DragonbaneYZEIntegration {
       return null;
     }
 
+    // Skip table rolls - these are reactions/consequences, not actions
+    if (this._isTableRoll(message)) {
+      DragonbaneUtils.debugLog(
+        this.moduleId,
+        "YZEIntegration",
+        "Skipping table roll (not an action)"
+      );
+      return null;
+    }
+
     // Skip damage/healing rolls - these are follow-ups, not actions
     if (this._isDamageRoll(message)) {
       DragonbaneUtils.debugLog(
@@ -295,6 +305,25 @@ export class DragonbaneYZEIntegration {
       );
       return false;
     }
+  }
+
+  /**
+   * Check if this is a table roll (should not count as an action)
+   */
+  _isTableRoll(message) {
+    // Foundry automatically sets this flag when table.draw() creates a chat message
+    const isTableDraw = message.flags?.core?.RollTable !== undefined;
+
+    if (isTableDraw) {
+      DragonbaneUtils.debugLog(
+        this.moduleId,
+        "YZEIntegration",
+        `Detected table draw (table ID: ${message.flags.core.RollTable}) - excluding from action tracking`
+      );
+      return true;
+    }
+
+    return false;
   }
 
   /**
