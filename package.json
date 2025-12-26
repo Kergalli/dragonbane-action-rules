@@ -1,6 +1,6 @@
 {
   "name": "dragonbane-action-rules",
-  "version": "2.2.3",
+  "version": "2.2.4",
   "description": "Enhancement for Dragonbane combat and character management with target validation, range checking, and combat rule automation.",
   "main": "scripts/main.js",
   "scripts": {

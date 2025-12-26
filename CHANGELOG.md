@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.2.4] - 2025-12-26
+
+### 🐛 **Bug Fixes**
+
+#### 🎯 **YZE Combat Integration - Table Roll Action Counting Fix**
+
+- **Fixed Table Click Action Counting Bug**: Clicking on table links in chat (like "fear" from ghost attacks) no longer incorrectly counts as combat actions
+- **Robust Detection Method**: Uses Foundry's built-in `message.flags.core.RollTable` flag for reliable table draw identification
+- **Future-Proof Solution**: Works automatically with any new tables without requiring manual configuration
+
+---
+
 ## [2.2.3] - 2025-12-26
 
 ### 🔗 **Enhanced Module Integration**

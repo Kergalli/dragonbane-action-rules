@@ -1,6 +1,6 @@
 # Dragonbane Combat Assistant
 
-![Version](https://img.shields.io/badge/version-2.2.3-blue)
+![Version](https://img.shields.io/badge/version-2.2.4-blue)
 ![Foundry Version](https://img.shields.io/badge/foundry-v12%20%7C%20v13-green)
 ![System](https://img.shields.io/badge/system-dragonbane-orange)
 
@@ -57,7 +57,7 @@
 - **Single action tracking** - Seamless integration with YZE Combat module for action management
 - **Automatic detection** - Monitors chat for combat actions using intelligent pattern matching
 - **Token-specific tracking** - Each combatant tracked independently with action numbering
-- **Smart exclusions** - Ignores damage rolls, healing, reaction spells, attribute tests, and other non-action activities
+- **Smart exclusions** - Ignores damage rolls, healing, reaction spells, attribute tests, table rolls, and other non-action activities
 - **Token Action HUD integration** - Automatically excludes utility rolls from Token Action HUD Dragonbane v2.4.1+
 - **Override control** - Alt+V shortcut for manual control when automatic detection needs adjustment
 
