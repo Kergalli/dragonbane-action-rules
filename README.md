@@ -111,7 +111,7 @@
 
 ### **Rules Display**
 
-- **Display Delay** - How long rules stay visible (0-10 seconds)
+- **Display Delay** - Displays rules 0-10 seconds after roll is made, helpful if using Dice So Nice
 - **Show Weapon Durability on Parry** - Displays weapon durability for parrying weapons
 - **Monster Action Prevention** - Interrupts disarm and parry attacks against monsters with confirmation dialog
 
@@ -186,7 +186,7 @@ _Fully customizable through Configure Controls in Foundry_
 
 ### **Important Mechanics**
 
-**Template Spells:** Currently auto-target the caster for visual effects rather than placing templates for area targeting. Proper template placement will be added in v2.1.
+**Template Spells:** Currently auto-target the caster for visual effects rather than placing templates for area targeting. Proper template placement might be added in the future. 
 
 **Thrown Weapons:** Work both in melee range (up to 2-4m) and at distance (up to 2x weapon range) with contextual validation.
 
