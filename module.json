@@ -33,7 +33,7 @@
     {
       "lang": "it",
       "name": "Italiano",
-      "path": "languages/it.json"
+      "path": "lang/it.json"
     }
   ],
   "relationships": {
@@ -61,7 +61,6 @@
       {
         "id": "dragonbane-status-effects",
         "type": "module",
-        "manifest": "https://github.com/Kergalli/dragonbane-status-effects/releases/latest/download/module.json",
         "reason": "Provides thematic status effect icons and visual enhancements for automatic spell effect application"
       },
       {
