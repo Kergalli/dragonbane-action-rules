@@ -1,6 +1,6 @@
 # Dragonbane Combat Assistant
 
-![Version](https://img.shields.io/badge/version-2.2.4-blue)
+![Version](https://img.shields.io/badge/version-2.2.5-blue)
 ![Foundry Version](https://img.shields.io/badge/foundry-v12%20%7C%20v13-green)
 ![System](https://img.shields.io/badge/system-dragonbane-orange)
 
@@ -186,7 +186,7 @@ _Fully customizable through Configure Controls in Foundry_
 
 ### **Important Mechanics**
 
-**Template Spells:** Currently auto-target the caster for visual effects rather than placing templates for area targeting. Proper template placement might be added in the future. 
+**Template Spells:** Currently auto-target the caster for visual effects rather than placing templates for area targeting. Proper template placement might be added in the future.
 
 **Thrown Weapons:** Work both in melee range (up to 2-4m) and at distance (up to 2x weapon range) with contextual validation.
 
@@ -273,6 +273,7 @@ await yourCustomRollFunction();
 - **Languages**: Full support for English and Swedish using official Dragonbane translation keys
 - **Community Contributors**:
   - **dgladkov** - Encumbrance fixes and distance calculations for large/huge tokens
+  - **LuckyFrico** - Italian language localization
   - **xdy** - Swedish language improvements and localization fixes
 - **Support**: [GitHub Issues](https://github.com/kergalli/dragonbane-action-rules/issues)
 - **Documentation**: [Full Changelog](https://github.com/kergalli/dragonbane-action-rules/blob/main/CHANGELOG.md)
@@ -281,7 +282,7 @@ await yourCustomRollFunction();
 
 ## ⚖️ **License & Disclaimer**
 
-MIT License. 
+MIT License.
 
 This VTT module is not affiliated with, sponsored, or endorsed by Fria Ligan AB. This Supplement was created under Fria Ligan AB’s [Dragonbane Third Party Supplement License](https://freeleaguepublishing.com/wp-content/uploads/2023/11/Dragonbane-License-Agreement.pdf).
 

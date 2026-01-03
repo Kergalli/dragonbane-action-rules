@@ -1,0 +1,331 @@
+{
+  "DRAGONBANE_ACTION_RULES": {
+    "console": {
+      "initializing": "Inizializzazione",
+      "wrongSystem": "Questo modulo è progettato per il sistema Dragonbane",
+      "moduleEnabled": "Modulo abilitato",
+      "moduleDisabled": "Modulo disabilitato"
+    },
+    "settings": {
+      "enabled": {
+        "name": "Abilita Combat Assistant",
+        "hint": "Interruttore principale - disattiva tutte le funzionalità di Combat Assistant quando è spento (convalida, regole, ingombro, ecc.)"
+      },
+      "delay": {
+        "name": "Ritardo di visualizzazione (millisecondi)",
+        "hint": "Tempo di attesa prima di mostrare le regole dopo che un'azione è stata rilevata"
+      },
+      "showParryDurability": {
+        "name": "Mostra la durabilità dell’arma per Parata",
+        "hint": "Visualizza la durabilità dell’arma quando si mostrano le regole di parata (indica la soglia di danno che romperebbe l’arma)"
+      },
+      "enableParryMovementReminders": {
+        "name": "REGOLA OPZIONALE: Abilita promemoria movimento per Parata",
+        "hint": "Mostra la regola opzionale di movimento in parata (sposta te stesso e il nemico di 2 m in caso di parata riuscita)"
+      },
+      "enforceTargetSelection": {
+        "name": "Forza la selezione del bersaglio",
+        "hint": "Richiede ai giocatori di selezionare un bersaglio prima di effettuare qualsiasi attacco"
+      },
+      "enforceRangeChecking": {
+        "name": "Forza il controllo della gittata",
+        "hint": "Verifica che gli attacchi siano entro la gittata dell’arma (mischia: fino a 2 m/4 m per armi lunghe, a distanza: fino a 2x la gittata base, lanciate: contestuale)"
+      },
+      "enforceMonsterActionPrevention": {
+        "name": "Abilita la prevenzione delle azioni dei mostri",
+        "hint": "Mostra finestre di conferma prima di tentare azioni di parata o disarmo contro i mostri (previene avanzamenti non validi e chiarisce le regole)"
+      },
+      "enableShoveReminders": {
+        "name": "REGOLA OPZIONALE: Abilita promemoria per la spinta",
+        "hint": "Mostra promemoria della regola di spinta per attacchi speciali in mischia quando il bonus di danno da FOR lo consente"
+      },
+      "enableDodgeMovementReminders": {
+        "name": "Abilita promemoria di movimento per Schivata",
+        "hint": "Mostra promemoria di movimento per tiri di SCHIVATA riusciti"
+      },
+      "debugMode": {
+        "name": "Modalità debug",
+        "hint": "Abilita il log di debug nella console (per la risoluzione dei problemi)"
+      },
+      "enableEncumbranceMonitoring": {
+        "name": "Abilita monitoraggio dell’ingombro",
+        "hint": "Monitora automaticamente l’ingombro dei personaggi e applica effetti di stato quando sono sovraccarichi"
+      },
+      "encumbranceMonitorFolder": {
+        "name": "Cartella di monitoraggio dell’ingombro",
+        "hint": "Nome della cartella degli attori da monitorare per l’ingombro. Monitora gli attori nella cartella con il nome esatto specificato. Lascia vuoto per monitorare tutti i personaggi."
+      },
+      "encumbranceStatusEffect": {
+        "name": "Effetto di stato per ingombro",
+        "hint": "Nome dell’effetto di stato da applicare quando si è sovraccarichi (verrà creato automaticamente con icona di ancoraggio se non esiste)"
+      },
+      "encumbranceChatNotifications": {
+        "name": "Notifiche di chat per l’ingombro",
+        "hint": "Crea anche messaggi in chat per i cambiamenti di ingombro (oltre alle notifiche dell’interfaccia)"
+      },
+      "enableYZEIntegration": {
+        "name": "Abilita integrazione Year Zero Engine",
+        "hint": "Applica automaticamente effetti di stato per azioni singole quando il modulo Year Zero Engine Combat è installato e la modalità azione singola è abilitata"
+      },
+      "yzeCustomExclusions": {
+        "name": "Esclusioni azioni YZE",
+        "hint": "Parole/frasi/UUID aggiuntivi da escludere dal tracciamento delle azioni (separati da virgola). Questi tiri di dado non attiveranno effetti di stato. Vedi README.md per alcuni esempi. Nota: gli incantesimi di reazione sono esclusi automaticamente verificando il loro tempo di lancio."
+      },
+      "yzeAbilityInclusions": {
+        "name": "Inclusioni azioni YZE - Abilità",
+        "hint": "Abilità eroiche e di stirpe che devono contare come azioni (separate da virgola). Quando queste abilità vengono usate, attiveranno effetti di stato. Esempi: Grido di battaglia, Berserker, Compagno, Maestro carpentiere, Musicista, Schianto, Istinti di caccia, Risvegliare gli spiriti"
+      },
+      "enableGrudgeTracking": {
+        "name": "Abilita tracciamento rancore",
+        "hint": "Traccia automaticamente i danni inflitti ai personaggi nani con l’abilità di stirpe Rancoroso. Crea diari per le liste di rancore."
+      },
+      "enableSpellValidation": {
+        "name": "Abilita convalida gittata e bersaglio degli incantesimi",
+        "hint": "Richiede la selezione del bersaglio e il controllo della gittata per gli incantesimi (stesse regole delle armi). Tutti gli incantesimi ricevono Animazioni automatiche indipendentemente da questa impostazione."
+      },
+      "excludedSpells": {
+        "name": "Incantesimi esclusi",
+        "hint": "Elenco di nomi di incantesimi da escludere dalla convalida (separati da virgola). Riceveranno comunque le animazioni. Esempio: 'Canto degli uccelli, Incantesimo personalizzato'"
+      },
+      "enableSpellStatusEffects": {
+        "name": "Abilita effetti di stato automatici per incantesimi",
+        "hint": "Applica automaticamente effetti di stato quando gli incantesimi vengono lanciati con successo."
+      },
+      "enableAASupport": {
+        "name": "Abilita supporto AA",
+        "label": "Abilita Animazioni automatiche",
+        "hint": "Aggiunge dati di compatibilità a tutti gli incantesimi affinché possano attivare le Animazioni automatiche. Questo modifica i dati degli incantesimi aggiungendo 'n/a' ai campi di danno vuoti."
+      },
+      "disableAASupport": {
+        "name": "Disabilita supporto AA",
+        "label": "Disabilita Animazioni automatiche",
+        "hint": "Rimuove i dati di compatibilità dagli incantesimi estesi per disabilitare le Animazioni automatiche. Questo rimuove 'n/a' dai campi di danno degli incantesimi che erano stati aggiunti dalla funzione di abilitazione."
+      },
+      "setupGrudgeFolders": {
+        "name": "Configura cartelle di rancore",
+        "label": "Configura cartelle di rancore",
+        "hint": "Crea cartelle e diari di rancore per tutti i personaggi giocanti con l’abilità di stirpe Rancoroso. Esegui questa funzione una volta all’avvio della partita o quando si aggiungono nuovi PG."
+      },
+      "aoeRuleReminder": {
+        "name": "Promemoria regola AOE",
+        "hint": "Mostra promemoria delle regole prima di lanciare incantesimi ad area di effetto (sfera e cono)."
+      },
+      "customWeaponFeatures": {
+        "name": "Caratteristiche personalizzate delle armi",
+        "hint": "Aggiunge caratteristiche personalizzate delle armi al sistema (separate da virgola). Esempi: 'Snodata, Pesante, Piccola, Lacerante'. Queste appariranno nelle caselle di controllo delle caratteristiche per qualsiasi arma."
+      }
+    },
+    "actions": {
+      "parry": "Parata",
+      "topple": "Atterramento",
+      "disarm": "Disarmo",
+      "weakspot": "Individua punto debole"
+    },
+    "speakers": {
+      "generic": "Regole di {action}",
+      "shove": "Spinta disponibile",
+      "evade": "Movimento di schivata"
+    },
+    "durability": "Durabilità",
+    "unknownWeapon": "Arma sconosciuta",
+    "weaponTypes": {
+      "melee": "arma da mischia",
+      "longMelee": "arma da mischia lunga"
+    },
+    "range": {
+      "upToTwoMeters": "entro 2 m da",
+      "upToFourMeters": "entro 4 m da"
+    },
+    "validation": {
+      "selectToken": "Seleziona il tuo token prima di attaccare con {weapon}.",
+      "noWeapon": "Non possiedi l’arma {weapon}!",
+      "noTarget": "Seleziona un token come bersaglio prima di attaccare con {weapon}.",
+      "tooManyTargets": "Seleziona un solo token come bersaglio per {weapon}.",
+      "meleeOutOfRange": "Il bersaglio è troppo lontano! {weapon} è una {weaponType} e deve essere {maxRange} dal bersaglio, ma il bersaglio è a {distance} m di distanza.",
+      "rangedOutOfRange": "Il bersaglio è troppo lontano! {weapon} ha una gittata massima di {maxRange} m, ma il bersaglio è a {distance} m di distanza.",
+      "spellSelectToken": "Devi selezionare un token per lanciare {spell}",
+      "spellNotFound": "Incantesimo {spell} non trovato",
+      "spellNoActor": "Nessun attore trovato per lanciare {spell}",
+      "spellNoToken": "Nessun token trovato per {actor} per lanciare {spell}",
+      "spellNoTarget": "Devi selezionare un bersaglio per lanciare {spell}",
+      "spellTooManyTargets": "Devi selezionare esattamente un bersaglio per lanciare {spell}",
+      "spellCannotTargetSelf": "{spell} non può avere come bersaglio l’incantatore! Seleziona un bersaglio diverso.",
+      "spellTouchRange": "{spell} richiede contatto! Devi essere adiacente (entro 2 m). Distanza: {distance} m",
+      "spellOutOfRange": "{spell} è fuori gittata! Max: {maxRange} m, Distanza: {distance} m"
+    },
+    "parry": {
+      "reaction": "La parata utilizza la tua azione per il turno (reazione)",
+      "success": "Successo = nessun danno. Se il danno > durabilità, l’arma è danneggiata finché non viene riparata",
+      "piercing": "Gli attacchi perforanti non possono danneggiare armi/scudi usati per parare",
+      "monster": "Gli attacchi dei mostri non possono essere parati (a meno che non sia specificato)",
+      "movement": "Successo = sposta te stesso e il nemico di 2 m (non conta come movimento, nessun attacco gratuito)",
+      "dragon": "Drago = contrattacco (non può essere schivato/parato). Se l’attaccante ha tirato Drago, serve Drago per parare (nessun contrattacco)",
+      "dodgeMovement": "<strong>Se Schivi:</strong> puoi muoverti fino a 2 m in qualsiasi direzione (non si attivano attacchi gratuiti)",
+      "ifParrying": "Se stai parando:"
+    },
+    "topple": {
+      "noDamage": "Nessun danno inflitto",
+      "evadeRoll": "L’avversario effettua un tiro contrapposto di <strong>SCHIVATA</strong>",
+      "cannotDefend": "Non può essere schivato o parato",
+      "success": "Successo = l’avversario cade prono",
+      "weaponFeature": "Caratteristica: Atterramento",
+      "boonBonus": "+1 Vantaggio",
+      "monsterRule": "<strong>Mostro:</strong> 4 o più zampe = svantaggio al tiro"
+    },
+    "disarm": {
+      "noDamage": "Nessun danno inflitto",
+      "skillRoll": "L’avversario effettua un tiro contrapposto di abilità con arma",
+      "cannotDefend": "Non può essere schivato o parato",
+      "twoHanded": "Arma a due mani = ottieni svantaggio",
+      "success": "Successo = l’arma cade a D6 metri di distanza (direzione a tua scelta)",
+      "limitations": "Non si possono disarmare scudi o armi naturali"
+    },
+    "weakspot": {
+      "piercing": "Solo armi perforanti: colpisci i punti deboli dell’armatura",
+      "bane": "Ottieni svantaggio all’attacco",
+      "success": "Successo = il nemico conta come senza armatura"
+    },
+    "shove": {
+      "available": "<strong>Bonus:</strong> Il vantaggio in FOR consente di spingere {targetName} di 2 m in qualsiasi direzione.",
+      "defaultTarget": "bersaglio"
+    },
+    "evade": {
+      "movementAvailable": "<strong>Se Schivi:</strong> puoi muoverti fino a 2 m in qualsiasi direzione (non si attivano attacchi gratuiti)"
+    },
+    "weaponBroken": {
+      "buttonText": "Segna arma come rotta",
+      "buttonTextCompleted": "Arma segnata come rotta",
+      "dialogTitle": "Segna arma come rotta",
+      "dialogContent": "Segnare <strong>{weaponName}</strong> come rotta?",
+      "dialogExplanation": "Questo ne impedirà l’uso finché non sarà riparata.",
+      "confirmButton": "Segna come rotta",
+      "cancelButton": "Annulla",
+      "errors": {
+        "actorNotFound": "Attore non trovato",
+        "weaponNotFound": "Arma non trovata",
+        "noPermission": "Non hai il permesso di modificare questa arma",
+        "alreadyBroken": "{weaponName} è già rotta",
+        "updateFailed": "Impossibile segnare l’arma come rotta"
+      },
+      "success": "{weaponName} è stata segnata come rotta"
+    },
+    "encumbrance": {
+      "statusEffectName": "Sovraccarico",
+      "nowOverEncumbered": "{actorName} è ora sovraccarico ({currentEnc}/{maxEnc} oggetti)",
+      "noLongerOverEncumbered": "{actorName} non è più sovraccarico ({currentEnc}/{maxEnc} oggetti)",
+      "chatOverEncumbered": "<strong>{actorName}</strong> è ora <strong>sovraccarico!</strong>",
+      "chatNoLongerOverEncumbered": "<strong>{actorName}</strong> non è più sovraccarico.",
+      "carryingItems": "Trasporta {currentEnc}/{maxEnc} oggetti",
+      "strRollReminder": "Deve effettuare tiri di FOR per muoversi in combattimento o durante i turni di viaggio mentre è sovraccarico.",
+      "systemMessage": "Monitoraggio ingombro"
+    },
+    "overrides": {
+      "targetEnforcementDisabled": "Controllo selezione bersaglio disabilitato",
+      "targetEnforcementEnabled": "Controllo selezione bersaglio abilitato",
+      "rangeCheckingDisabled": "Controllo gittata disabilitato",
+      "rangeCheckingEnabled": "Controllo gittata abilitato",
+      "yzeActionTrackingDisabled": "Tracciamento azioni YZE disabilitato",
+      "yzeActionTrackingEnabled": "Tracciamento azioni YZE abilitato",
+      "allValidationDisabled": "Tutte le regole di convalida e il tracciamento delle azioni disabilitati",
+      "allValidationEnabled": "Tutte le regole di convalida e il tracciamento delle azioni abilitati",
+      "allOverridesCleared": "Tutte le eccezioni di convalida e tracciamento rimosse",
+      "status": {
+        "targetSelection": "Selezione bersaglio",
+        "rangeChecking": "Controllo gittata",
+        "yzeActionTracking": "Tracciamento azioni YZE",
+        "allValidations": "Tutte le convalide",
+        "allActive": "Tutte le regole di convalida attive (nessuna eccezione)",
+        "activeOverrides": "Eccezioni attive: {overrides}"
+      }
+    },
+    "yze": {
+      "actionAlreadyPerformedOrPushing": "Un’azione è già stata eseguita da {actorName} oppure sta forzando un tiro.",
+      "actionAlreadyPerformedNPC": "{actorName} ha usato tutte le azioni disponibili."
+    },
+    "monsterPrevention": {
+      "disarm": {
+        "title": "Disarmare Mostro",
+        "content": "I mostri non possono essere disarmati. Sei sicuro di voler tentare questo disarmo contro {targetName}?"
+      },
+      "parry": {
+        "title": "Parare Attacco di Mostro",
+        "content": "Gli attacchi dei mostri generalmente non possono essere parati (a meno che l’attacco lo consenta esplicitamente). Sei sicuro di voler tentare questa parata contro {targetName}?"
+      },
+      "proceed": "Procedi",
+      "cancel": "Annulla"
+    },
+    "effects": {
+      "protector": "Protettore",
+      "birdsong": "Canto degli uccelli",
+      "powerFist": "Pugno Potente",
+      "enchantWeapon": "Incantare Arma",
+      "engulfingForest": "Intrappolato",
+      "ensnaringRoots": "Intrappolato",
+      "flight": "Volare",
+      "longstrider": "Lungopasso",
+      "sleep": "Addormentato",
+      "stoneSkin": "Pelle di Pietra",
+      "chill": "Brivido",
+      "cold": "Freddo",
+      "frost": "Congelato",
+      "heat": "Calore"
+    },
+    "dialogs": {
+      "enableAA": {
+        "title": "Abilita supporto Animazioni automatiche",
+        "content": "Questo aggiungerà 'n/a' al campo danno di tutti gli incantesimi senza danno, rendendoli compatibili con le Animazioni automatiche.",
+        "warning": "Questo influisce su tutti gli attori e i loro incantesimi nel tuo mondo. Facilmente reversibile con il pulsante di disabilitazione.",
+        "warningLabel": "Avviso:",
+        "enableButton": "Abilita supporto AA",
+        "cancelButton": "Annulla"
+      },
+      "disableAA": {
+        "title": "Disabilita supporto Animazioni automatiche",
+        "content": "Questo rimuoverà 'n/a' dal campo danno degli incantesimi estesi, disabilitando la compatibilità con le Animazioni automatiche.",
+        "warning": "Questo influisce su tutti gli attori e i loro incantesimi nel tuo mondo. Puoi riabilitare in qualsiasi momento.",
+        "warningLabel": "Avviso:",
+        "disableButton": "Disabilita supporto AA",
+        "cancelButton": "Annulla"
+      },
+      "setupGrudgeFolders": {
+        "title": "Configura cartelle di rancore",
+        "content": "Questo creerà cartelle e diari di rancore per tutti i personaggi giocanti con l’abilità di stirpe Rancoroso. Qualsiasi diario esistente sarà preservato.",
+        "info": "Solo i personaggi con l’abilità di stirpe Rancoroso avranno diari creati.",
+        "setupButton": "Crea cartelle e diari"
+      },
+      "aoeReminder": {
+        "title": "Promemoria incantesimi ad area di effetto",
+        "dodgeRule": "Gli incantesimi ad area di effetto possono essere schivati ma non parati, salvo diversa indicazione.",
+        "exemptRule": "Puoi escludere uno o più bersagli all’interno dell’area dagli effetti dell’incantesimo, ma ottieni uno svantaggio al tiro.",
+        "cast": "Lancia incantesimo",
+        "cancel": "Annulla",
+        "cancelled": "Lancio dell’incantesimo annullato."
+      }
+    },
+    "grudgeTracker": {
+      "allGrudgeJournalsExist": "Tutti i diari di rancore esistono già oppure non sono stati trovati personaggi con l’abilità Rancoroso",
+      "speakerName": "Tracciatore Rancoroso",
+      "damageReceived": "{actorName} ha subito {damage} danni da {attackerName}.",
+      "addToGrudgeList": "Aggiungi alla lista di rancore",
+      "buttonTextCompleted": "Aggiunto alla lista di rancore",
+      "journalName": "Rancori di {actorName}",
+      "folderName": "Tracciatore Rancoroso",
+      "pageTitle": "Tracciatore Rancoroso",
+      "dateColumn": "Data",
+      "enemyColumn": "Nemico",
+      "damageColumn": "Danno",
+      "locationColumn": "Luogo",
+      "unknownLocation": "Luogo sconosciuto",
+      "addedToGrudgeList": "{attackerName} aggiunto alla lista di rancore di {actorName}",
+      "setupComplete": "Creati {count} diari di rancore per i personaggi con l’abilità Rancoroso.",
+      "errors": {
+        "actorNotFound": "Attore non trovato",
+        "noPermission": "Non hai il permesso di modificare la lista di rancore di questo personaggio",
+        "addFailed": "Impossibile aggiungere la voce alla lista di rancore",
+        "journalCreateFailed": "Impossibile creare il diario della lista di rancore",
+        "journalNotFound": "Diario di rancore non trovato",
+        "journalNotSetup": "Nessun diario di rancore trovato per {actorName}. Chiedi al GM di eseguire 'Configura cartelle di rancore' dalle impostazioni del modulo."
+      }
+    }
+  }
+}
