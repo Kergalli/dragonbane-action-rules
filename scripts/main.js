@@ -2,6 +2,7 @@
  * Dragonbane Combat Assistant - Main Module
  */
 
+import { runLegacyAACleanup } from "./aa-integration.js";
 import { CustomWeaponFeaturesManager } from "./custom-weapon-features.js";
 import { DragonbaneEncumbranceMonitor } from "./encumbrance-monitor.js";
 import { DragonbaneGrudgeTracker } from "./grudge-tracker.js";
@@ -9,6 +10,7 @@ import {
   cleanupCharacterSheets,
   disableTokenActionHUD,
   registerHooks,
+  setupSheetInterception,
   setupTokenActionHUD,
 } from "./hooks.js";
 import { DragonbanePatternManager } from "./pattern-manager.js";
@@ -21,7 +23,7 @@ import { DragonbaneYZEIntegration } from "./yze-integration.js";
 
 class DragonbaneActionRules {
   static ID = "dragonbane-action-rules";
-  static VERSION = "2.2.5";
+  static VERSION = "3.0.0";
 
   static FLAGS = {
     RULES_MESSAGE: "dragonbaneRulesMessage",
@@ -52,7 +54,7 @@ class DragonbaneActionRules {
         DragonbaneUtils.debugLog(
           DragonbaneActionRules.ID,
           "Main",
-          `${game.i18n.localize("DRAGONBANE_ACTION_RULES.console.wrongSystem")}`
+          `${game.i18n.localize("DRAGONBANE_ACTION_RULES.console.wrongSystem")}`,
         );
         return;
       }
@@ -60,24 +62,24 @@ class DragonbaneActionRules {
       registerSettings(DragonbaneActionRules.ID);
 
       DragonbaneActionRules.patternManager = new DragonbanePatternManager(
-        DragonbaneActionRules.ID
+        DragonbaneActionRules.ID,
       );
 
       DragonbaneActionRules.validator = new DragonbaneValidator(
-        DragonbaneActionRules.ID
+        DragonbaneActionRules.ID,
       );
       DragonbaneActionRules.rulesDisplay = new DragonbaneRulesDisplay(
         DragonbaneActionRules.ID,
-        DragonbaneActionRules.patternManager
+        DragonbaneActionRules.patternManager,
       );
       DragonbaneActionRules.encumbranceMonitor =
         new DragonbaneEncumbranceMonitor(DragonbaneActionRules.ID);
       DragonbaneActionRules.yzeIntegration = new DragonbaneYZEIntegration(
         DragonbaneActionRules.ID,
-        DragonbaneActionRules.patternManager
+        DragonbaneActionRules.patternManager,
       );
       DragonbaneActionRules.grudgeTracker = new DragonbaneGrudgeTracker(
-        DragonbaneActionRules.ID
+        DragonbaneActionRules.ID,
       );
       DragonbaneActionRules.customWeaponFeaturesManager =
         new CustomWeaponFeaturesManager(DragonbaneActionRules.ID);
@@ -89,15 +91,15 @@ class DragonbaneActionRules {
         DragonbaneActionRules.ID,
         "Main",
         `${game.i18n.localize(
-          "DRAGONBANE_ACTION_RULES.console.initializing"
-        )} v${DragonbaneActionRules.VERSION}`
+          "DRAGONBANE_ACTION_RULES.console.initializing",
+        )} v${DragonbaneActionRules.VERSION}`,
       );
     } catch (error) {
       if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
         DoD_Utility.WARNING(`Critical initialization error: ${error.message}`);
       }
       ui.notifications.error(
-        "Dragonbane Combat Assistant failed to initialize. Check console for details."
+        "Dragonbane Combat Assistant failed to initialize. Check console for details.",
       );
     }
   }
@@ -109,14 +111,20 @@ class DragonbaneActionRules {
           DragonbaneActionRules.enableModule();
         }
 
+        // Sheet attack interception must run after system sheet classes register
+        setupSheetInterception(DragonbaneActionRules.ID);
+
         DragonbaneActionRules.encumbranceMonitor?.initialize();
         DragonbaneActionRules.yzeIntegration?.initialize();
         DragonbaneActionRules.customWeaponFeaturesManager?.initialize();
 
+        // One-time legacy "n/a" spell-damage cleanup (GM-only, flag-guarded)
+        runLegacyAACleanup(DragonbaneActionRules.ID);
+
         try {
           if (game.modules.get("socketlib")?.active) {
             DragonbaneActionRules.socket = socketlib.registerModule(
-              "dragonbane-action-rules"
+              "dragonbane-action-rules",
             );
             DragonbaneActionRules.socket.register(
               "applyStatusEffect",
@@ -130,7 +138,7 @@ class DragonbaneActionRules {
                   if (target) {
                     // Rebuild effectData on GM side to ensure proper description
                     const effect = DragonbaneUtils.findStatusEffect(
-                      data.config.effectId
+                      data.config.effectId,
                     );
                     if (!effect) return;
 
@@ -138,7 +146,7 @@ class DragonbaneActionRules {
                     let effectName;
                     if (data.config.effectNameKey) {
                       effectName = game.i18n.localize(
-                        data.config.effectNameKey
+                        data.config.effectNameKey,
                       );
                     } else if (effect.name) {
                       effectName = game.i18n.localize(effect.name);
@@ -185,11 +193,11 @@ class DragonbaneActionRules {
                     DoD_Utility.WARNING
                   ) {
                     DoD_Utility.WARNING(
-                      `applyStatusEffect error: ${error.message}`
+                      `applyStatusEffect error: ${error.message}`,
                     );
                   }
                 }
-              }
+              },
             );
 
             // Register the applyEncumbranceEffect function for GM execution
@@ -201,7 +209,7 @@ class DragonbaneActionRules {
                   if (target) {
                     // Rebuild effect data on GM side to ensure proper description
                     const effect = DragonbaneUtils.findStatusEffect(
-                      data.statusEffectName
+                      data.statusEffectName,
                     );
                     if (!effect) return;
 
@@ -230,17 +238,17 @@ class DragonbaneActionRules {
                     DoD_Utility.WARNING
                   ) {
                     DoD_Utility.WARNING(
-                      `applyEncumbranceEffect error: ${error.message}`
+                      `applyEncumbranceEffect error: ${error.message}`,
                     );
                   }
                 }
-              }
+              },
             );
 
             DragonbaneUtils.debugLog(
               DragonbaneActionRules.ID,
               "Socket",
-              "Socket handlers registered successfully"
+              "Socket handlers registered successfully",
             );
           }
         } catch (error) {
@@ -258,7 +266,7 @@ class DragonbaneActionRules {
     } catch (error) {
       if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
         DoD_Utility.WARNING(
-          `Failed to register hooks and keybinds: ${error.message}`
+          `Failed to register hooks and keybinds: ${error.message}`,
         );
       }
     }
@@ -278,7 +286,7 @@ class DragonbaneActionRules {
           hint: "Temporarily disable/enable all combat validations and YZE tracking",
           editable: [{ key: "KeyV", modifiers: ["Alt"] }],
           onDown: () => DragonbaneActionRules.toggleValidationBypass(),
-        }
+        },
       );
     } catch (error) {
       if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
@@ -295,6 +303,9 @@ class DragonbaneActionRules {
       // Re-establish Token Action HUD integration
       setupTokenActionHUD(DragonbaneActionRules.ID);
 
+      // Re-establish character sheet attack interception
+      setupSheetInterception(DragonbaneActionRules.ID);
+
       // Reinitialize components that need setup when re-enabled
       DragonbaneActionRules.encumbranceMonitor?.initialize();
       DragonbaneActionRules.yzeIntegration?.initialize();
@@ -302,7 +313,7 @@ class DragonbaneActionRules {
       DragonbaneUtils.debugLog(
         DragonbaneActionRules.ID,
         "Main",
-        `${game.i18n.localize("DRAGONBANE_ACTION_RULES.console.moduleEnabled")}`
+        `${game.i18n.localize("DRAGONBANE_ACTION_RULES.console.moduleEnabled")}`,
       );
     } catch (error) {
       if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
@@ -323,8 +334,8 @@ class DragonbaneActionRules {
       if (DragonbaneUtils.isDebugMode(DragonbaneActionRules.ID)) {
         console.log(
           `${DragonbaneActionRules.ID} | ${game.i18n.localize(
-            "DRAGONBANE_ACTION_RULES.console.moduleDisabled"
-          )}`
+            "DRAGONBANE_ACTION_RULES.console.moduleDisabled",
+          )}`,
         );
       }
     } catch (error) {
@@ -354,7 +365,7 @@ class DragonbaneActionRules {
       DragonbaneUtils.debugLog(
         DragonbaneActionRules.ID,
         "Main",
-        `Error refreshing custom weapon features: ${error.message}`
+        `Error refreshing custom weapon features: ${error.message}`,
       );
     }
   }

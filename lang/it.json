@@ -1,5 +1,8 @@
 {
   "DRAGONBANE_ACTION_RULES": {
+    "aa": {
+      "legacyCleanup": "Rimossi {count} tag di danno obsoleti degli incantesimi da una versione precedente."
+    },
     "console": {
       "initializing": "Inizializzazione",
       "wrongSystem": "Questo modulo è progettato per il sistema Dragonbane",

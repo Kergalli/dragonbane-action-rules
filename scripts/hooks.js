@@ -2,6 +2,7 @@
  * Dragonbane Combat Assistant - Hook Registration
  */
 
+import { onRenderChatMessageForAA } from "./aa-integration.js";
 import { DragonbaneUtils } from "./utils.js";
 
 // Store original methods for Token Action HUD override
@@ -15,9 +16,6 @@ export function registerHooks(moduleId) {
     if (!DragonbaneUtils.getSetting(moduleId, "enabled")) return;
 
     try {
-      // Magic Trick AA support - add buttons early for AA detection
-      addMagicTrickButtonsToMessage(message);
-
       // Rules display processing
       if (DragonbaneActionRules.rulesDisplay?.onChatMessage) {
         DragonbaneActionRules.rulesDisplay.onChatMessage(message);
@@ -56,14 +54,14 @@ export function registerHooks(moduleId) {
 
             const isSuccess =
               DragonbaneActionRules.patternManager.isSuccessfulAction(
-                messageContent
+                messageContent,
               );
 
             if (isSuccess || isMagicTrick) {
               const excludedSpells = DragonbaneUtils.getSetting(
                 moduleId,
                 "excludedSpells",
-                ""
+                "",
               )
                 .split(",")
                 .map((s) => s.trim())
@@ -76,7 +74,7 @@ export function registerHooks(moduleId) {
                   setTimeout(() => {
                     DragonbaneActionRules.spellLibrary.applySpellEffect(
                       spell,
-                      message
+                      message,
                     );
                   }, 100);
                 }
@@ -88,241 +86,169 @@ export function registerHooks(moduleId) {
     } catch (error) {
       if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
         DoD_Utility.WARNING(
-          `Error in chat message processing: ${error.message}`
+          `Error in chat message processing: ${error.message}`,
         );
       }
     }
   });
 
-  /**
-   * Add Magic Trick buttons during createChatMessage for earlier AA detection
-   */
-  function addMagicTrickButtonsToMessage(message) {
-    try {
-      const content = message.content;
-
-      // Look for Magic Trick pattern: actor casts spell with UUID
-      const uuidMatch = content?.match(
-        /@UUID\[Actor\.([^.]+)\.Item\.([^\]]+)\]/
-      );
-      if (uuidMatch) {
-        const [, actorId, spellId] = uuidMatch;
-        const actor = game.actors.get(actorId);
-        const spell = actor?.items.get(spellId);
-
-        // Check if Magic Trick (rank 0 or general school)
-        if (spell && spell.type === "spell" && spell.system.damage === "n/a") {
-          // ONLY add button for actual Magic Tricks
-          const isMagicTrick =
-            spell.system.rank === 0 ||
-            spell.system.school?.toLowerCase() === "general";
-
-          if (!isMagicTrick) {
-            // Not a Magic Trick - don't add button!
-            return;
-          }
-
-          // Only add button if it doesn't already exist (for actual Magic Tricks)
-          if (!content.includes("magic-roll")) {
-            // Add button with all required attributes (like real spell buttons)
-            const buttonHTML = `<div class="permission-owner" data-actor-id="Actor.${actorId}">
-                              <button class="chat-button magic-roll" 
-                                     data-actor-id="Actor.${actorId}"
-                                     data-spell-id="${spellId}"
-                                     data-power-level="1"
-                                     data-wp-cost="1"
-                                     data-target-id="Actor.${actorId}"
-                                     style="position: absolute; left: -9999px;">
-                                Roll Damage
-                              </button>
-                            </div>`;
-
-            // Inject button into message content
-            const newContent = content + buttonHTML;
-            message.updateSource({
-              content: newContent,
-            });
-
-            DragonbaneUtils.debugLog(
-              "dragonbane-action-rules",
-              "MagicTrick",
-              `Added early AA button for Magic Trick: ${spell.name}`
-            );
-          }
-        }
-      }
-    } catch (error) {
-      if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
-        DoD_Utility.WARNING(
-          `Error adding early Magic Trick buttons: ${error.message}`
-        );
-      }
-    }
-  }
-
   // Chat button interaction processing
-  Hooks.on("renderChatMessage", (message, html, data) => {
+  Hooks.on("renderChatMessageHTML", (message, html, data) => {
     if (!DragonbaneUtils.getSetting(moduleId, "enabled")) return;
 
-    // Fix enhanced spell issues:
-    // 1. Hide "Roll Damage" buttons but preserve "Choose" buttons
-    hideEnhancedSpellButtons(html);
-
-    // 2. Fix critical effects for enhanced spells (remove double damage + add Choose button)
-    fixEnhancedSpellCriticalEffects(html);
-
-    // Continue with existing logic for rules messages
+    // Only process our rules messages
     if (!message.getFlag(moduleId, "dragonbaneRulesMessage")) return;
 
     try {
       // Mark weapon broken button
-      html.find(".mark-weapon-broken").click(async (event) => {
-        event.preventDefault();
-        event.stopPropagation();
-        const button = event.currentTarget;
-        const weaponId = button.dataset.weaponId;
-        const actorId = button.dataset.actorId;
-        const sceneId = button.dataset.sceneId;
-        const tokenId = button.dataset.tokenId;
+      const markBrokenButton = html.querySelector(".mark-weapon-broken");
+      if (markBrokenButton) {
+        markBrokenButton.addEventListener("click", async (event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          const button = event.currentTarget;
+          const weaponId = button.dataset.weaponId;
+          const actorId = button.dataset.actorId;
+          const sceneId = button.dataset.sceneId;
+          const tokenId = button.dataset.tokenId;
 
-        try {
-          const speakerData = {
-            actor: actorId,
-            scene: sceneId,
-            token: tokenId,
-          };
+          try {
+            const speakerData = {
+              actor: actorId,
+              scene: sceneId,
+              token: tokenId,
+            };
 
-          const actor = DragonbaneUtils.getActorFromSpeakerData(speakerData);
+            const actor = DragonbaneUtils.getActorFromSpeakerData(speakerData);
 
-          if (!actor) {
-            const errorMsg = `Failed to find actor with any method. ID was: ${actorId}`;
+            if (!actor) {
+              const errorMsg = `Failed to find actor with any method. ID was: ${actorId}`;
+              if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
+                DoD_Utility.WARNING(errorMsg);
+              }
+              ui.notifications.error(
+                game.i18n.localize(
+                  "DRAGONBANE_ACTION_RULES.weaponBroken.errors.actorNotFound",
+                ),
+              );
+              return;
+            }
+
+            const weapon = actor.items.get(weaponId);
+            if (!weapon) {
+              ui.notifications.error(
+                game.i18n.localize(
+                  "DRAGONBANE_ACTION_RULES.weaponBroken.errors.weaponNotFound",
+                ),
+              );
+              return;
+            }
+
+            if (!actor.isOwner && !game.user.isGM) {
+              ui.notifications.warn(
+                game.i18n.localize(
+                  "DRAGONBANE_ACTION_RULES.weaponBroken.errors.noPermission",
+                ),
+              );
+              return;
+            }
+
+            if (weapon.system.broken) {
+              ui.notifications.info(
+                game.i18n.format(
+                  "DRAGONBANE_ACTION_RULES.weaponBroken.errors.alreadyBroken",
+                  { weaponName: weapon.name },
+                ),
+              );
+              return;
+            }
+
+            // Show confirmation dialog
+            const confirmed = await new Promise((resolve) => {
+              new Dialog({
+                title: game.i18n.localize(
+                  "DRAGONBANE_ACTION_RULES.weaponBroken.dialogTitle",
+                ),
+                content: `<p>${game.i18n.format(
+                  "DRAGONBANE_ACTION_RULES.weaponBroken.dialogContent",
+                  { weaponName: weapon.name },
+                )}</p>
+                  <p><em>${game.i18n.localize(
+                    "DRAGONBANE_ACTION_RULES.weaponBroken.dialogExplanation",
+                  )}</em></p>`,
+                buttons: {
+                  yes: {
+                    icon: '<i class="fas fa-check"></i>',
+                    label: game.i18n.localize(
+                      "DRAGONBANE_ACTION_RULES.weaponBroken.confirmButton",
+                    ),
+                    callback: () => resolve(true),
+                  },
+                  no: {
+                    icon: '<i class="fas fa-times"></i>',
+                    label: game.i18n.localize(
+                      "DRAGONBANE_ACTION_RULES.weaponBroken.cancelButton",
+                    ),
+                    callback: () => resolve(false),
+                  },
+                },
+                default: "no",
+                close: () => resolve(false),
+              }).render(true);
+            });
+
+            if (!confirmed) return;
+
+            // Mark weapon as broken
+            await weapon.update({ "system.broken": true });
+
+            ui.notifications.info(
+              game.i18n.format("DRAGONBANE_ACTION_RULES.weaponBroken.success", {
+                weaponName: weapon.name,
+              }),
+            );
+
+            // Update button to show completion
+            button.textContent = game.i18n.localize(
+              "DRAGONBANE_ACTION_RULES.weaponBroken.buttonTextCompleted",
+            );
+            button.disabled = true;
+          } catch (error) {
+            const errorMsg = `Error marking weapon broken: ${error.message}`;
             if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
               DoD_Utility.WARNING(errorMsg);
             }
             ui.notifications.error(
               game.i18n.localize(
-                "DRAGONBANE_ACTION_RULES.weaponBroken.errors.actorNotFound"
-              )
-            );
-            return;
-          }
-
-          const weapon = actor.items.get(weaponId);
-          if (!weapon) {
-            ui.notifications.error(
-              game.i18n.localize(
-                "DRAGONBANE_ACTION_RULES.weaponBroken.errors.weaponNotFound"
-              )
-            );
-            return;
-          }
-
-          if (!actor.isOwner && !game.user.isGM) {
-            ui.notifications.warn(
-              game.i18n.localize(
-                "DRAGONBANE_ACTION_RULES.weaponBroken.errors.noPermission"
-              )
-            );
-            return;
-          }
-
-          if (weapon.system.broken) {
-            ui.notifications.info(
-              game.i18n.format(
-                "DRAGONBANE_ACTION_RULES.weaponBroken.errors.alreadyBroken",
-                { weaponName: weapon.name }
-              )
-            );
-            return;
-          }
-
-          // Show confirmation dialog
-          const confirmed = await new Promise((resolve) => {
-            new Dialog({
-              title: game.i18n.localize(
-                "DRAGONBANE_ACTION_RULES.weaponBroken.dialogTitle"
+                "DRAGONBANE_ACTION_RULES.weaponBroken.errors.updateFailed",
               ),
-              content: `<p>${game.i18n.format(
-                "DRAGONBANE_ACTION_RULES.weaponBroken.dialogContent",
-                { weaponName: weapon.name }
-              )}</p>
-                  <p><em>${game.i18n.localize(
-                    "DRAGONBANE_ACTION_RULES.weaponBroken.dialogExplanation"
-                  )}</em></p>`,
-              buttons: {
-                yes: {
-                  icon: '<i class="fas fa-check"></i>',
-                  label: game.i18n.localize(
-                    "DRAGONBANE_ACTION_RULES.weaponBroken.confirmButton"
-                  ),
-                  callback: () => resolve(true),
-                },
-                no: {
-                  icon: '<i class="fas fa-times"></i>',
-                  label: game.i18n.localize(
-                    "DRAGONBANE_ACTION_RULES.weaponBroken.cancelButton"
-                  ),
-                  callback: () => resolve(false),
-                },
-              },
-              default: "no",
-              close: () => resolve(false),
-            }).render(true);
-          });
-
-          if (!confirmed) return;
-
-          // Mark weapon as broken
-          await weapon.update({ "system.broken": true });
-
-          ui.notifications.info(
-            game.i18n.format("DRAGONBANE_ACTION_RULES.weaponBroken.success", {
-              weaponName: weapon.name,
-            })
-          );
-
-          // Update button to show completion
-          $(button)
-            .text(
-              game.i18n.localize(
-                "DRAGONBANE_ACTION_RULES.weaponBroken.buttonTextCompleted"
-              )
-            )
-            .prop("disabled", true);
-        } catch (error) {
-          const errorMsg = `Error marking weapon broken: ${error.message}`;
-          if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
-            DoD_Utility.WARNING(errorMsg);
+            );
           }
-          ui.notifications.error(
-            game.i18n.localize(
-              "DRAGONBANE_ACTION_RULES.weaponBroken.errors.updateFailed"
-            )
-          );
-        }
-      });
+        });
+      }
     } catch (error) {
       if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
         DoD_Utility.WARNING(
-          `Error in chat button processing: ${error.message}`
+          `Error in chat button processing: ${error.message}`,
         );
       }
     }
   });
 
-  // Support both v12 and v13 journal hooks
+  // Journal hooks for grudge tracking
   registerJournalHooks(moduleId);
 
   // Grudge tracker button handler (separate hook since grudge messages don't have rules flag)
-  Hooks.on("renderChatMessage", (message, html, data) => {
+  Hooks.on("renderChatMessageHTML", (message, html, data) => {
     if (!DragonbaneUtils.getSetting(moduleId, "enabled")) return;
     if (!DragonbaneUtils.getSetting(moduleId, "enableGrudgeTracking")) return;
 
     // Only process messages with grudge buttons
-    if (!html.find(".add-to-grudge-list").length) return;
+    const grudgeButton = html.querySelector(".add-to-grudge-list");
+    if (!grudgeButton) return;
 
     try {
-      html.find(".add-to-grudge-list").click(async (event) => {
+      grudgeButton.addEventListener("click", async (event) => {
         event.preventDefault();
         event.stopPropagation();
 
@@ -340,27 +266,24 @@ export function registerHooks(moduleId) {
               attackerName,
               damage,
               location,
-              critical
+              critical,
             );
 
             // Update button to show completion
-            $(button)
-              .text(
-                game.i18n.localize(
-                  "DRAGONBANE_ACTION_RULES.grudgeTracker.buttonTextCompleted"
-                )
-              )
-              .prop("disabled", true);
+            button.textContent = game.i18n.localize(
+              "DRAGONBANE_ACTION_RULES.grudgeTracker.buttonTextCompleted",
+            );
+            button.disabled = true;
           } catch (error) {
             if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
               DoD_Utility.WARNING(
-                `Error adding to grudge list: ${error.message}`
+                `Error adding to grudge list: ${error.message}`,
               );
             }
             ui.notifications.error(
               game.i18n.localize(
-                "DRAGONBANE_ACTION_RULES.grudgeTracker.errors.addFailed"
-              )
+                "DRAGONBANE_ACTION_RULES.grudgeTracker.errors.addFailed",
+              ),
             );
           }
         } else {
@@ -372,10 +295,16 @@ export function registerHooks(moduleId) {
     } catch (error) {
       if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
         DoD_Utility.WARNING(
-          `Error in grudge button processing: ${error.message}`
+          `Error in grudge button processing: ${error.message}`,
         );
       }
     }
+  });
+
+  // Automated Animations: trigger animations for spells AA's native handler skips
+  Hooks.on("renderChatMessageHTML", (message, html, data) => {
+    if (!DragonbaneUtils.getSetting(moduleId, "enabled")) return;
+    onRenderChatMessageForAA(message, html, data);
   });
 
   // Monster action prevention - no more timed bypass system
@@ -385,7 +314,7 @@ export function registerHooks(moduleId) {
       !DragonbaneUtils.getSetting(
         moduleId,
         "enforceMonsterActionPrevention",
-        true
+        true,
       )
     )
       return;
@@ -426,13 +355,13 @@ export function registerHooks(moduleId) {
         normalizedAction,
         targetActor.name,
         document,
-        moduleId
+        moduleId,
       );
       return false; // Always prevent original message
     } catch (error) {
       if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
         DoD_Utility.WARNING(
-          `Error in monster action prevention: ${error.message}`
+          `Error in monster action prevention: ${error.message}`,
         );
       }
     }
@@ -443,31 +372,31 @@ export function registerHooks(moduleId) {
     action,
     targetName,
     document,
-    moduleId
+    moduleId,
   ) {
     const dialogKey = action === "disarm" ? "disarm" : "parry";
 
     const proceed = await new Promise((resolve) => {
       new Dialog({
         title: game.i18n.localize(
-          `DRAGONBANE_ACTION_RULES.monsterPrevention.${dialogKey}.title`
+          `DRAGONBANE_ACTION_RULES.monsterPrevention.${dialogKey}.title`,
         ),
         content: `<p>${game.i18n.format(
           `DRAGONBANE_ACTION_RULES.monsterPrevention.${dialogKey}.content`,
-          { targetName }
+          { targetName },
         )}</p>`,
         buttons: {
           proceed: {
             icon: '<i class="fas fa-check"></i>',
             label: game.i18n.localize(
-              "DRAGONBANE_ACTION_RULES.monsterPrevention.proceed"
+              "DRAGONBANE_ACTION_RULES.monsterPrevention.proceed",
             ),
             callback: () => resolve(true),
           },
           cancel: {
             icon: '<i class="fas fa-times"></i>',
             label: game.i18n.localize(
-              "DRAGONBANE_ACTION_RULES.monsterPrevention.cancel"
+              "DRAGONBANE_ACTION_RULES.monsterPrevention.cancel",
             ),
             callback: () => resolve(false),
           },
@@ -495,177 +424,6 @@ export function registerHooks(moduleId) {
   // Setup Token Action HUD integration
   setupTokenActionHUD(moduleId);
 
-  // Character sheets attack interception
-  Hooks.on("renderActorSheet", (sheet, html, data) => {
-    if (!DragonbaneUtils.getSetting(moduleId, "enabled")) return;
-    if (
-      !DragonbaneUtils.getSetting(moduleId, "enforceTargetSelection") &&
-      !DragonbaneUtils.getSetting(moduleId, "enforceRangeChecking")
-    )
-      return;
-
-    if (sheet.constructor.name !== "DoDCharacterSheet") return;
-
-    try {
-      sheet._dragonbaneHooked = true;
-
-      // PC weapons: .rollable-skill within weapon rows (tr[data-item-id])
-      html.find("tr[data-item-id] .rollable-skill").each((index, element) => {
-        const $element = $(element);
-        const $row = $element.closest("tr[data-item-id]");
-        const itemId = $row.attr("data-item-id");
-
-        if (itemId) {
-          const item = sheet.actor.items.get(itemId);
-
-          if (item?.type === "weapon") {
-            element.addEventListener(
-              "click",
-              async function (event) {
-                // Check if module is enabled
-                if (!DragonbaneUtils.getSetting(moduleId, "enabled")) {
-                  return;
-                }
-
-                if (DragonbaneActionRules?.overrides?.validationBypass) {
-                  return;
-                }
-
-                if (DragonbaneActionRules?.validator?.performWeaponAttack) {
-                  const validation =
-                    await DragonbaneActionRules.validator.performWeaponAttack(
-                      item.name,
-                      sheet.actor
-                    );
-
-                  if (!validation.success) {
-                    event.preventDefault();
-                    event.stopImmediatePropagation();
-                    ui.notifications.warn(validation.message);
-                    return false;
-                  }
-                }
-              },
-              true
-            );
-          }
-
-          if (item?.type === "spell") {
-            element.addEventListener(
-              "click",
-              async function (event) {
-                // Check if module is enabled
-                if (!DragonbaneUtils.getSetting(moduleId, "enabled")) {
-                  return;
-                }
-
-                if (DragonbaneActionRules?.overrides?.validationBypass) {
-                  return;
-                }
-
-                if (DragonbaneActionRules?.validator?.performSpellCast) {
-                  const validation =
-                    await DragonbaneActionRules.validator.performSpellCast(
-                      item.name,
-                      sheet.actor
-                    );
-
-                  if (!validation.success) {
-                    event.preventDefault();
-                    event.stopImmediatePropagation();
-                    ui.notifications.warn(validation.message);
-                    return false;
-                  }
-                }
-              },
-              true
-            );
-          }
-        }
-      });
-
-      // NPC weapons: .rollable-skill elements with data-item-id directly on them
-      html.find(".rollable-skill[data-item-id]").each((index, element) => {
-        const $element = $(element);
-        const itemId = $element.attr("data-item-id");
-
-        if (itemId) {
-          const item = sheet.actor.items.get(itemId);
-
-          if (item?.type === "weapon") {
-            element.addEventListener(
-              "click",
-              async function (event) {
-                // Check if module is enabled
-                if (!DragonbaneUtils.getSetting(moduleId, "enabled")) {
-                  return;
-                }
-
-                if (DragonbaneActionRules?.overrides?.validationBypass) {
-                  return;
-                }
-
-                if (DragonbaneActionRules?.validator?.performWeaponAttack) {
-                  const validation =
-                    await DragonbaneActionRules.validator.performWeaponAttack(
-                      item.name,
-                      sheet.actor
-                    );
-
-                  if (!validation.success) {
-                    event.preventDefault();
-                    event.stopImmediatePropagation();
-                    ui.notifications.warn(validation.message);
-                    return false;
-                  }
-                }
-              },
-              true
-            );
-          }
-
-          if (item?.type === "spell") {
-            element.addEventListener(
-              "click",
-              async function (event) {
-                // Check if module is enabled
-                if (!DragonbaneUtils.getSetting(moduleId, "enabled")) {
-                  return;
-                }
-
-                if (DragonbaneActionRules?.overrides?.validationBypass) {
-                  return;
-                }
-
-                if (DragonbaneActionRules?.validator?.performSpellCast) {
-                  const validation =
-                    await DragonbaneActionRules.validator.performSpellCast(
-                      item.name,
-                      sheet.actor
-                    );
-
-                  if (!validation.success) {
-                    event.preventDefault();
-                    event.stopImmediatePropagation();
-                    ui.notifications.warn(validation.message);
-                    return false;
-                  }
-                }
-              },
-              true
-            );
-          }
-        }
-      });
-    } catch (error) {
-      if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
-        DoD_Utility.WARNING(
-          `Error applying weapon interceptors: ${error.message}`
-        );
-      }
-    }
-  });
-
   // Encumbrance monitoring hooks
   Hooks.on("updateActor", (actor, changes, options, userId) => {
     if (!DragonbaneUtils.getSetting(moduleId, "enableEncumbranceMonitoring"))
@@ -676,7 +434,7 @@ export function registerHooks(moduleId) {
         actor,
         changes,
         options,
-        userId
+        userId,
       );
     }
   });
@@ -689,7 +447,7 @@ export function registerHooks(moduleId) {
       DragonbaneActionRules.encumbranceMonitor.onActorDelete(
         actor,
         options,
-        userId
+        userId,
       );
     }
   });
@@ -703,7 +461,7 @@ export function registerHooks(moduleId) {
         item,
         changes,
         options,
-        userId
+        userId,
       );
     }
   });
@@ -716,7 +474,7 @@ export function registerHooks(moduleId) {
       DragonbaneActionRules.encumbranceMonitor.onItemChange(
         item,
         options,
-        userId
+        userId,
       );
     }
   });
@@ -729,7 +487,7 @@ export function registerHooks(moduleId) {
       DragonbaneActionRules.encumbranceMonitor.onItemChange(
         item,
         options,
-        userId
+        userId,
       );
     }
   });
@@ -772,7 +530,7 @@ export function setupTokenActionHUD(moduleId) {
         const selectedToken = canvas.tokens.controlled[0];
         if (selectedToken?.actor) {
           const item = selectedToken.actor.items.find(
-            (i) => i.name === itemName && i.type === itemType
+            (i) => i.name === itemName && i.type === itemType,
           );
 
           // Check for Magic Tricks (before any validation)
@@ -801,27 +559,15 @@ export function setupTokenActionHUD(moduleId) {
                     // Small delay for UI
                     await new Promise((resolve) => setTimeout(resolve, 50));
 
-                    if (casterToken.object) {
-                      // v13
-                      casterToken.object.setTarget(true, {
-                        user: game.user,
-                        releaseOthers: true,
-                      });
-                    } else if (casterToken.setTarget) {
-                      // v12
-                      casterToken.setTarget(true, {
-                        user: game.user,
-                        releaseOthers: true,
-                      });
-                    } else if (game.user.updateTokenTargets) {
-                      // Older v12
-                      game.user.updateTokenTargets([casterToken.id]);
-                    }
+                    casterToken.object.setTarget(true, {
+                      user: game.user,
+                      releaseOthers: true,
+                    });
 
                     DragonbaneUtils.debugLog(
                       "dragonbane-action-rules",
                       "TokenActionHUD",
-                      `Auto-targeted ${selectedToken.actor.name} for personal Magic Trick: ${itemName}`
+                      `Auto-targeted ${selectedToken.actor.name} for personal Magic Trick: ${itemName}`,
                     );
                   } catch (error) {
                     if (
@@ -829,7 +575,7 @@ export function setupTokenActionHUD(moduleId) {
                       DoD_Utility.WARNING
                     ) {
                       DoD_Utility.WARNING(
-                        `Auto-targeting failed for ${itemName}: ${error.message}`
+                        `Auto-targeting failed for ${itemName}: ${error.message}`,
                       );
                     }
                   }
@@ -856,7 +602,7 @@ export function setupTokenActionHUD(moduleId) {
             const validation =
               await DragonbaneActionRules.validator.performWeaponAttack(
                 itemName,
-                selectedToken.actor
+                selectedToken.actor,
               );
 
             if (!validation.success) {
@@ -874,7 +620,7 @@ export function setupTokenActionHUD(moduleId) {
             const validation =
               await DragonbaneActionRules.validator.performSpellCast(
                 itemName,
-                selectedToken.actor
+                selectedToken.actor,
               );
 
             if (!validation.success) {
@@ -886,7 +632,7 @@ export function setupTokenActionHUD(moduleId) {
       } catch (error) {
         if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
           DoD_Utility.WARNING(
-            `Error in Token Action HUD rollItem validation: ${error.message}`
+            `Error in Token Action HUD rollItem validation: ${error.message}`,
           );
         }
       }
@@ -930,7 +676,7 @@ export function setupTokenActionHUD(moduleId) {
         const selectedToken = canvas.tokens.controlled[0];
         if (selectedToken?.actor) {
           const item = selectedToken.actor.items.find(
-            (i) => i.name === itemName && i.type === itemType
+            (i) => i.name === itemName && i.type === itemType,
           );
 
           // Spell Validation (No Magic Trick redirect needed - useItem handles them naturally)
@@ -942,7 +688,7 @@ export function setupTokenActionHUD(moduleId) {
             const validation =
               await DragonbaneActionRules.validator.performSpellCast(
                 itemName,
-                selectedToken.actor
+                selectedToken.actor,
               );
 
             if (!validation.success) {
@@ -960,7 +706,7 @@ export function setupTokenActionHUD(moduleId) {
             const validation =
               await DragonbaneActionRules.validator.performSpellCast(
                 itemName,
-                selectedToken.actor
+                selectedToken.actor,
               );
 
             if (!validation.success) {
@@ -972,7 +718,7 @@ export function setupTokenActionHUD(moduleId) {
       } catch (error) {
         if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
           DoD_Utility.WARNING(
-            `Error in Token Action HUD useItem validation: ${error.message}`
+            `Error in Token Action HUD useItem validation: ${error.message}`,
           );
         }
       }
@@ -985,208 +731,87 @@ export function setupTokenActionHUD(moduleId) {
 }
 
 /**
- * Hide ONLY "Roll Damage" buttons from enhanced spells, preserve "Choose" buttons
+ * Setup character sheet attack interception.
+ * v14 AppV2 captures the action handler reference when each sheet builds its
+ * options, BEFORE renderActorSheetV2 fires — so per-render wrapping is too late.
+ * Instead we wrap the handler on the class's static DEFAULT_OPTIONS once, before
+ * any sheet renders, so AppV2 captures our wrapped version.
  */
-function hideEnhancedSpellButtons(html) {
-  try {
-    const rollDamageText = game.i18n.localize("DoD.ui.chat.rollDamage");
-    const magicButtons = html.find(".magic-roll");
+export function setupSheetInterception(moduleId) {
+  if (originalMethods.has("_skillRollHandler")) return;
 
-    magicButtons.each(function () {
-      const button = $(this);
-      const spellId = button.attr("data-spell-id");
-      const actorId = button.attr("data-actor-id");
-      const buttonText = button.text().trim();
+  const charCls =
+    CONFIG.Actor.sheetClasses?.character?.["DoD.DoDCharacterSheet"]?.cls;
+  const baseCls = charCls ? Object.getPrototypeOf(charCls) : null;
+  const action = baseCls?.DEFAULT_OPTIONS?.actions?.skillRoll;
 
-      // Only process buttons that have data-spell-id (these are "Roll Damage" buttons)
-      if (spellId && actorId) {
-        const cleanActorId = actorId.replace("Actor.", "");
-        const actor = game.actors.get(cleanActorId);
-        const spell = actor?.items.get(spellId);
+  if (!action || typeof action.handler !== "function") return;
+  if (action.handler._darWrapped) return;
 
-        // Hide only "Roll Damage" buttons for enhanced spells
-        if (
-          spell &&
-          spell.system.damage === "n/a" &&
-          buttonText === rollDamageText
-        ) {
-          button.hide();
-          DragonbaneUtils.debugLog(
-            "dragonbane-action-rules",
-            "EnhancedSpellButtons",
-            `Hidden "Roll Damage" button for enhanced spell: ${spell.name}`
+  const original = action.handler;
+  originalMethods.set("_skillRollHandler", { action, original });
+
+  const wrapped = async function (event, target) {
+    const callOriginal = () => original.call(this, event, target);
+
+    if (event.type !== "click") return callOriginal();
+    if (!DragonbaneUtils.getSetting(moduleId, "enabled")) return callOriginal();
+    if (
+      !DragonbaneUtils.getSetting(moduleId, "enforceTargetSelection") &&
+      !DragonbaneUtils.getSetting(moduleId, "enforceRangeChecking")
+    )
+      return callOriginal();
+    if (DragonbaneActionRules.overrides?.validationBypass)
+      return callOriginal();
+
+    try {
+      const row = target.closest(".sheet-table-data");
+      const itemId = row?.dataset.itemId;
+      const item = itemId ? this.actor.items.get(itemId) : null;
+
+      if (
+        item?.type === "weapon" &&
+        DragonbaneActionRules.validator?.performWeaponAttack
+      ) {
+        const validation =
+          await DragonbaneActionRules.validator.performWeaponAttack(
+            item.name,
+            this.actor,
           );
+        if (!validation.success) {
+          ui.notifications.warn(validation.message);
+          return;
         }
-      } else {
-        DragonbaneUtils.debugLog(
-          "dragonbane-action-rules",
-          "EnhancedSpellButtons",
-          `Preserved button without spell-id: "${buttonText}"`
+      }
+
+      if (
+        item?.type === "spell" &&
+        item.system?.rank > 0 &&
+        DragonbaneActionRules.validator?.performSpellCast
+      ) {
+        const validation =
+          await DragonbaneActionRules.validator.performSpellCast(
+            item.name,
+            this.actor,
+          );
+        if (!validation.success) {
+          ui.notifications.warn(validation.message);
+          return;
+        }
+      }
+    } catch (error) {
+      if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
+        DoD_Utility.WARNING(
+          `Error in sheet attack validation: ${error.message}`,
         );
       }
-    });
-  } catch (error) {
-    if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
-      DoD_Utility.WARNING(
-        `Error hiding enhanced spell buttons: ${error.message}`
-      );
-    }
-  }
-}
-
-/**
- * Enhanced spells: Remove "Double damage" option AND add missing "Choose" button
- */
-function fixEnhancedSpellCriticalEffects(html) {
-  try {
-    // Properly localized critical effects detection
-    const criticalEffectLabel = game.i18n.localize(
-      "DoD.magicCritChoices.choiceLabel"
-    );
-    const criticalSections = html.find(".form-group").filter(function () {
-      return $(this).find("label").first().text().includes(criticalEffectLabel);
-    });
-
-    if (criticalSections.length > 0) {
-      criticalSections.each(function () {
-        const section = $(this);
-        const formFields = section.find(".form-fields");
-
-        // Check if this message is for a spell by looking for Roll Damage button
-        const messageDiv = section.closest(".message-content");
-        const rollDamageText = game.i18n.localize("DoD.ui.chat.rollDamage");
-        const rollDamageButton = messageDiv
-          .find("button.magic-roll")
-          .filter(function () {
-            return (
-              $(this).attr("data-spell-id") &&
-              $(this).text().trim() === rollDamageText
-            );
-          });
-
-        // If we found a Roll Damage button, check if it's an enhanced spell
-        if (rollDamageButton.length > 0) {
-          const spellId = rollDamageButton.attr("data-spell-id");
-          const actorId = rollDamageButton.attr("data-actor-id");
-
-          if (spellId && actorId) {
-            const cleanActorId = actorId.replace("Actor.", "");
-            const actor = game.actors.get(cleanActorId);
-            const spell = actor?.items.get(spellId);
-
-            // Only process enhanced non-damage spells (damage === "n/a")
-            if (spell && spell.system.damage === "n/a") {
-              // Remove "Double damage" option using proper localization
-              const doubleDamageText = game.i18n.localize(
-                "DoD.magicCritChoices.doubleDamage"
-              );
-              const doubleDamageInput = formFields
-                .find('input[type="radio"]')
-                .filter(function () {
-                  const label = $(this).closest("label");
-                  return label.text().trim().includes(doubleDamageText);
-                });
-
-              if (doubleDamageInput.length > 0) {
-                doubleDamageInput.closest("label").remove();
-                DragonbaneUtils.debugLog(
-                  "dragonbane-action-rules",
-                  "CriticalEffects",
-                  "Removed 'Double damage' option from enhanced spell"
-                );
-              }
-
-              // Add missing "Choose" button
-              const existingChooseButton = messageDiv
-                .find("button")
-                .filter(function () {
-                  const buttonText = $(this).text().trim();
-                  const chooseText = game.i18n.localize("DoD.ui.chat.choose");
-                  return (
-                    buttonText === chooseText && !$(this).attr("data-spell-id")
-                  );
-                });
-
-              if (existingChooseButton.length === 0) {
-                const wpCost = rollDamageButton.attr("data-wp-cost");
-                const chooseButtonWithDivider = $(`
-                  <hr>
-                  <button class="chat-button magic-roll" data-actor-id="${actorId}" data-is-magic-crit="true" data-wp-cost="${wpCost}">
-                    ${game.i18n.localize("DoD.ui.chat.choose")}
-                  </button>
-                `);
-
-                section.nextAll("hr").first().remove();
-                section.after(chooseButtonWithDivider);
-
-                DragonbaneUtils.debugLog(
-                  "dragonbane-action-rules",
-                  "CriticalEffects",
-                  "Added missing 'Choose' button for enhanced spell"
-                );
-              }
-            }
-          }
-        }
-      });
-    }
-  } catch (error) {
-    if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
-      DoD_Utility.WARNING(
-        `Error fixing enhanced spell critical effects: ${error.message}`
-      );
-    }
-  }
-}
-
-/**
- * Enhance all non-damage spells for Automated Animations compatibility
- */
-async function enhanceAllNonDamageSpells() {
-  try {
-    let enhancedCount = 0;
-    let excludedCount = 0;
-
-    // Get excluded spells list
-    const excludedSpells = DragonbaneUtils.getSetting(
-      "dragonbane-action-rules",
-      "excludedSpells",
-      ""
-    )
-      .split(",")
-      .map((s) => s.trim())
-      .filter((s) => s.length > 0);
-
-    for (let actor of game.actors) {
-      if (!actor) continue;
-
-      for (let item of actor.items) {
-        if (
-          item.type === "spell" &&
-          (!item.system.damage || item.system.damage.length === 0)
-        ) {
-          // Check if this spell is excluded
-          const isExcluded = excludedSpells.includes(item.name);
-          if (isExcluded) excludedCount++;
-
-          // Always enhance for AA (even excluded spells get animations)
-          await item.update({ "system.damage": "n/a" });
-          enhancedCount++;
-        }
-      }
     }
 
-    // Single summary log instead of individual logs
-    DragonbaneUtils.debugLog(
-      "dragonbane-action-rules",
-      "SpellEnhancement",
-      `Enhanced ${enhancedCount} spells for AA (${excludedCount} validation excluded)`
-    );
-  } catch (error) {
-    if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
-      DoD_Utility.WARNING(`Error enhancing spells for AA: ${error.message}`);
-    }
-  }
+    return callOriginal();
+  };
+
+  wrapped._darWrapped = true;
+  action.handler = wrapped;
 }
 
 /**
@@ -1201,6 +826,11 @@ export function disableTokenActionHUD() {
     game.dragonbane.useItem = originalMethods.get("useItem");
     originalMethods.delete("useItem");
   }
+  if (originalMethods.has("_skillRollHandler")) {
+    const { action, original } = originalMethods.get("_skillRollHandler");
+    action.handler = original;
+    originalMethods.delete("_skillRollHandler");
+  }
 }
 
 /**
@@ -1210,22 +840,13 @@ export function cleanupCharacterSheets() {
   Object.values(ui.windows)
     .filter(
       (app) =>
-        app.constructor.name === "DoDCharacterSheet" && app._dragonbaneHooked
+        app.constructor.name === "DoDCharacterSheet" && app._dragonbaneHooked,
     )
     .forEach((app) => delete app._dragonbaneHooked);
 }
 
-// Support both v12 and v13 journal hooks
+// Journal hook for grudge tracking (v14)
 function registerJournalHooks(moduleId) {
-  // v12 hook
-  Hooks.on("renderJournalSheet", (journal, html, data) => {
-    handleGrudgeJournalSheet(moduleId, journal, html, {
-      folderPath: journal.object.folder?.name,
-      journalName: journal.object.name,
-    });
-  });
-
-  // v13 hook
   Hooks.on("renderJournalEntryPageSheet", (sheet, html, data) => {
     handleGrudgeJournalSheet(moduleId, sheet, html, {
       folderPath: sheet.document?.parent?.folder?.name,
@@ -1234,19 +855,18 @@ function registerJournalHooks(moduleId) {
   });
 }
 
-// Shared handler for both versions
+// Handler for grudge journal sheet rendering
 function handleGrudgeJournalSheet(moduleId, sheetOrJournal, html, paths) {
   if (!DragonbaneUtils.getSetting(moduleId, "enabled")) return;
   if (!DragonbaneUtils.getSetting(moduleId, "enableGrudgeTracking")) return;
 
   const folderName = game.i18n.localize(
-    "DRAGONBANE_ACTION_RULES.grudgeTracker.folderName"
+    "DRAGONBANE_ACTION_RULES.grudgeTracker.folderName",
   );
   if (paths.folderPath !== folderName) return;
 
   try {
-    // Handle different HTML parameter types between v12 and v13
-    const $html = html.find ? html : $(html); // v12 has .find, v13 needs jQuery wrap
+    // html is a native HTMLElement in v14; no further interaction needed here
   } catch (error) {
     if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
       DoD_Utility.WARNING(`Error in journal interaction: ${error.message}`);
@@ -1261,7 +881,7 @@ function getActionMatch(content) {
 
   const actionPattern = new RegExp(
     `(${parryTerm}|${disarmTerm}|parry|disarm)`,
-    "i"
+    "i",
   );
 
   return content.match(actionPattern);
@@ -1283,43 +903,3 @@ function normalizeAction(action) {
 
   return actionLower;
 }
-
-/**
- * Disable all spell enhancements for Automated Animations
- */
-async function disableAllSpellEnhancements() {
-  try {
-    let enhancedCount = 0;
-
-    for (let actor of game.actors) {
-      if (!actor) continue;
-
-      for (let item of actor.items) {
-        if (item.type === "spell" && item.system.damage === "n/a") {
-          await item.update({ "system.damage": "" });
-          enhancedCount++;
-        }
-      }
-    }
-
-    // Single summary log instead of individual logs
-    DragonbaneUtils.debugLog(
-      "dragonbane-action-rules",
-      "SpellEnhancement",
-      `Disabled AA support for ${enhancedCount} spells`
-    );
-
-    return enhancedCount;
-  } catch (error) {
-    if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
-      DoD_Utility.WARNING(
-        `Error disabling spell enhancements: ${error.message}`
-      );
-    }
-    throw error;
-  }
-}
-
-// Make functions available globally for the dialogs
-globalThis.enhanceAllNonDamageSpells = enhanceAllNonDamageSpells;
-globalThis.disableAllSpellEnhancements = disableAllSpellEnhancements;

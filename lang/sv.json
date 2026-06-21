@@ -1,5 +1,8 @@
 {
   "DRAGONBANE_ACTION_RULES": {
+    "aa": {
+      "legacyCleanup": "Rensade {count} föråldrade skadetaggar för besvärjelser från en tidigare version."
+    },
     "console": {
       "initializing": "Initialiserar",
       "wrongSystem": "Denna modul är designad för Drakar och Demoner-systemet",

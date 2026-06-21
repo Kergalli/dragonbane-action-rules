@@ -2,12 +2,12 @@
   "id": "dragonbane-action-rules",
   "title": "Dragonbane Combat Assistant",
   "description": "Enhancement for Dragonbane combat and character management. Enforces target selection and weapon range for all attacks (including contextual thrown weapon support), automatically displays combat action rules when special attacks succeed, and provides event-driven encumbrance monitoring with instant notifications. Includes interactive weapon management, enhanced weapon feature display, configurable status effects for over-encumbered characters, optional rule reminders for shove and movement mechanics, EVADE skill enhancements, seamless integration with Year Zero Engine Combat module for single action tracking, monster action prevention with confirmation dialogs for Parry/Disarm attempts, and keyboard shortcuts for temporarily overriding validation rules during gameplay.",
-  "version": "2.2.5",
+  "version": "3.0.0",
   "socket": true,
   "compatibility": {
-    "minimum": "12",
-    "verified": "13.351",
-    "maximum": "13"
+    "minimum": "14",
+    "verified": "14.364",
+    "maximum": "14"
   },
   "authors": [
     {
@@ -42,8 +42,8 @@
         "id": "dragonbane",
         "type": "system",
         "compatibility": {
-          "minimum": "2.0",
-          "verified": "3.0"
+          "minimum": "4.0.0",
+          "verified": "4.0.1"
         }
       }
     ],
@@ -66,7 +66,7 @@
       {
         "id": "autoanimations",
         "type": "module",
-        "reason": "Enables visual animations for all spells when Universal Spell AA Support is active"
+        "reason": "Enables visual animations and sounds for spells and attacks, enhancing immersion during combat encounters"
       }
     ],
     "optional": [
@@ -84,7 +84,7 @@
   },
   "url": "https://github.com/kergalli/dragonbane-action-rules",
   "manifest": "https://github.com/kergalli/dragonbane-action-rules/releases/latest/download/module.json",
-  "download": "https://github.com/kergalli/dragonbane-action-rules/releases/download/v2.2.5/module.zip",
+  "download": "https://github.com/kergalli/dragonbane-action-rules/releases/download/v3.0.0/module.zip",
   "readme": "https://github.com/kergalli/dragonbane-action-rules/blob/main/README.md",
   "changelog": "https://github.com/kergalli/dragonbane-action-rules/blob/main/CHANGELOG.md",
   "protected": false,

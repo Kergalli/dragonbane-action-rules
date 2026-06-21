@@ -1,5 +1,8 @@
 {
   "DRAGONBANE_ACTION_RULES": {
+    "aa": {
+      "legacyCleanup": "Cleaned up {count} legacy spell damage tag(s) from a previous version."
+    },
     "console": {
       "initializing": "Initializing",
       "wrongSystem": "This module is designed for the Dragonbane system",

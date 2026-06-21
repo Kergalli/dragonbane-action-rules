@@ -61,14 +61,14 @@ export function registerSettings(moduleId) {
           } else {
             if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
               DoD_Utility.WARNING(
-                `DragonbaneActionRules not available for settings onChange`
+                `DragonbaneActionRules not available for settings onChange`,
               );
             }
           }
         } catch (error) {
           if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
             DoD_Utility.WARNING(
-              `Error in enabled setting onChange: ${error.message}`
+              `Error in enabled setting onChange: ${error.message}`,
             );
           }
         }
@@ -104,10 +104,10 @@ export function registerSettings(moduleId) {
   // Validation settings
   game.settings.register(moduleId, SETTINGS.SHOW_PARRY_DURABILITY, {
     name: game.i18n.localize(
-      "DRAGONBANE_ACTION_RULES.settings.showParryDurability.name"
+      "DRAGONBANE_ACTION_RULES.settings.showParryDurability.name",
     ),
     hint: game.i18n.localize(
-      "DRAGONBANE_ACTION_RULES.settings.showParryDurability.hint"
+      "DRAGONBANE_ACTION_RULES.settings.showParryDurability.hint",
     ),
     scope: "world",
     config: true,
@@ -117,10 +117,10 @@ export function registerSettings(moduleId) {
 
   game.settings.register(moduleId, SETTINGS.ENFORCE_TARGET_SELECTION, {
     name: game.i18n.localize(
-      "DRAGONBANE_ACTION_RULES.settings.enforceTargetSelection.name"
+      "DRAGONBANE_ACTION_RULES.settings.enforceTargetSelection.name",
     ),
     hint: game.i18n.localize(
-      "DRAGONBANE_ACTION_RULES.settings.enforceTargetSelection.hint"
+      "DRAGONBANE_ACTION_RULES.settings.enforceTargetSelection.hint",
     ),
     scope: "world",
     config: true,
@@ -130,10 +130,10 @@ export function registerSettings(moduleId) {
 
   game.settings.register(moduleId, SETTINGS.ENFORCE_RANGE_CHECKING, {
     name: game.i18n.localize(
-      "DRAGONBANE_ACTION_RULES.settings.enforceRangeChecking.name"
+      "DRAGONBANE_ACTION_RULES.settings.enforceRangeChecking.name",
     ),
     hint: game.i18n.localize(
-      "DRAGONBANE_ACTION_RULES.settings.enforceRangeChecking.hint"
+      "DRAGONBANE_ACTION_RULES.settings.enforceRangeChecking.hint",
     ),
     scope: "world",
     config: true,
@@ -143,10 +143,10 @@ export function registerSettings(moduleId) {
 
   game.settings.register(moduleId, SETTINGS.ENFORCE_MONSTER_ACTION_PREVENTION, {
     name: game.i18n.localize(
-      "DRAGONBANE_ACTION_RULES.settings.enforceMonsterActionPrevention.name"
+      "DRAGONBANE_ACTION_RULES.settings.enforceMonsterActionPrevention.name",
     ),
     hint: game.i18n.localize(
-      "DRAGONBANE_ACTION_RULES.settings.enforceMonsterActionPrevention.hint"
+      "DRAGONBANE_ACTION_RULES.settings.enforceMonsterActionPrevention.hint",
     ),
     scope: "world",
     config: true,
@@ -157,10 +157,10 @@ export function registerSettings(moduleId) {
   // Optional rules settings
   game.settings.register(moduleId, SETTINGS.ENABLE_SHOVE_REMINDERS, {
     name: game.i18n.localize(
-      "DRAGONBANE_ACTION_RULES.settings.enableShoveReminders.name"
+      "DRAGONBANE_ACTION_RULES.settings.enableShoveReminders.name",
     ),
     hint: game.i18n.localize(
-      "DRAGONBANE_ACTION_RULES.settings.enableShoveReminders.hint"
+      "DRAGONBANE_ACTION_RULES.settings.enableShoveReminders.hint",
     ),
     scope: "world",
     config: true,
@@ -170,10 +170,10 @@ export function registerSettings(moduleId) {
 
   game.settings.register(moduleId, SETTINGS.ENABLE_PARRY_MOVEMENT_REMINDERS, {
     name: game.i18n.localize(
-      "DRAGONBANE_ACTION_RULES.settings.enableParryMovementReminders.name"
+      "DRAGONBANE_ACTION_RULES.settings.enableParryMovementReminders.name",
     ),
     hint: game.i18n.localize(
-      "DRAGONBANE_ACTION_RULES.settings.enableParryMovementReminders.hint"
+      "DRAGONBANE_ACTION_RULES.settings.enableParryMovementReminders.hint",
     ),
     scope: "world",
     config: true,
@@ -183,10 +183,10 @@ export function registerSettings(moduleId) {
 
   game.settings.register(moduleId, SETTINGS.ENABLE_DODGE_MOVEMENT_REMINDERS, {
     name: game.i18n.localize(
-      "DRAGONBANE_ACTION_RULES.settings.enableDodgeMovementReminders.name"
+      "DRAGONBANE_ACTION_RULES.settings.enableDodgeMovementReminders.name",
     ),
     hint: game.i18n.localize(
-      "DRAGONBANE_ACTION_RULES.settings.enableDodgeMovementReminders.hint"
+      "DRAGONBANE_ACTION_RULES.settings.enableDodgeMovementReminders.hint",
     ),
     scope: "world",
     config: true,
@@ -197,10 +197,10 @@ export function registerSettings(moduleId) {
   // Custom Weapon Features setting
   game.settings.register(moduleId, SETTINGS.CUSTOM_WEAPON_FEATURES, {
     name: game.i18n.localize(
-      "DRAGONBANE_ACTION_RULES.settings.customWeaponFeatures.name"
+      "DRAGONBANE_ACTION_RULES.settings.customWeaponFeatures.name",
     ),
     hint: game.i18n.localize(
-      "DRAGONBANE_ACTION_RULES.settings.customWeaponFeatures.hint"
+      "DRAGONBANE_ACTION_RULES.settings.customWeaponFeatures.hint",
     ),
     scope: "world",
     config: true,
@@ -215,10 +215,10 @@ export function registerSettings(moduleId) {
   // Encumbrance monitoring settings with onChange handlers
   game.settings.register(moduleId, SETTINGS.ENABLE_ENCUMBRANCE_MONITORING, {
     name: game.i18n.localize(
-      "DRAGONBANE_ACTION_RULES.settings.enableEncumbranceMonitoring.name"
+      "DRAGONBANE_ACTION_RULES.settings.enableEncumbranceMonitoring.name",
     ),
     hint: game.i18n.localize(
-      "DRAGONBANE_ACTION_RULES.settings.enableEncumbranceMonitoring.hint"
+      "DRAGONBANE_ACTION_RULES.settings.enableEncumbranceMonitoring.hint",
     ),
     scope: "world",
     config: true,
@@ -235,7 +235,7 @@ export function registerSettings(moduleId) {
         } catch (error) {
           if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
             DoD_Utility.WARNING(
-              `Error in encumbrance onChange: ${error.message}`
+              `Error in encumbrance onChange: ${error.message}`,
             );
           }
         }
@@ -245,10 +245,10 @@ export function registerSettings(moduleId) {
 
   game.settings.register(moduleId, SETTINGS.ENCUMBRANCE_MONITOR_FOLDER, {
     name: game.i18n.localize(
-      "DRAGONBANE_ACTION_RULES.settings.encumbranceMonitorFolder.name"
+      "DRAGONBANE_ACTION_RULES.settings.encumbranceMonitorFolder.name",
     ),
     hint: game.i18n.localize(
-      "DRAGONBANE_ACTION_RULES.settings.encumbranceMonitorFolder.hint"
+      "DRAGONBANE_ACTION_RULES.settings.encumbranceMonitorFolder.hint",
     ),
     scope: "world",
     config: true,
@@ -265,7 +265,7 @@ export function registerSettings(moduleId) {
         } catch (error) {
           if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
             DoD_Utility.WARNING(
-              `Error in encumbrance folder onChange: ${error.message}`
+              `Error in encumbrance folder onChange: ${error.message}`,
             );
           }
         }
@@ -275,10 +275,10 @@ export function registerSettings(moduleId) {
 
   game.settings.register(moduleId, SETTINGS.ENCUMBRANCE_STATUS_EFFECT, {
     name: game.i18n.localize(
-      "DRAGONBANE_ACTION_RULES.settings.encumbranceStatusEffect.name"
+      "DRAGONBANE_ACTION_RULES.settings.encumbranceStatusEffect.name",
     ),
     hint: game.i18n.localize(
-      "DRAGONBANE_ACTION_RULES.settings.encumbranceStatusEffect.hint"
+      "DRAGONBANE_ACTION_RULES.settings.encumbranceStatusEffect.hint",
     ),
     scope: "world",
     config: true,
@@ -295,7 +295,7 @@ export function registerSettings(moduleId) {
         } catch (error) {
           if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
             DoD_Utility.WARNING(
-              `Error in encumbrance status onChange: ${error.message}`
+              `Error in encumbrance status onChange: ${error.message}`,
             );
           }
         }
@@ -305,10 +305,10 @@ export function registerSettings(moduleId) {
 
   game.settings.register(moduleId, SETTINGS.ENCUMBRANCE_CHAT_NOTIFICATIONS, {
     name: game.i18n.localize(
-      "DRAGONBANE_ACTION_RULES.settings.encumbranceChatNotifications.name"
+      "DRAGONBANE_ACTION_RULES.settings.encumbranceChatNotifications.name",
     ),
     hint: game.i18n.localize(
-      "DRAGONBANE_ACTION_RULES.settings.encumbranceChatNotifications.hint"
+      "DRAGONBANE_ACTION_RULES.settings.encumbranceChatNotifications.hint",
     ),
     scope: "world",
     config: true,
@@ -319,10 +319,10 @@ export function registerSettings(moduleId) {
   // YZE integration settings with onChange handlers
   game.settings.register(moduleId, SETTINGS.ENABLE_YZE_INTEGRATION, {
     name: game.i18n.localize(
-      "DRAGONBANE_ACTION_RULES.settings.enableYZEIntegration.name"
+      "DRAGONBANE_ACTION_RULES.settings.enableYZEIntegration.name",
     ),
     hint: game.i18n.localize(
-      "DRAGONBANE_ACTION_RULES.settings.enableYZEIntegration.hint"
+      "DRAGONBANE_ACTION_RULES.settings.enableYZEIntegration.hint",
     ),
     scope: "world",
     config: true,
@@ -339,7 +339,7 @@ export function registerSettings(moduleId) {
         } catch (error) {
           if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
             DoD_Utility.WARNING(
-              `Error in YZE integration onChange: ${error.message}`
+              `Error in YZE integration onChange: ${error.message}`,
             );
           }
         }
@@ -349,10 +349,10 @@ export function registerSettings(moduleId) {
 
   game.settings.register(moduleId, SETTINGS.YZE_CUSTOM_EXCLUSIONS, {
     name: game.i18n.localize(
-      "DRAGONBANE_ACTION_RULES.settings.yzeCustomExclusions.name"
+      "DRAGONBANE_ACTION_RULES.settings.yzeCustomExclusions.name",
     ),
     hint: game.i18n.localize(
-      "DRAGONBANE_ACTION_RULES.settings.yzeCustomExclusions.hint"
+      "DRAGONBANE_ACTION_RULES.settings.yzeCustomExclusions.hint",
     ),
     scope: "world",
     config: true,
@@ -376,10 +376,10 @@ export function registerSettings(moduleId) {
 
   game.settings.register(moduleId, SETTINGS.YZE_ABILITY_INCLUSIONS, {
     name: game.i18n.localize(
-      "DRAGONBANE_ACTION_RULES.settings.yzeAbilityInclusions.name"
+      "DRAGONBANE_ACTION_RULES.settings.yzeAbilityInclusions.name",
     ),
     hint: game.i18n.localize(
-      "DRAGONBANE_ACTION_RULES.settings.yzeAbilityInclusions.hint"
+      "DRAGONBANE_ACTION_RULES.settings.yzeAbilityInclusions.hint",
     ),
     scope: "world",
     config: true,
@@ -407,10 +407,10 @@ export function registerSettings(moduleId) {
   // Grudge tracking settings
   game.settings.register(moduleId, SETTINGS.ENABLE_GRUDGE_TRACKING, {
     name: game.i18n.localize(
-      "DRAGONBANE_ACTION_RULES.settings.enableGrudgeTracking.name"
+      "DRAGONBANE_ACTION_RULES.settings.enableGrudgeTracking.name",
     ),
     hint: game.i18n.localize(
-      "DRAGONBANE_ACTION_RULES.settings.enableGrudgeTracking.hint"
+      "DRAGONBANE_ACTION_RULES.settings.enableGrudgeTracking.hint",
     ),
     scope: "world",
     config: true,
@@ -421,13 +421,13 @@ export function registerSettings(moduleId) {
   // Grudge Setup Button
   game.settings.registerMenu(moduleId, "setupGrudgeFolders", {
     name: game.i18n.localize(
-      "DRAGONBANE_ACTION_RULES.settings.setupGrudgeFolders.name"
+      "DRAGONBANE_ACTION_RULES.settings.setupGrudgeFolders.name",
     ),
     label: game.i18n.localize(
-      "DRAGONBANE_ACTION_RULES.settings.setupGrudgeFolders.label"
+      "DRAGONBANE_ACTION_RULES.settings.setupGrudgeFolders.label",
     ),
     hint: game.i18n.localize(
-      "DRAGONBANE_ACTION_RULES.settings.setupGrudgeFolders.hint"
+      "DRAGONBANE_ACTION_RULES.settings.setupGrudgeFolders.hint",
     ),
     icon: "fas fa-folder-plus",
     type: SetupGrudgeFoldersDialog,
@@ -437,10 +437,10 @@ export function registerSettings(moduleId) {
   // Spell settings
   game.settings.register(moduleId, SETTINGS.ENABLE_SPELL_VALIDATION, {
     name: game.i18n.localize(
-      "DRAGONBANE_ACTION_RULES.settings.enableSpellValidation.name"
+      "DRAGONBANE_ACTION_RULES.settings.enableSpellValidation.name",
     ),
     hint: game.i18n.localize(
-      "DRAGONBANE_ACTION_RULES.settings.enableSpellValidation.hint"
+      "DRAGONBANE_ACTION_RULES.settings.enableSpellValidation.hint",
     ),
     scope: "world",
     config: true,
@@ -450,10 +450,10 @@ export function registerSettings(moduleId) {
 
   game.settings.register(moduleId, "excludedSpells", {
     name: game.i18n.localize(
-      "DRAGONBANE_ACTION_RULES.settings.excludedSpells.name"
+      "DRAGONBANE_ACTION_RULES.settings.excludedSpells.name",
     ),
     hint: game.i18n.localize(
-      "DRAGONBANE_ACTION_RULES.settings.excludedSpells.hint"
+      "DRAGONBANE_ACTION_RULES.settings.excludedSpells.hint",
     ),
     scope: "world",
     config: true,
@@ -463,10 +463,10 @@ export function registerSettings(moduleId) {
 
   game.settings.register(moduleId, SETTINGS.ENABLE_SPELL_STATUS_EFFECTS, {
     name: game.i18n.localize(
-      "DRAGONBANE_ACTION_RULES.settings.enableSpellStatusEffects.name"
+      "DRAGONBANE_ACTION_RULES.settings.enableSpellStatusEffects.name",
     ),
     hint: game.i18n.localize(
-      "DRAGONBANE_ACTION_RULES.settings.enableSpellStatusEffects.hint"
+      "DRAGONBANE_ACTION_RULES.settings.enableSpellStatusEffects.hint",
     ),
     scope: "world",
     config: true,
@@ -474,35 +474,12 @@ export function registerSettings(moduleId) {
     default: true,
   });
 
-  // AA Support buttons
-  game.settings.registerMenu(moduleId, "enableAASupport", {
-    name: game.i18n.localize(
-      "DRAGONBANE_ACTION_RULES.settings.enableAASupport.name"
-    ),
-    label: game.i18n.localize(
-      "DRAGONBANE_ACTION_RULES.settings.enableAASupport.label"
-    ),
-    hint: game.i18n.localize(
-      "DRAGONBANE_ACTION_RULES.settings.enableAASupport.hint"
-    ),
-    icon: "fas fa-magic",
-    type: EnableAADialog,
-    restricted: true,
-  });
-
-  game.settings.registerMenu(moduleId, "disableAASupport", {
-    name: game.i18n.localize(
-      "DRAGONBANE_ACTION_RULES.settings.disableAASupport.name"
-    ),
-    label: game.i18n.localize(
-      "DRAGONBANE_ACTION_RULES.settings.disableAASupport.label"
-    ),
-    hint: game.i18n.localize(
-      "DRAGONBANE_ACTION_RULES.settings.disableAASupport.hint"
-    ),
-    icon: "fas fa-undo",
-    type: DisableAADialog,
-    restricted: true,
+  // Hidden flag: tracks whether the one-time legacy "n/a" cleanup has run
+  game.settings.register(moduleId, "aaCleanupComplete", {
+    scope: "world",
+    config: false,
+    type: Boolean,
+    default: false,
   });
 
   // AOE Rule Reminder
@@ -547,16 +524,16 @@ class SetupGrudgeFoldersDialog extends FormApplication {
   async showDialog() {
     return new Dialog({
       title: game.i18n.localize(
-        "DRAGONBANE_ACTION_RULES.dialogs.setupGrudgeFolders.title"
+        "DRAGONBANE_ACTION_RULES.dialogs.setupGrudgeFolders.title",
       ),
       content: `
         <div style="margin-bottom: 1rem;">
           <p>${game.i18n.localize(
-            "DRAGONBANE_ACTION_RULES.dialogs.setupGrudgeFolders.content"
+            "DRAGONBANE_ACTION_RULES.dialogs.setupGrudgeFolders.content",
           )}</p>
           <p style="margin-top: 10px; font-style: italic;">
             ${game.i18n.localize(
-              "DRAGONBANE_ACTION_RULES.dialogs.setupGrudgeFolders.info"
+              "DRAGONBANE_ACTION_RULES.dialogs.setupGrudgeFolders.info",
             )}
           </p>
         </div>
@@ -564,7 +541,7 @@ class SetupGrudgeFoldersDialog extends FormApplication {
       buttons: {
         setup: {
           label: game.i18n.localize(
-            "DRAGONBANE_ACTION_RULES.dialogs.setupGrudgeFolders.setupButton"
+            "DRAGONBANE_ACTION_RULES.dialogs.setupGrudgeFolders.setupButton",
           ),
           callback: async () => {
             if (window.DragonbaneActionRules?.grudgeTracker) {
@@ -581,136 +558,5 @@ class SetupGrudgeFoldersDialog extends FormApplication {
       },
       default: "setup",
     }).render(true);
-  }
-}
-
-// Dialog classes for AA Support
-class EnableAADialog extends FormApplication {
-  static get defaultOptions() {
-    return mergeObject(super.defaultOptions, {
-      title: "Enable Automated Animations Support",
-      id: "enable-aa-support",
-      width: 400,
-      closeOnSubmit: true,
-    });
-  }
-
-  render(force, options) {
-    this.showDialog();
-    return this;
-  }
-
-  async showDialog() {
-    return new Promise((resolve) => {
-      new Dialog({
-        title: game.i18n.localize(
-          "DRAGONBANE_ACTION_RULES.dialogs.enableAA.title"
-        ),
-        content: `
-          <div style="margin-bottom: 1rem;">
-            <p>${game.i18n.localize(
-              "DRAGONBANE_ACTION_RULES.dialogs.enableAA.content"
-            )}</p>
-            <div style="background: #ffe6e6; border: 1px solid #ff9999; padding: 10px; margin: 10px 0; border-radius: 4px;">
-              <i class="fas fa-exclamation-triangle" style="color: #cc0000; margin-right: 8px;"></i>
-              <strong>${game.i18n.localize(
-                "DRAGONBANE_ACTION_RULES.dialogs.enableAA.warningLabel"
-              )}</strong> ${game.i18n.localize(
-          "DRAGONBANE_ACTION_RULES.dialogs.enableAA.warning"
-        )}
-            </div>
-          </div>
-        `,
-        buttons: {
-          enable: {
-            label: game.i18n.localize(
-              "DRAGONBANE_ACTION_RULES.dialogs.enableAA.enableButton"
-            ),
-            callback: async () => {
-              if (globalThis.enhanceAllNonDamageSpells) {
-                await globalThis.enhanceAllNonDamageSpells();
-                ui.notifications.info(
-                  "Automated Animations support enabled for all spells!"
-                );
-              } else {
-                ui.notifications.error(
-                  "Enhancement function not available. Please refresh and try again."
-                );
-              }
-            },
-          },
-          cancel: {
-            label: game.i18n.localize("Cancel"),
-          },
-        },
-        default: "cancel",
-      }).render(true);
-      resolve();
-    });
-  }
-}
-
-class DisableAADialog extends FormApplication {
-  static get defaultOptions() {
-    return mergeObject(super.defaultOptions, {
-      title: "Disable Automated Animations Support",
-      id: "disable-aa-support",
-      width: 400,
-      closeOnSubmit: true,
-    });
-  }
-
-  render(force, options) {
-    this.showDialog();
-    return this;
-  }
-
-  async showDialog() {
-    return new Promise((resolve) => {
-      new Dialog({
-        title: game.i18n.localize(
-          "DRAGONBANE_ACTION_RULES.dialogs.disableAA.title"
-        ),
-        content: `
-          <div style="margin-bottom: 1rem;">
-            <p>${game.i18n.localize(
-              "DRAGONBANE_ACTION_RULES.dialogs.disableAA.content"
-            )}</p>
-            <div style="background: #ffe6e6; border: 1px solid #ff9999; padding: 10px; margin: 10px 0; border-radius: 4px;">
-              <i class="fas fa-exclamation-triangle" style="color: #cc0000; margin-right: 8px;"></i>
-              <strong>${game.i18n.localize(
-                "DRAGONBANE_ACTION_RULES.dialogs.disableAA.warningLabel"
-              )}</strong> ${game.i18n.localize(
-          "DRAGONBANE_ACTION_RULES.dialogs.disableAA.warning"
-        )}
-            </div>
-          </div>
-        `,
-        buttons: {
-          disable: {
-            label: game.i18n.localize(
-              "DRAGONBANE_ACTION_RULES.dialogs.disableAA.disableButton"
-            ),
-            callback: async () => {
-              if (globalThis.disableAllSpellEnhancements) {
-                await globalThis.disableAllSpellEnhancements();
-                ui.notifications.info(
-                  "Automated Animations support disabled for all spells."
-                );
-              } else {
-                ui.notifications.error(
-                  "Disable function not available. Please refresh and try again."
-                );
-              }
-            },
-          },
-          cancel: {
-            label: game.i18n.localize("Cancel"),
-          },
-        },
-        default: "cancel",
-      }).render(true);
-      resolve();
-    });
   }
 }
