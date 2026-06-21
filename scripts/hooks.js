@@ -68,8 +68,12 @@ export function registerHooks(moduleId) {
                 .filter((s) => s.length > 0);
 
               if (!excludedSpells.includes(spell.name)) {
-                // Only the message creator processes the effect
-                if (message.user.id === game.user.id) {
+                // Only the message creator processes the effect.
+                // On Dragonbane 4.0.1 the live property is message.author (an
+                // ID string); message.user is deprecated/undefined.
+                const authorId =
+                  message.author?.id ?? message.author ?? message.user?.id;
+                if (authorId === game.user.id) {
                   // Small delay to ensure message is fully created
                   setTimeout(() => {
                     DragonbaneActionRules.spellLibrary.applySpellEffect(
@@ -164,39 +168,42 @@ export function registerHooks(moduleId) {
             }
 
             // Show confirmation dialog
-            const confirmed = await new Promise((resolve) => {
-              new Dialog({
+            const confirmed = await foundry.applications.api.DialogV2.wait({
+              window: {
                 title: game.i18n.localize(
                   "DRAGONBANE_ACTION_RULES.weaponBroken.dialogTitle",
                 ),
-                content: `<p>${game.i18n.format(
-                  "DRAGONBANE_ACTION_RULES.weaponBroken.dialogContent",
-                  { weaponName: weapon.name },
-                )}</p>
+              },
+              content: `<p>${game.i18n.format(
+                "DRAGONBANE_ACTION_RULES.weaponBroken.dialogContent",
+                { weaponName: weapon.name },
+              )}</p>
                   <p><em>${game.i18n.localize(
                     "DRAGONBANE_ACTION_RULES.weaponBroken.dialogExplanation",
                   )}</em></p>`,
-                buttons: {
-                  yes: {
-                    icon: '<i class="fas fa-check"></i>',
-                    label: game.i18n.localize(
-                      "DRAGONBANE_ACTION_RULES.weaponBroken.confirmButton",
-                    ),
-                    callback: () => resolve(true),
-                  },
-                  no: {
-                    icon: '<i class="fas fa-times"></i>',
-                    label: game.i18n.localize(
-                      "DRAGONBANE_ACTION_RULES.weaponBroken.cancelButton",
-                    ),
-                    callback: () => resolve(false),
-                  },
+              position: { width: 400 },
+              buttons: [
+                {
+                  action: "yes",
+                  icon: "fa-solid fa-check",
+                  label: game.i18n.localize(
+                    "DRAGONBANE_ACTION_RULES.weaponBroken.confirmButton",
+                  ),
+                  callback: () => true,
                 },
-                default: "no",
-                close: () => resolve(false),
-              }).render(true);
+                {
+                  action: "no",
+                  icon: "fa-solid fa-xmark",
+                  label: game.i18n.localize(
+                    "DRAGONBANE_ACTION_RULES.weaponBroken.cancelButton",
+                  ),
+                  default: true,
+                  callback: () => false,
+                },
+              ],
             });
 
+            // DialogV2.wait returns null/undefined if dismissed → treat as cancel
             if (!confirmed) return;
 
             // Mark weapon as broken
@@ -376,34 +383,36 @@ export function registerHooks(moduleId) {
   ) {
     const dialogKey = action === "disarm" ? "disarm" : "parry";
 
-    const proceed = await new Promise((resolve) => {
-      new Dialog({
+    const proceed = await foundry.applications.api.DialogV2.wait({
+      window: {
         title: game.i18n.localize(
           `DRAGONBANE_ACTION_RULES.monsterPrevention.${dialogKey}.title`,
         ),
-        content: `<p>${game.i18n.format(
-          `DRAGONBANE_ACTION_RULES.monsterPrevention.${dialogKey}.content`,
-          { targetName },
-        )}</p>`,
-        buttons: {
-          proceed: {
-            icon: '<i class="fas fa-check"></i>',
-            label: game.i18n.localize(
-              "DRAGONBANE_ACTION_RULES.monsterPrevention.proceed",
-            ),
-            callback: () => resolve(true),
-          },
-          cancel: {
-            icon: '<i class="fas fa-times"></i>',
-            label: game.i18n.localize(
-              "DRAGONBANE_ACTION_RULES.monsterPrevention.cancel",
-            ),
-            callback: () => resolve(false),
-          },
+      },
+      content: `<p>${game.i18n.format(
+        `DRAGONBANE_ACTION_RULES.monsterPrevention.${dialogKey}.content`,
+        { targetName },
+      )}</p>`,
+      position: { width: 400 },
+      buttons: [
+        {
+          action: "proceed",
+          icon: "fa-solid fa-check",
+          label: game.i18n.localize(
+            "DRAGONBANE_ACTION_RULES.monsterPrevention.proceed",
+          ),
+          callback: () => true,
         },
-        default: "cancel",
-        close: () => resolve(false),
-      }).render(true);
+        {
+          action: "cancel",
+          icon: "fa-solid fa-xmark",
+          label: game.i18n.localize(
+            "DRAGONBANE_ACTION_RULES.monsterPrevention.cancel",
+          ),
+          default: true,
+          callback: () => false,
+        },
+      ],
     });
 
     if (proceed) {

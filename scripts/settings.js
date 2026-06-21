@@ -514,18 +514,22 @@ export function getSetting(moduleId, settingName) {
   }
 }
 
-// Dialog class for setup grudge folders
-class SetupGrudgeFoldersDialog extends FormApplication {
-  render(force, options) {
+// Menu launcher for the grudge-folder setup confirm dialog.
+// registerMenu requires the type to extend ApplicationV2 (v14); this is a
+// minimal shell whose render() launches a DialogV2 confirm. (Not a real form.)
+class SetupGrudgeFoldersDialog extends foundry.applications.api.ApplicationV2 {
+  async render(options) {
     this.showDialog();
     return this;
   }
 
   async showDialog() {
-    return new Dialog({
-      title: game.i18n.localize(
-        "DRAGONBANE_ACTION_RULES.dialogs.setupGrudgeFolders.title",
-      ),
+    const confirmed = await foundry.applications.api.DialogV2.wait({
+      window: {
+        title: game.i18n.localize(
+          "DRAGONBANE_ACTION_RULES.dialogs.setupGrudgeFolders.title",
+        ),
+      },
       content: `
         <div style="margin-bottom: 1rem;">
           <p>${game.i18n.localize(
@@ -538,25 +542,31 @@ class SetupGrudgeFoldersDialog extends FormApplication {
           </p>
         </div>
       `,
-      buttons: {
-        setup: {
+      position: { width: 400 },
+      buttons: [
+        {
+          action: "setup",
           label: game.i18n.localize(
             "DRAGONBANE_ACTION_RULES.dialogs.setupGrudgeFolders.setupButton",
           ),
-          callback: async () => {
-            if (window.DragonbaneActionRules?.grudgeTracker) {
-              await window.DragonbaneActionRules.grudgeTracker.setupAllGrudgeFolders();
-              // Notification is handled by the method itself
-            } else {
-              ui.notifications.error("Grudge tracker not initialized");
-            }
-          },
+          default: true,
+          callback: () => true,
         },
-        cancel: {
+        {
+          action: "cancel",
           label: game.i18n.localize("Cancel"),
+          callback: () => false,
         },
-      },
-      default: "setup",
-    }).render(true);
+      ],
+    });
+
+    if (confirmed) {
+      if (window.DragonbaneActionRules?.grudgeTracker) {
+        await window.DragonbaneActionRules.grudgeTracker.setupAllGrudgeFolders();
+        // Notification is handled by the method itself
+      } else {
+        ui.notifications.error("Grudge tracker not initialized");
+      }
+    }
   }
 }

@@ -69,7 +69,7 @@ export class DragonbaneRulesDisplay {
         normalizedAction,
         ruleData.content,
         ruleData.weapon,
-        message.speaker
+        message.speaker,
       );
     }
   }
@@ -172,7 +172,7 @@ export class DragonbaneRulesDisplay {
     } catch (error) {
       if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
         DoD_Utility.WARNING(
-          `Error processing regular melee attack: ${error.message}`
+          `Error processing regular melee attack: ${error.message}`,
         );
       }
     }
@@ -188,7 +188,7 @@ export class DragonbaneRulesDisplay {
         !DragonbaneUtils.getSetting(
           this.moduleId,
           "enableDodgeMovementReminders",
-          true
+          true,
         )
       )
         return;
@@ -211,7 +211,7 @@ export class DragonbaneRulesDisplay {
     } catch (error) {
       if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
         DoD_Utility.WARNING(
-          `Error handling EVADE skill roll: ${error.message}`
+          `Error handling EVADE skill roll: ${error.message}`,
         );
       }
     }
@@ -227,7 +227,7 @@ export class DragonbaneRulesDisplay {
       DragonbaneUtils.debugLog(
         this.moduleId,
         "RulesDisplay",
-        "EVADE skill roll detected via UUID"
+        "EVADE skill roll detected via UUID",
       );
       return true;
     }
@@ -237,7 +237,7 @@ export class DragonbaneRulesDisplay {
       DragonbaneUtils.debugLog(
         this.moduleId,
         "RulesDisplay",
-        "EVADE skill roll detected via text pattern"
+        "EVADE skill roll detected via text pattern",
       );
       return true;
     }
@@ -257,7 +257,7 @@ export class DragonbaneRulesDisplay {
     const showDurability = getSetting(
       this.moduleId,
       SETTINGS.SHOW_PARRY_DURABILITY,
-      true
+      true,
     );
     const isMonster = DragonbaneUtils.isMonsterActor(actor);
     let content = "";
@@ -269,7 +269,7 @@ export class DragonbaneRulesDisplay {
           weapon.name ||
           game.i18n.localize("DRAGONBANE_ACTION_RULES.unknownWeapon");
         content += `<li><strong>${weaponName} ${game.i18n.localize(
-          "DRAGONBANE_ACTION_RULES.durability"
+          "DRAGONBANE_ACTION_RULES.durability",
         )}:</strong> ${durability}</li>`;
       }
     }
@@ -281,27 +281,27 @@ export class DragonbaneRulesDisplay {
   _getParryRulesList(dragonRolled = false, isMonster = false) {
     const dragonRule = dragonRolled
       ? `<li><strong class="dragon-highlight">${game.i18n.localize(
-          "DRAGONBANE_ACTION_RULES.parry.dragon"
+          "DRAGONBANE_ACTION_RULES.parry.dragon",
         )}</strong></li>`
       : `<li>${game.i18n.localize(
-          "DRAGONBANE_ACTION_RULES.parry.dragon"
+          "DRAGONBANE_ACTION_RULES.parry.dragon",
         )}</li>`;
 
     let rules = `<li>${game.i18n.localize(
-      "DRAGONBANE_ACTION_RULES.parry.reaction"
+      "DRAGONBANE_ACTION_RULES.parry.reaction",
     )}</li>
                      <li>${game.i18n.localize(
-                       "DRAGONBANE_ACTION_RULES.parry.success"
+                       "DRAGONBANE_ACTION_RULES.parry.success",
                      )}</li>`;
 
     rules += dragonRule;
     rules += `<li>${game.i18n.localize(
-      "DRAGONBANE_ACTION_RULES.parry.piercing"
+      "DRAGONBANE_ACTION_RULES.parry.piercing",
     )}</li>`;
 
     if (!isMonster) {
       rules += `<li>${game.i18n.localize(
-        "DRAGONBANE_ACTION_RULES.parry.monster"
+        "DRAGONBANE_ACTION_RULES.parry.monster",
       )}</li>`;
     }
 
@@ -310,13 +310,13 @@ export class DragonbaneRulesDisplay {
     ) {
       if (isMonster) {
         rules += `<li><strong>${game.i18n.localize(
-          "DRAGONBANE_ACTION_RULES.parry.ifParrying"
+          "DRAGONBANE_ACTION_RULES.parry.ifParrying",
         )}</strong> ${game.i18n.localize(
-          "DRAGONBANE_ACTION_RULES.parry.movement"
+          "DRAGONBANE_ACTION_RULES.parry.movement",
         )}</li>`;
       } else {
         rules += `<li>${game.i18n.localize(
-          "DRAGONBANE_ACTION_RULES.parry.movement"
+          "DRAGONBANE_ACTION_RULES.parry.movement",
         )}</li>`;
       }
     }
@@ -326,7 +326,7 @@ export class DragonbaneRulesDisplay {
       getSetting(this.moduleId, SETTINGS.ENABLE_DODGE_MOVEMENT_REMINDERS, true)
     ) {
       rules += `<li>${game.i18n.localize(
-        "DRAGONBANE_ACTION_RULES.parry.dodgeMovement"
+        "DRAGONBANE_ACTION_RULES.parry.dodgeMovement",
       )}</li>`;
     }
 
@@ -342,27 +342,27 @@ export class DragonbaneRulesDisplay {
         game.i18n.localize("DRAGONBANE_ACTION_RULES.unknownWeapon");
       const toppleBonus = this._getToppleBonus(weapon);
       content += `<li><strong>${weaponName} ${game.i18n.localize(
-        "DRAGONBANE_ACTION_RULES.topple.weaponFeature"
+        "DRAGONBANE_ACTION_RULES.topple.weaponFeature",
       )}:</strong> ${toppleBonus}</li>`;
     }
 
     content += `<li>${game.i18n.localize(
-      "DRAGONBANE_ACTION_RULES.topple.noDamage"
+      "DRAGONBANE_ACTION_RULES.topple.noDamage",
     )}</li>
                     <li>${game.i18n.localize(
-                      "DRAGONBANE_ACTION_RULES.topple.evadeRoll"
+                      "DRAGONBANE_ACTION_RULES.topple.evadeRoll",
                     )}</li>
                     <li>${game.i18n.localize(
-                      "DRAGONBANE_ACTION_RULES.topple.cannotDefend"
+                      "DRAGONBANE_ACTION_RULES.topple.cannotDefend",
                     )}</li>
                     <li>${game.i18n.localize(
-                      "DRAGONBANE_ACTION_RULES.topple.success"
+                      "DRAGONBANE_ACTION_RULES.topple.success",
                     )}</li>`;
 
     const target = DragonbaneUtils.getCurrentTarget();
     if (target && DragonbaneUtils.isMonsterActor(target)) {
       content += `<li>${game.i18n.localize(
-        "DRAGONBANE_ACTION_RULES.topple.monsterRule"
+        "DRAGONBANE_ACTION_RULES.topple.monsterRule",
       )}</li>`;
     }
 
@@ -371,34 +371,34 @@ export class DragonbaneRulesDisplay {
 
   _getDisarmRules(weapon, actor = null) {
     return `<li>${game.i18n.localize(
-      "DRAGONBANE_ACTION_RULES.disarm.noDamage"
+      "DRAGONBANE_ACTION_RULES.disarm.noDamage",
     )}</li>
                 <li>${game.i18n.localize(
-                  "DRAGONBANE_ACTION_RULES.disarm.skillRoll"
+                  "DRAGONBANE_ACTION_RULES.disarm.skillRoll",
                 )}</li>
                 <li>${game.i18n.localize(
-                  "DRAGONBANE_ACTION_RULES.disarm.cannotDefend"
+                  "DRAGONBANE_ACTION_RULES.disarm.cannotDefend",
                 )}</li>
                 <li>${game.i18n.localize(
-                  "DRAGONBANE_ACTION_RULES.disarm.twoHanded"
+                  "DRAGONBANE_ACTION_RULES.disarm.twoHanded",
                 )}</li>
                 <li>${game.i18n.localize(
-                  "DRAGONBANE_ACTION_RULES.disarm.success"
+                  "DRAGONBANE_ACTION_RULES.disarm.success",
                 )}</li>
                 <li>${game.i18n.localize(
-                  "DRAGONBANE_ACTION_RULES.disarm.limitations"
+                  "DRAGONBANE_ACTION_RULES.disarm.limitations",
                 )}</li>`;
   }
 
   _getWeakspotRules(weapon, actor = null, message = null) {
     let content = `<li>${game.i18n.localize(
-      "DRAGONBANE_ACTION_RULES.weakspot.piercing"
+      "DRAGONBANE_ACTION_RULES.weakspot.piercing",
     )}</li>
               <li>${game.i18n.localize(
-                "DRAGONBANE_ACTION_RULES.weakspot.bane"
+                "DRAGONBANE_ACTION_RULES.weakspot.bane",
               )}</li>
               <li>${game.i18n.localize(
-                "DRAGONBANE_ACTION_RULES.weakspot.success"
+                "DRAGONBANE_ACTION_RULES.weakspot.success",
               )}</li>`;
 
     if (message) {
@@ -429,12 +429,17 @@ export class DragonbaneRulesDisplay {
       return "";
     if (!actor || DragonbaneUtils.isMonsterActor(actor)) return "";
 
-    // Get targets from the actual attacking user
-    const attackingUser = message.user;
+    // Get targets from the actual attacking user.
+    // On Dragonbane 4.0.1 message.author is the user ID string (message.user
+    // is deprecated/undefined). Resolve to the User object; also handle the
+    // legacy case where author/user is already a User object.
+    const authorRef = message.author ?? message.user;
+    const attackingUser =
+      typeof authorRef === "string" ? game.users.get(authorRef) : authorRef;
     if (!attackingUser) return "";
 
     const attackerTargets = attackingUser.targets;
-    if (attackerTargets.size !== 1) return "";
+    if (!attackerTargets || attackerTargets.size !== 1) return "";
 
     const target = Array.from(attackerTargets)[0]?.actor;
     if (!target || DragonbaneUtils.isMonsterActor(target)) return "";
@@ -458,7 +463,7 @@ export class DragonbaneRulesDisplay {
     DragonbaneUtils.debugLog(
       this.moduleId,
       "RulesDisplay",
-      `Shove check: ${attacker.name} D${attackerBonus} vs ${defender.name} D${defenderBonus}`
+      `Shove check: ${attacker.name} D${attackerBonus} vs ${defender.name} D${defenderBonus}`,
     );
     return attackerBonus >= defenderBonus;
   }
@@ -473,11 +478,11 @@ export class DragonbaneRulesDisplay {
     const delay = getSetting(this.moduleId, SETTINGS.DELAY, 3000);
 
     const actionName = game.i18n.localize(
-      `DRAGONBANE_ACTION_RULES.actions.${action}`
+      `DRAGONBANE_ACTION_RULES.actions.${action}`,
     );
     const speakerName = game.i18n.format(
       "DRAGONBANE_ACTION_RULES.speakers.generic",
-      { action: actionName }
+      { action: actionName },
     );
 
     let chatContent = `<div class="dragonbane-action-rules"><ul>${content}</ul>`;
@@ -511,10 +516,10 @@ export class DragonbaneRulesDisplay {
   async _displayEvadeMovementRule() {
     const delay = DragonbaneUtils.getSetting(this.moduleId, "delay", 3000);
     const speakerName = game.i18n.localize(
-      "DRAGONBANE_ACTION_RULES.speakers.evade"
+      "DRAGONBANE_ACTION_RULES.speakers.evade",
     );
     const content = `${game.i18n.localize(
-      "DRAGONBANE_ACTION_RULES.evade.movementAvailable"
+      "DRAGONBANE_ACTION_RULES.evade.movementAvailable",
     )}`;
     const chatContent = `<div class="dragonbane-action-rules">${content}</div>`;
 
@@ -532,7 +537,7 @@ export class DragonbaneRulesDisplay {
       } catch (error) {
         if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
           DoD_Utility.WARNING(
-            `Error creating evade movement chat message: ${error.message}`
+            `Error creating evade movement chat message: ${error.message}`,
           );
         }
       }
@@ -542,7 +547,7 @@ export class DragonbaneRulesDisplay {
   async _displayShoveRule(content) {
     const delay = DragonbaneUtils.getSetting(this.moduleId, "delay", 3000);
     const speakerName = game.i18n.localize(
-      "DRAGONBANE_ACTION_RULES.speakers.shove"
+      "DRAGONBANE_ACTION_RULES.speakers.shove",
     );
     const chatContent = `<div class="dragonbane-action-rules">${content}</div>`;
 
@@ -560,7 +565,7 @@ export class DragonbaneRulesDisplay {
       } catch (error) {
         if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
           DoD_Utility.WARNING(
-            `Error creating shove chat message: ${error.message}`
+            `Error creating shove chat message: ${error.message}`,
           );
         }
       }
@@ -569,7 +574,7 @@ export class DragonbaneRulesDisplay {
 
   _buildWeaponBrokenButton(weapon, speaker) {
     const buttonText = game.i18n.localize(
-      "DRAGONBANE_ACTION_RULES.weaponBroken.buttonText"
+      "DRAGONBANE_ACTION_RULES.weaponBroken.buttonText",
     );
     return `
             <div class="weapon-actions" style="margin-top: 8px; text-align: center;">
@@ -596,8 +601,8 @@ export class DragonbaneRulesDisplay {
       if (!actor) {
         ui.notifications.error(
           game.i18n.localize(
-            "DRAGONBANE_ACTION_RULES.weaponBroken.errors.actorNotFound"
-          )
+            "DRAGONBANE_ACTION_RULES.weaponBroken.errors.actorNotFound",
+          ),
         );
         return;
       }
@@ -606,8 +611,8 @@ export class DragonbaneRulesDisplay {
       if (!weapon) {
         ui.notifications.error(
           game.i18n.localize(
-            "DRAGONBANE_ACTION_RULES.weaponBroken.errors.weaponNotFound"
-          )
+            "DRAGONBANE_ACTION_RULES.weaponBroken.errors.weaponNotFound",
+          ),
         );
         return;
       }
@@ -615,8 +620,8 @@ export class DragonbaneRulesDisplay {
       if (!actor.isOwner && !game.user.isGM) {
         ui.notifications.warn(
           game.i18n.localize(
-            "DRAGONBANE_ACTION_RULES.weaponBroken.errors.noPermission"
-          )
+            "DRAGONBANE_ACTION_RULES.weaponBroken.errors.noPermission",
+          ),
         );
         return;
       }
@@ -625,56 +630,59 @@ export class DragonbaneRulesDisplay {
         ui.notifications.info(
           game.i18n.format(
             "DRAGONBANE_ACTION_RULES.weaponBroken.errors.alreadyBroken",
-            { weaponName: weapon.name }
-          )
+            { weaponName: weapon.name },
+          ),
         );
         return;
       }
 
-      const confirmed = await new Promise((resolve) => {
-        new Dialog({
+      const confirmed = await foundry.applications.api.DialogV2.wait({
+        window: {
           title: game.i18n.localize(
-            "DRAGONBANE_ACTION_RULES.weaponBroken.dialogTitle"
+            "DRAGONBANE_ACTION_RULES.weaponBroken.dialogTitle",
           ),
-          content: `<p>${game.i18n.format(
-            "DRAGONBANE_ACTION_RULES.weaponBroken.dialogContent",
-            { weaponName: weapon.name }
-          )}</p><p><em>${game.i18n.localize(
-            "DRAGONBANE_ACTION_RULES.weaponBroken.dialogExplanation"
-          )}</em></p>`,
-          buttons: {
-            yes: {
-              icon: '<i class="fas fa-check"></i>',
-              label: game.i18n.localize(
-                "DRAGONBANE_ACTION_RULES.weaponBroken.confirmButton"
-              ),
-              callback: () => resolve(true),
-            },
-            no: {
-              icon: '<i class="fas fa-times"></i>',
-              label: game.i18n.localize(
-                "DRAGONBANE_ACTION_RULES.weaponBroken.cancelButton"
-              ),
-              callback: () => resolve(false),
-            },
+        },
+        content: `<p>${game.i18n.format(
+          "DRAGONBANE_ACTION_RULES.weaponBroken.dialogContent",
+          { weaponName: weapon.name },
+        )}</p><p><em>${game.i18n.localize(
+          "DRAGONBANE_ACTION_RULES.weaponBroken.dialogExplanation",
+        )}</em></p>`,
+        position: { width: 400 },
+        buttons: [
+          {
+            action: "yes",
+            icon: "fa-solid fa-check",
+            label: game.i18n.localize(
+              "DRAGONBANE_ACTION_RULES.weaponBroken.confirmButton",
+            ),
+            callback: () => true,
           },
-          default: "no",
-          close: () => resolve(false),
-        }).render(true);
+          {
+            action: "no",
+            icon: "fa-solid fa-xmark",
+            label: game.i18n.localize(
+              "DRAGONBANE_ACTION_RULES.weaponBroken.cancelButton",
+            ),
+            default: true,
+            callback: () => false,
+          },
+        ],
       });
 
+      // DialogV2.wait returns null/undefined if dismissed → treat as cancel
       if (!confirmed) return;
 
       await weapon.update({ "system.broken": true });
       ui.notifications.info(
         game.i18n.format("DRAGONBANE_ACTION_RULES.weaponBroken.success", {
           weaponName: weapon.name,
-        })
+        }),
       );
       DragonbaneUtils.debugLog(
         this.moduleId,
         "RulesDisplay",
-        `Weapon ${weapon.name} marked as broken by ${game.user.name}`
+        `Weapon ${weapon.name} marked as broken by ${game.user.name}`,
       );
     } catch (error) {
       if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
@@ -682,8 +690,8 @@ export class DragonbaneRulesDisplay {
       }
       ui.notifications.error(
         game.i18n.localize(
-          "DRAGONBANE_ACTION_RULES.weaponBroken.errors.updateFailed"
-        )
+          "DRAGONBANE_ACTION_RULES.weaponBroken.errors.updateFailed",
+        ),
       );
     }
   }
