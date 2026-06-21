@@ -1,7 +1,7 @@
 # Dragonbane Combat Assistant
 
-![Version](https://img.shields.io/badge/version-2.2.5-blue)
-![Foundry Version](https://img.shields.io/badge/foundry-v12%20%7C%20v13-green)
+![Version](https://img.shields.io/badge/version-3.0.0-blue)
+![Foundry Version](https://img.shields.io/badge/foundry-v14-green)
 ![System](https://img.shields.io/badge/system-dragonbane-orange)
 
 **Dragonbane Combat Assistant** enhances combat and spellcasting with comprehensive validation, automation, and smart integrations for the Dragonbane RPG system.
@@ -18,15 +18,14 @@
 
 ## ✨ **Key Features**
 
-### 🪄 **Universal Spell Support & Validation**
+### 🪄 **Spell Support & Validation**
 
-- **All spells trigger Automated Animations** - Extends AA beyond damage spells to include buffs, debuffs, utility spells, and Magic Tricks
+- **Animations for every spell** - Triggers Automated Animations (and its sounds) for spells AA's native handler skips — non-damaging ranked spells and Magic Tricks — so buffs, debuffs, and utility spells animate just like damaging ones. No spell-data changes required.
 - **Smart targeting enforcement** - Range and touch spells require exactly one target, personal spells auto-target the caster
 - **Intelligent range checking** - Validates spell casting distances before allowing the roll
 - **Automatic status effects** - Successful spells apply appropriate status effects to correct targets (self-buffs to caster, debuffs to target)
 - **Template spell handling** - Template spells (cones, spheres) auto-target caster for visual effects while deferring area targeting
-- **Spell exclusion system** - Simple comma-separated list to exclude specific spells from validation while keeping animations
-- **Manual control options** - User-controlled buttons to enable/disable AA support as needed (disabled by default)
+- **Spell exclusion system** - Simple comma-separated list to exclude specific spells from validation
 
 ### ⚔️ **Combat Validation & Enhancement**
 
@@ -58,7 +57,7 @@
 - **Automatic detection** - Monitors chat for combat actions using intelligent pattern matching
 - **Token-specific tracking** - Each combatant tracked independently with action numbering
 - **Smart exclusions** - Ignores damage rolls, healing, reaction spells, attribute tests, table rolls, and other non-action activities
-- **Token Action HUD integration** - Automatically excludes utility rolls from Token Action HUD Dragonbane v2.4.1+
+- **Token Action HUD integration** - Automatically excludes utility rolls from Token Action HUD Dragonbane
 - **Override control** - Alt+V shortcut for manual control when automatic detection needs adjustment
 
 ### 🛡️ **Character Monitoring Systems**
@@ -92,11 +91,9 @@
 
 **Access**: Game Settings → Configure Settings → Dragonbane Combat Assistant
 
-### **Universal Spell Support**
+### **Spell Support**
 
-- **Enable Universal Spell Automated Animations** - Makes all spells compatible with Automated Animations module
-- **Manual AA Enhancement Control** - User-controlled buttons to enable/disable AA support for all spells
-- **Spell Exclusions** - Comma-separated list of spell names to exclude from validation (they still get animations)
+- **Spell Exclusions** - Comma-separated list of spell names to exclude from validation
 - **Enable Automatic Status Effects** - Apply appropriate status effects when spells succeed
 
 ### **Spell Validation**
@@ -147,7 +144,7 @@ Swedish: Ledad, Tung, Liten, Sårande, Vampyrisk
 
 **🆕 Automatic Token Action HUD Integration:**
 
-When using Token Action HUD Dragonbane v2.4.1+, these are **automatically excluded** without configuration:
+When using Token Action HUD Dragonbane, these are **automatically excluded** without configuration:
 
 - **Fear Tests** - WIL resistance rolls and Fear Effect table rolls
 - **Light Tests** - Light source duration tests
@@ -184,6 +181,14 @@ Swedish: Bärsärk, Följeslagare, Jaktsinne, Mästersnickare, Stridsrop, Tackli
 
 _Fully customizable through Configure Controls in Foundry_
 
+### **Spell Animations (Automated Animations)**
+
+The module triggers [Automated Animations](https://foundryvtt.com/packages/autoanimations) for spells its native Dragonbane handler doesn't cover on its own — non-damaging ranked spells and Magic Tricks. Damaging spells continue to animate through AA's own handler as before. There is nothing to enable: if Automated Animations is installed and a spell has an animation configured, it plays automatically when cast. The module no longer modifies spell data to make this work.
+
+**Important — animations must be configured in a _cast-type_ category to play on cast.** In AA's Automatic Recognition menu, an animation assigned to a spell under **Melee, Range, On Token, Templates, Aura, or Preset** will fire when the spell is cast. An animation assigned under the **Active Effects** category does **not** fire on cast — AA plays Active-Effect animations when the effect is applied to a token, through its own separate handler. So if a spell isn't animating when you cast it, check that its AA entry is under a cast-type category (e.g. **On Token**) rather than **Active Effects**.
+
+> **Upgrading from an earlier version?** Previous releases worked by writing a placeholder value into each non-damaging spell's damage field. On first launch, this version automatically cleans up that leftover data (a one-time notification confirms how many spells were tidied). No action is needed on your part.
+
 ### **Important Mechanics**
 
 **Template Spells:** Currently auto-target the caster for visual effects rather than placing templates for area targeting. Proper template placement might be added in the future.
@@ -212,13 +217,11 @@ _Fully customizable through Configure Controls in Foundry_
 
 ### **Integration Tips**
 
-**Token Action HUD Integration:** When using Token Action HUD Dragonbane v2.4.1+, Fear Tests, Light Tests, Death Rolls, and Severe Injury Tests are automatically excluded from action counting. No manual configuration required.
+**Token Action HUD Integration:** When using Token Action HUD Dragonbane, Fear Tests, Light Tests, Death Rolls, and Severe Injury Tests are automatically excluded from action counting. No manual configuration required.
 
-**Spell Exclusions:** Add spell names to exclude specific spells from validation while keeping animations. Example: `Protector, Heal Wound, Fireball`
+**Spell Exclusions:** Add spell names to exclude specific spells from validation. Example: `Protector, Heal Wound, Fireball`
 
 **Manual Exclusions:** Use YZE Action Exclusions setting only for custom content not covered by automatic detection (custom abilities, house rules, etc.)
-
-**Manual AA Control:** If automatic spell enhancement causes issues, use the "Disable AA Support" button in settings, then re-enable when ready.
 
 ### **Developer API**
 
@@ -227,7 +230,7 @@ _Fully customizable through Configure Controls in Foundry_
 await game.user.setFlag(
   "token-action-hud-dragonbane",
   "ignoreNextRollForActionCounting",
-  true
+  true,
 );
 await yourCustomRollFunction();
 // Combat Assistant automatically respects this flag
@@ -241,36 +244,36 @@ await yourCustomRollFunction();
 
 | Requirement           | Version | Notes                                                      |
 | --------------------- | ------- | ---------------------------------------------------------- |
-| **Foundry VTT**       | v12-v13 | v13.345+ recommended                                       |
-| **Dragonbane System** | v2.6.0+ | Required for dynamic range calculation                     |
+| **Foundry VTT**       | v14     | v14.364 verified                                           |
+| **Dragonbane System** | v4.0.0+ | v4.0.1 verified                                            |
 | **socketlib**         | Latest  | Required for status effects and cross-client communication |
 
 ### **Recommended**
 
-| Module                        | Purpose               | Benefit                                                                                                 |
-| ----------------------------- | --------------------- | ------------------------------------------------------------------------------------------------------- |
-| **Dragonbane Status Effects** | Enhanced status icons | Provides thematic status effect icons when automatically applying spell effects                         |
-| **Automated Animations**      | Spell animations      | Enables visual animations for all spells; without this module, Universal Spell AA Support has no effect |
+| Module                        | Purpose               | Benefit                                                                                                |
+| ----------------------------- | --------------------- | ------------------------------------------------------------------------------------------------------ |
+| **Dragonbane Status Effects** | Enhanced status icons | Provides thematic status effect icons when automatically applying spell effects                        |
+| **Automated Animations**      | Spell animations      | Enables visual animations and sounds for spells and attacks; without it, spell animation has no effect |
 
 ### **Optional Integrations**
 
-| Module                                  | Purpose          | Integration Details                                            |
-| --------------------------------------- | ---------------- | -------------------------------------------------------------- |
-| **Year Zero Engine Combat**             | Action tracking  | Automatic single action tracking with seamless YZE integration |
-| **Token Action HUD Dragonbane v2.4.1+** | Quick actions    | Enhanced compatibility with automatic utility roll exclusions  |
-| **Argon - Combat HUD (DRAGONBANE)**     | Combat interface | Compatible with Argon's enhanced combat interface              |
+| Module                              | Purpose          | Integration Details                                            |
+| ----------------------------------- | ---------------- | -------------------------------------------------------------- |
+| **Year Zero Engine Combat**         | Action tracking  | Automatic single action tracking with seamless YZE integration |
+| **Token Action HUD Dragonbane**     | Quick actions    | Enhanced compatibility with automatic utility roll exclusions  |
+| **Argon - Combat HUD (DRAGONBANE)** | Combat interface | Compatible with Argon's enhanced combat interface              |
 
 ### **Installation Notes**
 
 - **socketlib** is mandatory - the module will not function properly without it
 - Install **Dragonbane Status Effects** before enabling automatic status effects for optimal visual experience
-- **Automated Animations** should be installed and configured if you plan to use Universal Spell AA Support
+- **Automated Animations** should be installed and configured if you want spell animations; see the Spell Animations section above for how AA recognition categories work
 
 ---
 
 ## 🌍 **Localization & Support**
 
-- **Languages**: Full support for English and Swedish using official Dragonbane translation keys
+- **Languages**: Full support for English, Swedish, and Italian using official Dragonbane translation keys
 - **Community Contributors**:
   - **dgladkov** - Encumbrance fixes and distance calculations for large/huge tokens
   - **LuckyFrico** - Italian language localization

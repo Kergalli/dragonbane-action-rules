@@ -1,5 +1,42 @@
 # Changelog
 
+## [3.0.0] - 2026-06-21
+
+### 🚀 Major Compatibility Update — Foundry v14 & Dragonbane v4.0.1
+
+This release is a clean cut to **Foundry VTT v14** and **Dragonbane system v4.0.1**. It drops support for Foundry v12/v13 and Dragonbane v2.x/v3.x.
+
+- **⚠️ Breaking Change** — Now requires **Foundry v14** (verified 14.364) and **Dragonbane v4.0.0+** (verified 4.0.1)
+- **Staying on Foundry v13?** Continue using Combat Assistant **v2.2.5**. There is no Dragonbane release that supports both v13 and v14, so this is a hard version cut rather than a dual-compatibility update.
+
+### 🪄 Reworked Spell Animation Support
+
+The Automated Animations integration has been rebuilt from the ground up.
+
+- **No more spell-data modification** — Previous versions made non-damaging spells animate by writing a placeholder value into their damage field. This release instead triggers Automated Animations directly through its own API, so your spell data is never altered.
+- **Removed the manual Enable/Disable AA buttons** — Animations now work automatically whenever Automated Animations is installed. There is nothing to toggle.
+- **Automatic one-time cleanup** — On first launch, any leftover placeholder data from previous versions is cleared automatically. A one-time notification confirms how many spells were tidied.
+- **⚠️ Animation configuration note** — For a spell to animate when **cast**, its Automated Animations entry must be in a cast-type category (**On Token, Range, Melee, Templates, Aura, or Preset**). Entries in the **Active Effects** category animate when the effect is _applied_ to a token (handled by Automated Animations directly), not on cast. If a spell stops animating after this update, check that its AA entry uses a cast-type category. See the README's "Spell Animations" section for details.
+
+### 🐛 Bug Fixes
+
+- **Shove reminders** — Fixed shove reminders not appearing. The reminder logic read a chat-message property that changed in Dragonbane v4.0.1, causing it to silently skip.
+- **Spell status effects** — Fixed an error that could prevent automatic status effects from applying when the caster's own client processed the spell, due to the same v4.0.1 message-property change.
+
+### 🔧 Technical Improvements
+
+- **Dialogs converted to ApplicationV2** — All confirmation dialogs (Mark Weapon Broken, Monster Action Prevention, Grudge Folder Setup) now use Foundry's modern DialogV2 framework, removing deprecation warnings ahead of Foundry v15.
+- **Chat and journal hooks modernized** — Migrated to v14's native HTML hooks, replacing the deprecated jQuery-based chat message handling.
+- **Character sheet attack interception rebuilt** — Reworked to align with Dragonbane v4.0.1's ApplicationV2 action system, restoring weapon and ranked-spell validation from the character sheet.
+- **Removed legacy v12/v13 compatibility code** — Cleaned out dead code paths and scaffolding now that the module targets a single Foundry version.
+
+### 🌍 Localization
+
+- Added the spell-cleanup notification string in English, Swedish, and Italian
+- Updated the Excluded Spells setting description to reflect that exclusions apply to validation only
+
+---
+
 ## [2.2.5] - 2025-01-02
 
 ### 🌍 Localization Improvements
@@ -61,7 +98,6 @@
 ### Encumbrance Monitor Enhancements
 
 - **Enhanced Coin Weight Monitoring**
-
   - Encumbrance monitor now properly detects changes to gold, silver, and copper coin values
   - Instant status effect updates when adding or removing coins from character sheet
   - Works with Dragonbane/Drakar och Demoner v3.0 Coin Encumbrance Actor Setting
@@ -103,7 +139,6 @@ Articulated, Heavy, Small, Wounding
 ### Grudge Tracker Improvements
 
 - **Simplified Table Management**
-
   - **Removed Delete Buttons** - Players can now edit grudge tables directly in the journal editor using standard Foundry tools
   - **Native Foundry Table Structure** - Users can add, delete, and modify grudge entries using familiar Foundry table tools
   - **Cleaner Interface** - Eliminated JavaScript dependencies that broke when journals were edited manually
@@ -243,7 +278,6 @@ Articulated, Heavy, Small, Wounding
 ### Enhancements
 
 - **Large and Huge Token Targeting**
-
   - Adjusted the way large and huge tokens are targeted and validated when being attacked with melee weapons and spells. Ranged and thrown weapons will still require a core Dragonbane update (coming in v2.6). Thanks to dgladkov for the assist on this one!
 
 ---
@@ -277,16 +311,13 @@ Articulated, Heavy, Small, Wounding
 ### Bug Fixes
 
 - **Fixed Enhanced Spell Critical Effects Display**
-
   - Resolved issue where "Choose" button was incorrectly hidden for enhanced non-damage spells with dragon rolls
   - Enhanced spells now properly display critical effects selection interface identical to non-enhanced spells
 
 - **Removed Invalid Critical Effects for Non-Damage Spells**
-
   - "Double damage" option no longer appears in critical effects list for enhanced non-damage spells
 
 - **Fixed Encumbrance Validator for Root Actors**
-
   - Now properly handles named folder and actors outside named folder. Moved condition check earlier - thanks to dgladov for catching that!
 
 ---
@@ -298,7 +329,6 @@ Articulated, Heavy, Small, Wounding
 ### **✨ Universal Spell Support for Automated Animations**
 
 - **Animation Enhancement System**
-
   - Automatically makes all non-damage spells compatible with Automated Animations
   - Intelligent background enhancement that preserves original spell appearance
   - Hidden button system maintains clean UI while enabling AA `data-spell-id` attributes
@@ -311,7 +341,6 @@ Articulated, Heavy, Small, Wounding
 ### **🎯 Comprehensive Spell Validation System**
 
 - **Smart Target Validation**
-
   - **Range spells** Require exactly 1 target selection
   - **Touch spells** Require exactly 1 target selection
   - **Personal spells** Automatically target the caster
@@ -325,13 +354,11 @@ Articulated, Heavy, Small, Wounding
 ### **🎭 Automatic Status Effect Application**
 
 - **Effect Targeting**
-
   - **Self-targeting spells** Apply effects to the caster
   - **Target spells** Apply effects to the selected target
   - **Template spells** → Skip automatic effects
 
 - **Dragonbane Status Effects Integration**
-
   - Seamlessly uses DSE module icons and descriptions when available
   - Fallback system with appropriate Foundry icons when DSE not present
   - Effect origin tracking properly identifies the caster for clean effect management
@@ -462,7 +489,6 @@ All notable changes to the Dragonbane Combat Assistant module will be documented
 ### Major New Features
 
 - **Monster Action Prevention System**
-
   - **Pre-roll confirmation dialogs** for Parry and Disarm attempts against monsters
   - **Educational approach** - informs players about rules before they attempt invalid actions
   - **Prevents invalid advancement** - blocks the roll entirely when user cancels, avoiding skill advancement on impossible actions
@@ -484,7 +510,6 @@ All notable changes to the Dragonbane Combat Assistant module will be documented
 ### Bug Fixes
 
 - **Fixed Non-Combat Token YZE Messages**
-
   - Resolved issue where tokens not in combat were incorrectly showing "An action has already been performed by..." messages
   - YZE integration now properly distinguishes between combatants and non-combatants
   - Non-combat tokens are silently ignored by action tracking system
@@ -510,7 +535,6 @@ All notable changes to the Dragonbane Combat Assistant module will be documented
 ### New Features
 
 - **YZE Action Tracking Override (Alt+Y)**
-
   - New keyboard shortcut to temporarily disable Year Zero Engine action status effect application
   - Useful for handling edge cases where rolls are incorrectly detected as actions
   - Allows manual action management when automatic tracking isn't desired
@@ -581,13 +605,11 @@ All notable changes to the Dragonbane Combat Assistant module will be documented
 ### Major Code Refactoring & Optimization
 
 - **Consolidated Pattern Management**
-
   - All localization and pattern matching logic centralized to `pattern-manager.js`
   - Language-agnostic pattern compilation using Dragonbane's core localization keys
   - Improved pattern accuracy and performance optimization
 
 - **Streamlined Architecture**
-
   - Consolidated message processing across all components
   - Simplified hook management system for better reliability
   - Merged duplicate methods from `rules-display.js` into centralized `utils.js`
@@ -610,7 +632,6 @@ All notable changes to the Dragonbane Combat Assistant module will be documented
 ### Technical Improvements
 
 - **Foundry v14 Compatibility Preparation**
-
   - Updated several (but not all) items that will be deprecated in Foundry v14
   - Improved compatibility with current and future Foundry versions
   - Enhanced status effect handling with v12+ compatible properties
@@ -645,12 +666,10 @@ All notable changes to the Dragonbane Combat Assistant module will be documented
 ### Technical Improvements
 
 - **Pattern-Based Attack Detection System**
-
   - Complete rewrite of shove detection using chat message content analysis
   - Uses Dragonbane's own localization keys for language-agnostic operation
 
 - **Enhanced Language Support**
-
   - Fully language-agnostic shove detection
   - Dynamic pattern building from Dragonbane system translation keys
   - All weapon feature detection now uses core Dragonbane system keys (`DoD.weaponFeatureTypes.*`)
@@ -679,13 +698,11 @@ All notable changes to the Dragonbane Combat Assistant module will be documented
 ### Major New Features
 
 - **Optional Shove Rule Integration**
-
   - Automatic reminders for the optional shove rule when STR damage bonus ≥ opponent's
   - Smart conditional display - only appears for damage-dealing attacks
   - Excludes monsters (cannot shove or be shoved per rules)
 
 - **Dodge Movement Reminders**
-
   - Automatic movement reminders for successful EVADE rolls
 
 - **Enhanced Optional Rule System**
@@ -717,7 +734,6 @@ All notable changes to the Dragonbane Combat Assistant module will be documented
 ### Major New Features
 
 - **Encumbrance Monitoring System**
-
   - Automatic status effect application when characters become over-encumbered
   - Configurable actor folder monitoring (default: "Party" folder)
   - Instant response to inventory changes, item additions/removals, and strength modifications
@@ -736,7 +752,6 @@ All notable changes to the Dragonbane Combat Assistant module will be documented
 ### Major New Features
 
 - **Interactive Weapon Management**
-
   - Added "Mark Weapon Broken" button to parry rules display
   - One-click weapon breaking with confirmation dialog
   - Updates character sheet directly from chat interface
@@ -768,7 +783,6 @@ Tactical enhancement module for Dragonbane combat.
   - Weapon durability display when parrying
   - Smart success detection - only shows rules on successful attacks
 - **Multi-Platform Integration**
-
   - Works with Token Action HUD and Argon - Combat HUD (DRAGONBANE)
   - Character sheet compatibility
 

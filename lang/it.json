@@ -88,7 +88,7 @@
       },
       "excludedSpells": {
         "name": "Incantesimi esclusi",
-        "hint": "Elenco di nomi di incantesimi da escludere dalla convalida (separati da virgola). Riceveranno comunque le animazioni. Esempio: 'Canto degli uccelli, Incantesimo personalizzato'"
+        "hint": "Elenco separato da virgole di nomi di incantesimi da escludere dalla convalida.'"
       },
       "enableSpellStatusEffects": {
         "name": "Abilita effetti di stato automatici per incantesimi",

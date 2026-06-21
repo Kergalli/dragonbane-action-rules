@@ -88,7 +88,7 @@
       },
       "excludedSpells": {
         "name": "Exkluderade besvärjelser",
-        "hint": "Kommaseparerad lista över besvärjelsenamn att exkludera från validering (de får fortfarande animationer). Exempel: 'Fågelsång, Anpassad besvärjelse'"
+        "hint": "Kommaseparerad lista med besvärjelsenamn som ska undantas från validering."
       },
       "enableSpellStatusEffects": {
         "name": "Aktivera automatiska trollformelstatuseffekter",
