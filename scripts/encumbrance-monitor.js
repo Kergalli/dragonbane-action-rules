@@ -188,7 +188,7 @@ export class DragonbaneEncumbranceMonitor {
           // Character became over-encumbered - add status effect if not present
           const hasEffect = DragonbaneUtils.hasStatusEffect(
             actor,
-            statusEffectName
+            statusEffectName,
           );
 
           if (!hasEffect) {
@@ -205,7 +205,7 @@ export class DragonbaneEncumbranceMonitor {
           } catch (toggleError) {
             if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
               DoD_Utility.WARNING(
-                `Error removing status effect: ${toggleError.message}`
+                `Error removing status effect: ${toggleError.message}`,
               );
             }
           }
@@ -214,15 +214,15 @@ export class DragonbaneEncumbranceMonitor {
           ui.notifications.info(
             game.i18n.format(
               "DRAGONBANE_ACTION_RULES.encumbrance.noLongerOverEncumbered",
-              { actorName: actor.name, currentEnc: currentEnc, maxEnc: maxEnc }
-            )
+              { actorName: actor.name, currentEnc: currentEnc, maxEnc: maxEnc },
+            ),
           );
         }
 
         // Send chat notification if enabled
         const chatEnabled = this.getSetting(
           "encumbranceChatNotifications",
-          false
+          false,
         );
 
         if (chatEnabled) {
@@ -230,7 +230,7 @@ export class DragonbaneEncumbranceMonitor {
             actor,
             isOverEncumbered,
             currentEnc,
-            maxEnc
+            maxEnc,
           );
         }
 
@@ -240,7 +240,7 @@ export class DragonbaneEncumbranceMonitor {
     } catch (error) {
       if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
         DoD_Utility.WARNING(
-          `Error checking encumbrance for ${actor.name}: ${error.message}`
+          `Error checking encumbrance for ${actor.name}: ${error.message}`,
         );
       }
     }
@@ -270,7 +270,7 @@ export class DragonbaneEncumbranceMonitor {
     }
 
     this.debugLog(
-      `Initialized encumbrance states for ${monitoredCount} actors in folder: ${targetFolder}`
+      `Initialized encumbrance states for ${monitoredCount} actors in folder: ${targetFolder}`,
     );
   }
 
@@ -283,14 +283,14 @@ export class DragonbaneEncumbranceMonitor {
     if (
       DragonbaneUtils.ensureStatusEffectExists(
         statusEffectName,
-        "icons/svg/anchor.svg"
+        "icons/svg/anchor.svg",
       )
     ) {
       this.debugLog(`Status effect "${statusEffectName}" ensured`);
     } else {
       if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
         DoD_Utility.WARNING(
-          `Failed to ensure status effect: ${statusEffectName}`
+          `Failed to ensure status effect: ${statusEffectName}`,
         );
       }
     }
@@ -305,25 +305,14 @@ export class DragonbaneEncumbranceMonitor {
 
       // Apply effect directly if user has permission, or via socket if not
       if (actor.isOwner || game.user.isGM) {
-        // Build effect data locally with proper description
+        // Use the native toggleStatusEffect so the token overlay icon is drawn
+        // (raw createEmbeddedDocuments registers the status but does not paint
+        // the token icon on v14). Mirrors the removal path below.
         const effect = DragonbaneUtils.findStatusEffect(statusEffectName);
         if (effect) {
-          const effectData = {
-            name: statusEffectName,
-            img: effect.img || effect.icon || "icons/svg/anchor.svg",
-            statuses: [effect.id],
-            origin: actor.uuid,
-          };
-
-          // Add description if it exists
-          if (
-            effect.description &&
-            effect.description !== `${effect.id} status effect`
-          ) {
-            effectData.description = effect.description;
-          }
-
-          await actor.createEmbeddedDocuments("ActiveEffect", [effectData]);
+          const effectId =
+            effect.id || statusEffectName.toLowerCase().replace(/\s+/g, "-");
+          await actor.toggleStatusEffect(effectId, { active: true });
           success = true;
         }
       } else {
@@ -334,7 +323,7 @@ export class DragonbaneEncumbranceMonitor {
             {
               targetUuid: actor.uuid,
               statusEffectName: statusEffectName,
-            }
+            },
           );
           success = true;
         }
@@ -348,14 +337,14 @@ export class DragonbaneEncumbranceMonitor {
         ui.notifications.warn(
           game.i18n.format(
             "DRAGONBANE_ACTION_RULES.encumbrance.nowOverEncumbered",
-            { actorName: actor.name, currentEnc: currentEnc, maxEnc: maxEnc }
-          )
+            { actorName: actor.name, currentEnc: currentEnc, maxEnc: maxEnc },
+          ),
         );
       }
     } catch (error) {
       if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
         DoD_Utility.WARNING(
-          `Error adding encumbrance status effect: ${error.message}`
+          `Error adding encumbrance status effect: ${error.message}`,
         );
       }
     }
@@ -398,7 +387,7 @@ export class DragonbaneEncumbranceMonitor {
     actor,
     isOverEncumbered,
     currentEnc,
-    maxEnc
+    maxEnc,
   ) {
     try {
       // Prevent duplicate chat messages from multiple clients
@@ -420,7 +409,7 @@ export class DragonbaneEncumbranceMonitor {
                       {
                         currentEnc: currentEnc,
                         maxEnc: maxEnc,
-                      }
+                      },
                     )}
                 </div>`;
 
@@ -428,7 +417,7 @@ export class DragonbaneEncumbranceMonitor {
       if (isOverEncumbered) {
         content += `<div class="encumbrance-rule">
                     <em>${game.i18n.localize(
-                      "DRAGONBANE_ACTION_RULES.encumbrance.strRollReminder"
+                      "DRAGONBANE_ACTION_RULES.encumbrance.strRollReminder",
                     )}</em>
                 </div>`;
       }
@@ -439,7 +428,7 @@ export class DragonbaneEncumbranceMonitor {
         content: content,
         speaker: {
           alias: game.i18n.localize(
-            "DRAGONBANE_ACTION_RULES.encumbrance.systemMessage"
+            "DRAGONBANE_ACTION_RULES.encumbrance.systemMessage",
           ),
         },
         flags: {
@@ -451,7 +440,7 @@ export class DragonbaneEncumbranceMonitor {
     } catch (error) {
       if (typeof DoD_Utility !== "undefined" && DoD_Utility.WARNING) {
         DoD_Utility.WARNING(
-          `Error sending encumbrance notification: ${error.message}`
+          `Error sending encumbrance notification: ${error.message}`,
         );
       }
     }
@@ -466,7 +455,7 @@ export class DragonbaneEncumbranceMonitor {
     // If setting is empty or not set, use localized default
     if (!settingValue) {
       return game.i18n.localize(
-        "DRAGONBANE_ACTION_RULES.encumbrance.statusEffectName"
+        "DRAGONBANE_ACTION_RULES.encumbrance.statusEffectName",
       );
     }
 

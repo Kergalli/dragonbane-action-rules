@@ -25,7 +25,7 @@ export class DragonbaneYZEIntegration {
       DragonbaneUtils.debugLog(
         this.moduleId,
         "YZEIntegration",
-        "YZE Combat module not found or not active"
+        "YZE Combat module not found or not active",
       );
       return false;
     }
@@ -37,7 +37,7 @@ export class DragonbaneYZEIntegration {
       DragonbaneUtils.debugLog(
         this.moduleId,
         "YZEIntegration",
-        "YZE single action mode not enabled"
+        "YZE single action mode not enabled",
       );
       return false;
     }
@@ -45,7 +45,7 @@ export class DragonbaneYZEIntegration {
     DragonbaneUtils.debugLog(
       this.moduleId,
       "YZEIntegration",
-      "YZE integration initialized successfully"
+      "YZE integration initialized successfully",
     );
     return true;
   }
@@ -58,7 +58,7 @@ export class DragonbaneYZEIntegration {
     const moduleSettingEnabled = DragonbaneUtils.getSetting(
       this.moduleId,
       "enableYZEIntegration",
-      true
+      true,
     );
     return (
       moduleSettingEnabled &&
@@ -74,7 +74,10 @@ export class DragonbaneYZEIntegration {
     if (!this.isEnabled()) return;
     if (!DragonbaneUtils.isCombatActive()) return;
 
-    if (message.user.id !== game.user.id) {
+    // On Dragonbane 4.0.1 the live property is message.author (an ID string or
+    // a User object depending on context); message.user is deprecated/undefined.
+    const authorId = message.author?.id ?? message.author ?? message.user?.id;
+    if (authorId !== game.user.id) {
       return;
     }
 
@@ -93,7 +96,7 @@ export class DragonbaneYZEIntegration {
         "YZEIntegration",
         `Detected ${actionType} action from chat for ${actor.name}${
           tokenInfo.tokenId ? ` (Token: ${tokenInfo.tokenId})` : ""
-        }`
+        }`,
       );
 
       await this.onActionTaken(actor, actionType, tokenInfo);
@@ -101,7 +104,7 @@ export class DragonbaneYZEIntegration {
       DragonbaneUtils.debugLog(
         this.moduleId,
         "YZEIntegration",
-        `Error in YZE chat message processing: ${error.message}`
+        `Error in YZE chat message processing: ${error.message}`,
       );
     }
   }
@@ -127,7 +130,7 @@ export class DragonbaneYZEIntegration {
       DragonbaneUtils.debugLog(
         this.moduleId,
         "YZEIntegration",
-        `Could not read YZE setting '${setting}': ${error.message}`
+        `Could not read YZE setting '${setting}': ${error.message}`,
       );
       return defaultValue;
     }
@@ -139,27 +142,27 @@ export class DragonbaneYZEIntegration {
   determineActionType(message) {
     const shouldIgnore = game.user.getFlag(
       "token-action-hud-dragonbane",
-      "ignoreNextRollForActionCounting"
+      "ignoreNextRollForActionCounting",
     );
 
     if (shouldIgnore) {
       DragonbaneUtils.debugLog(
         this.moduleId,
         "YZEIntegration",
-        "Skipping roll due to Token Action HUD ignore flag"
+        "Skipping roll due to Token Action HUD ignore flag",
       );
 
       // Clear the flag since we consumed it
       game.user
         .unsetFlag(
           "token-action-hud-dragonbane",
-          "ignoreNextRollForActionCounting"
+          "ignoreNextRollForActionCounting",
         )
         .catch((error) => {
           DragonbaneUtils.debugLog(
             this.moduleId,
             "YZEIntegration",
-            `Error clearing ignore flag: ${error.message}`
+            `Error clearing ignore flag: ${error.message}`,
           );
         });
 
@@ -171,7 +174,7 @@ export class DragonbaneYZEIntegration {
       DragonbaneUtils.debugLog(
         this.moduleId,
         "YZEIntegration",
-        "Skipping whispered message (likely informational)"
+        "Skipping whispered message (likely informational)",
       );
       return null;
     }
@@ -181,7 +184,7 @@ export class DragonbaneYZEIntegration {
       DragonbaneUtils.debugLog(
         this.moduleId,
         "YZEIntegration",
-        "Skipping table roll (not an action)"
+        "Skipping table roll (not an action)",
       );
       return null;
     }
@@ -191,7 +194,7 @@ export class DragonbaneYZEIntegration {
       DragonbaneUtils.debugLog(
         this.moduleId,
         "YZEIntegration",
-        "Skipping damage/healing roll"
+        "Skipping damage/healing roll",
       );
       return null;
     }
@@ -201,7 +204,7 @@ export class DragonbaneYZEIntegration {
       DragonbaneUtils.debugLog(
         this.moduleId,
         "YZEIntegration",
-        "Skipping reaction spell"
+        "Skipping reaction spell",
       );
       return null;
     }
@@ -211,7 +214,7 @@ export class DragonbaneYZEIntegration {
       DragonbaneUtils.debugLog(
         this.moduleId,
         "YZEIntegration",
-        "Skipping attribute test (not an action)"
+        "Skipping attribute test (not an action)",
       );
       return null;
     }
@@ -221,7 +224,7 @@ export class DragonbaneYZEIntegration {
       DragonbaneUtils.debugLog(
         this.moduleId,
         "YZEIntegration",
-        "Skipping due to custom exclusions"
+        "Skipping due to custom exclusions",
       );
       return null;
     }
@@ -231,7 +234,7 @@ export class DragonbaneYZEIntegration {
       DragonbaneUtils.debugLog(
         this.moduleId,
         "YZEIntegration",
-        "Detected ability action from inclusions list"
+        "Detected ability action from inclusions list",
       );
       return "ability";
     }
@@ -256,7 +259,7 @@ export class DragonbaneYZEIntegration {
       DragonbaneUtils.debugLog(
         this.moduleId,
         "YZEIntegration",
-        `Error checking reaction spell: ${error.message}`
+        `Error checking reaction spell: ${error.message}`,
       );
       return false;
     }
@@ -301,7 +304,7 @@ export class DragonbaneYZEIntegration {
       DragonbaneUtils.debugLog(
         this.moduleId,
         "YZEIntegration",
-        `Error checking attribute test: ${error.message}`
+        `Error checking attribute test: ${error.message}`,
       );
       return false;
     }
@@ -318,7 +321,7 @@ export class DragonbaneYZEIntegration {
       DragonbaneUtils.debugLog(
         this.moduleId,
         "YZEIntegration",
-        `Detected table draw (table ID: ${message.flags.core.RollTable}) - excluding from action tracking`
+        `Detected table draw (table ID: ${message.flags.core.RollTable}) - excluding from action tracking`,
       );
       return true;
     }
@@ -333,7 +336,7 @@ export class DragonbaneYZEIntegration {
     const exclusions = DragonbaneUtils.getSetting(
       this.moduleId,
       "yzeCustomExclusions",
-      ""
+      "",
     );
     if (!exclusions.trim()) return false;
 
@@ -353,7 +356,7 @@ export class DragonbaneYZEIntegration {
     const inclusions = DragonbaneUtils.getSetting(
       this.moduleId,
       "yzeAbilityInclusions",
-      ""
+      "",
     );
     if (!inclusions.trim()) return false;
 
@@ -389,7 +392,7 @@ export class DragonbaneYZEIntegration {
 
       // Check if this ability is in our inclusions list
       return inclusionList.some((ability) =>
-        abilityName.includes(ability.toLowerCase())
+        abilityName.includes(ability.toLowerCase()),
       );
     } catch (error) {
       return false;
@@ -437,14 +440,13 @@ export class DragonbaneYZEIntegration {
    */
   async onActionTaken(actor, actionType = "unknown", tokenInfo = {}) {
     if (!this.isEnabled()) return;
-    if (!DragonbaneUtils.isCombatActive()) return;
 
     // Check if validation bypass is active
     if (window.DragonbaneActionRules?.overrides?.validationBypass) {
       DragonbaneUtils.debugLog(
         this.moduleId,
         "YZEIntegration",
-        `YZE action tracking skipped due to validation bypass for ${actor.name} (${actionType})`
+        `YZE action tracking skipped due to validation bypass for ${actor.name} (${actionType})`,
       );
       return;
     }
@@ -455,7 +457,7 @@ export class DragonbaneYZEIntegration {
         DragonbaneUtils.debugLog(
           this.moduleId,
           "YZEIntegration",
-          `Action by ${actor.name} ignored - not a combatant in current combat`
+          `Action by ${actor.name} ignored - not a combatant in current combat`,
         );
         return; // Silently ignore actions from non-combatants
       }
@@ -463,7 +465,7 @@ export class DragonbaneYZEIntegration {
       // Check if this specific token has any available actions left
       const nextCombatant = this.getNextAvailableCombatantForToken(
         actor,
-        tokenInfo.tokenId
+        tokenInfo.tokenId,
       );
       if (!nextCombatant) {
         // Only show notification if they're actually in combat but used all actions
@@ -481,7 +483,7 @@ export class DragonbaneYZEIntegration {
         DragonbaneUtils.debugLog(
           this.moduleId,
           "YZEIntegration",
-          `Action attempted by ${actor.name} (Token: ${tokenInfo.tokenId}) but all action slots used`
+          `Action attempted by ${actor.name} (Token: ${tokenInfo.tokenId}) but all action slots used`,
         );
         return; // Don't block the action, just notify and return
       }
@@ -491,7 +493,7 @@ export class DragonbaneYZEIntegration {
         DragonbaneUtils.debugLog(
           this.moduleId,
           "YZEIntegration",
-          `Invalid action number ${actionNumber} for combatant ${nextCombatant.name}`
+          `Invalid action number ${actionNumber} for combatant ${nextCombatant.name}`,
         );
         return;
       }
@@ -499,7 +501,7 @@ export class DragonbaneYZEIntegration {
       await this.applySingleActionStatusEffect(
         nextCombatant,
         actionNumber,
-        actionType
+        actionType,
       );
     } catch (error) {
       console.error(`${this.moduleId} | Error in YZE action tracking:`, error);
@@ -528,7 +530,7 @@ export class DragonbaneYZEIntegration {
         DragonbaneUtils.debugLog(
           this.moduleId,
           "YZEIntegration",
-          `Found available combatant: action ${actionNumber}`
+          `Found available combatant: action ${actionNumber}`,
         );
         return combatant;
       }
@@ -564,27 +566,27 @@ export class DragonbaneYZEIntegration {
     const statusEffectId = `action${actionNumber}`;
 
     const statusEffect = CONFIG.statusEffects?.find(
-      (e) => e.id === statusEffectId
+      (e) => e.id === statusEffectId,
     );
     if (!statusEffect) {
       DragonbaneUtils.debugLog(
         this.moduleId,
         "YZEIntegration",
-        `Status effect ${statusEffectId} not found in CONFIG.statusEffects`
+        `Status effect ${statusEffectId} not found in CONFIG.statusEffects`,
       );
       return;
     }
 
     const hasEffect = DragonbaneUtils.hasStatusEffect(
       combatant.token?.actor,
-      statusEffectId
+      statusEffectId,
     );
 
     if (hasEffect) {
       DragonbaneUtils.debugLog(
         this.moduleId,
         "YZEIntegration",
-        `${combatant.name} already has ${statusEffectId} status effect`
+        `${combatant.name} already has ${statusEffectId} status effect`,
       );
       return;
     }
@@ -592,13 +594,13 @@ export class DragonbaneYZEIntegration {
     const success = await DragonbaneUtils.toggleStatusEffect(
       combatant.token.actor,
       statusEffectId,
-      true
+      true,
     );
     if (success) {
       DragonbaneUtils.debugLog(
         this.moduleId,
         "YZEIntegration",
-        `Applied ${statusEffectId} to ${combatant.name} for ${actionType} action`
+        `Applied ${statusEffectId} to ${combatant.name} for ${actionType} action`,
       );
     }
   }
@@ -613,7 +615,7 @@ export class DragonbaneYZEIntegration {
       DragonbaneUtils.debugLog(
         this.moduleId,
         "YZEIntegration",
-        `Failed to get YZE setting ${settingName}: ${error.message}`
+        `Failed to get YZE setting ${settingName}: ${error.message}`,
       );
       return fallback;
     }

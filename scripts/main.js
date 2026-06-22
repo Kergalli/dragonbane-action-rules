@@ -207,30 +207,17 @@ class DragonbaneActionRules {
                 try {
                   const target = await fromUuid(data.targetUuid);
                   if (target) {
-                    // Rebuild effect data on GM side to ensure proper description
+                    // Use native toggleStatusEffect so the token overlay icon
+                    // is drawn (matches the owner path in encumbrance-monitor.js)
                     const effect = DragonbaneUtils.findStatusEffect(
                       data.statusEffectName,
                     );
                     if (!effect) return;
 
-                    const effectData = {
-                      name: data.statusEffectName,
-                      img: effect.img || effect.icon || "icons/svg/anchor.svg",
-                      statuses: [effect.id],
-                      origin: target.uuid,
-                    };
-
-                    // Add description if it exists (GM has full access to descriptions)
-                    if (
-                      effect.description &&
-                      effect.description !== `${effect.id} status effect`
-                    ) {
-                      effectData.description = effect.description;
-                    }
-
-                    await target.createEmbeddedDocuments("ActiveEffect", [
-                      effectData,
-                    ]);
+                    const effectId =
+                      effect.id ||
+                      data.statusEffectName.toLowerCase().replace(/\s+/g, "-");
+                    await target.toggleStatusEffect(effectId, { active: true });
                   }
                 } catch (error) {
                   if (
