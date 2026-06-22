@@ -18,8 +18,13 @@ The Automated Animations integration has been rebuilt from the ground up.
 - **Automatic one-time cleanup** — On first launch, any leftover placeholder data from previous versions is cleared automatically. A one-time notification confirms how many spells were tidied.
 - **⚠️ Animation configuration note** — For a spell to animate when **cast**, its Automated Animations entry must be in a cast-type category (**On Token, Range, Melee, Templates, Aura, or Preset**). Entries in the **Active Effects** category animate when the effect is _applied_ to a token (handled by Automated Animations directly), not on cast. If a spell stops animating after this update, check that its AA entry uses a cast-type category. See the README's "Spell Animations" section for details.
 
+### 🏷️ Custom Weapon Feature Tooltips
+
+- **Optional tooltips for custom weapon features** — When adding a custom weapon feature, you can now give it a tooltip that appears when hovering over the feature on a weapon. Add the tooltip after a `|` in the feature list — for example, `Wounding|Inflicts an extra wound on a critical hit`. Features without a tooltip simply show no hover text. Existing comma-separated lists continue to work unchanged.
+
 ### 🐛 Bug Fixes
 
+- **Custom feature tooltips** — Custom weapon features no longer show a stray internal label on hover when no tooltip is set; they now correctly show nothing.
 - **Shove reminders** — Fixed shove reminders not appearing. The reminder logic read a chat-message property that changed in Dragonbane v4.0.1, causing it to silently skip.
 - **Spell status effects** — Fixed an error that could prevent automatic status effects from applying when the caster's own client processed the spell, due to the same v4.0.1 message-property change.
 

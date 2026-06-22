@@ -83,6 +83,7 @@
 #### **Custom Weapon Features**
 
 - **House rule support** - Add custom weapon features via comma-separated list for tracking campaign-specific properties
+- **Optional tooltips** - Give any custom feature a hover tooltip by adding it after a `|` (e.g. `Wounding|Inflicts an extra wound on a critical hit`)
 - **Tracking only** - Features appear in weapon checkboxes but don't implement mechanical effects automatically
 
 ---
@@ -127,14 +128,16 @@
 
 ### **Custom Features**
 
-- **Custom Weapon Features** - Add house rule or campaign-specific weapon properties via comma-separated list
+- **Custom Weapon Features** - Add house rule or campaign-specific weapon properties via comma-separated list. Optionally add a hover tooltip to any feature by placing it after a `|`.
 
 **Example Custom Features:**
 
 ```
-English: Articulated, Heavy, Small, Vampiric, Wounding
-Swedish: Ledad, Tung, Liten, Sårande, Vampyrisk
+English: Articulated, Heavy, Small, Vampiric, Wounding|Inflicts an extra wound on a critical hit
+Swedish: Ledad, Tung, Liten, Sårande, Vampyrisk|Ger ett extra sår vid en kritisk träff
 ```
+
+Features without a `|` have no tooltip; the part before the `|` is the feature name shown in the checkbox, and the part after is the hover text.
 
 ### **YZE Integration**
 

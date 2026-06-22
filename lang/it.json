@@ -115,7 +115,7 @@
       },
       "customWeaponFeatures": {
         "name": "Caratteristiche personalizzate delle armi",
-        "hint": "Aggiunge caratteristiche personalizzate delle armi al sistema (separate da virgola). Esempi: 'Snodata, Pesante, Piccola, Lacerante'. Queste appariranno nelle caselle di controllo delle caratteristiche per qualsiasi arma."
+        "hint": "Aggiungi proprietà d'arma personalizzate (separate da virgole). Puoi aggiungere un suggerimento dopo un '|'. Esempio: 'Articolata, Ferente|Infligge una ferita extra con un colpo critico'. Appaiono nelle caselle delle proprietà dell'arma; il suggerimento appare al passaggio del mouse."
       }
     },
     "actions": {

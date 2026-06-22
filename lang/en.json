@@ -115,7 +115,7 @@
       },
       "customWeaponFeatures": {
         "name": "Custom Weapon Features",
-        "hint": "Add custom weapon features to the system (comma-separated). Examples: 'Articulated, Heavy, Small, Wounding'. These will appear in weapon feature checkboxes for any weapon."
+        "hint": "Add custom weapon features (comma-separated). Optionally add a tooltip after a '|'. Example: 'Articulated, Wounding|Inflicts an extra wound on a critical hit'. These appear in weapon feature checkboxes for any weapon; the tooltip shows on hover."
       }
     },
     "actions": {

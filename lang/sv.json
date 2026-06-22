@@ -115,7 +115,7 @@
       },
       "customWeaponFeatures": {
         "name": "Anpassade Vapenegenskaper",
-        "hint": "Lägg till anpassade vapenegenskaper till systemet (kommaseparerade). Exempel: 'Ledad, Tung, Liten, Snärjande:'. Dessa kommer att visas i vapenegenskapsrutorna för alla vapen."
+        "hint": "Lägg till anpassade vapenegenskaper (kommaseparerade). Lägg eventuellt till en verktygstips efter ett '|'. Exempel: 'Ledad, Snärjande|Ger ett extra sår vid en kritisk träff'. Dessa visas i vapenegenskapsrutorna för alla vapen; verktygstipset visas vid hovring."
       }
     },
     "actions": {
