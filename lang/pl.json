@@ -1,0 +1,334 @@
+{
+  "DRAGONBANE_ACTION_RULES": {
+    "aa": {
+      "legacyCleanup": "Cleaned up {count} legacy spell damage tag(s) from a previous version."
+    },
+    "console": {
+      "initializing": "Initializing",
+      "wrongSystem": "This module is designed for the Dragonbane system",
+      "moduleEnabled": "Module enabled",
+      "moduleDisabled": "Module disabled"
+    },
+    "settings": {
+      "enabled": {
+        "name": "Enable Combat Assistant",
+        "hint": "Master toggle - disables all Combat Assistant features when turned off (validation, rules, encumbrance, etc.)"
+      },
+      "delay": {
+        "name": "Display Delay (milliseconds)",
+        "hint": "How long to wait before showing rules after an action is detected"
+      },
+      "showParryDurability": {
+        "name": "Show Weapon Durability for Parry",
+        "hint": "Display weapon durability when showing parry rules (shows the damage threshold that would break the weapon)"
+      },
+      "enableParryMovementReminders": {
+        "name": "OPTIONAL RULE: Enable Parry Movement Reminders",
+        "hint": "Show the optional parry movement rule (move yourself and enemy 2m on successful parry)"
+      },
+      "enforceTargetSelection": {
+        "name": "Enforce Target Selection",
+        "hint": "Require players to select a target before making any attack"
+      },
+      "enforceRangeChecking": {
+        "name": "Enforce Range Checking",
+        "hint": "Validate that attacks are within weapon range (melee: up to 2m/4m for long, ranged: up to 2x base range, thrown: contextual)"
+      },
+      "enforceMonsterActionPrevention": {
+        "name": "Enable Monster Action Prevention",
+        "hint": "Show confirmation dialogs before attempting parry or disarm actions against monsters (prevents invalid advancement and educates about rules)"
+      },
+      "enableShoveReminders": {
+        "name": "OPTIONAL RULE: Enable Shove Rule Reminders",
+        "hint": "Show shove rule reminders for melee special attacks when STR damage bonus allows it"
+      },
+      "enableDodgeMovementReminders": {
+        "name": "Enable Dodge Movement Reminders",
+        "hint": "Show movement reminders for successful EVADE rolls"
+      },
+      "debugMode": {
+        "name": "Debug Mode",
+        "hint": "Enable debug logging to console (for troubleshooting)"
+      },
+      "enableEncumbranceMonitoring": {
+        "name": "Enable Encumbrance Monitoring",
+        "hint": "Automatically monitor character encumbrance and apply status effects when over-encumbered"
+      },
+      "encumbranceMonitorFolder": {
+        "name": "Encumbrance Monitor Folder",
+        "hint": "Name of the actor folder to monitor for encumbrance. Monitors actors in the exact folder name specified. Leave blank to monitor all characters."
+      },
+      "encumbranceStatusEffect": {
+        "name": "Encumbrance Status Effect",
+        "hint": "Name of the status effect to apply when over-encumbered (will be created automatically with anchor icon if it doesn't exist)"
+      },
+      "encumbranceChatNotifications": {
+        "name": "Encumbrance Chat Notifications",
+        "hint": "Also create chat messages for encumbrance changes (in addition to UI notifications)"
+      },
+      "enableYZEIntegration": {
+        "name": "Enable Year Zero Engine Integration",
+        "hint": "Automatically apply single action status effects when Year Zero Engine Combat module is installed and single action mode is enabled"
+      },
+      "yzeCustomExclusions": {
+        "name": "YZE Action Exclusions",
+        "hint": "Additional words/phrases/UUIDs to exclude from action tracking (comma-separated). These dice rolls will not trigger action status effects. See README.md for some examples. Note: Reaction spells are automatically excluded by checking their casting time."
+      },
+      "yzeAbilityInclusions": {
+        "name": "YZE Action Inclusions - Abilities",
+        "hint": "Heroic and Kin abilities that should count as actions (comma-separated). When these abilities are used, they will trigger action status effects. Examples: Battle Cry, Berserker, Companion, Master Carpenter, Musician, Body Slam, Hunting Instincts, Raise Spirits"
+      },
+      "enableGrudgeTracking": {
+        "name": "Enable Unforgiving Tracker",
+        "hint": "Automatically track damage dealt to Dwarf characters with Unforgiving kin ability. Creates journals for grudge lists."
+      },
+      "enableSpellValidation": {
+        "name": "Enable Spell Range & Target Validation",
+        "hint": "Enable target selection and range checking for spells (same rules as weapons). All spells get Automated Animations regardless of this setting."
+      },
+      "excludedSpells": {
+        "name": "Excluded Spells",
+        "hint": "Comma-separated list of spell names to exclude from validation. Example: 'Birdsong, Custom Spell'"
+      },
+      "enableSpellStatusEffects": {
+        "name": "Enable Automatic Spell Status Effects",
+        "hint": "Automatically apply status effects when spells are successfully cast."
+      },
+      "enableAASupport": {
+        "name": "Enable AA Support",
+        "label": "Enable Automated Animations",
+        "hint": "Add compatibility data to all spells so they can trigger Automated Animations. This modifies spell data by adding 'n/a' to empty damage fields."
+      },
+      "disableAASupport": {
+        "name": "Disable AA Support",
+        "label": "Disable Automated Animations",
+        "hint": "Remove compatibility data from enhanced spells to disable Automated Animations. This removes 'n/a' from spell damage fields that were added by the enable function."
+      },
+      "setupGrudgeFolders": {
+        "name": "Setup Grudge Folders",
+        "label": "Setup Grudge Folders",
+        "hint": "Create grudge folders and journals for all player characters with the Unforgiving ability. Run this once when starting your game or when new PCs join."
+      },
+      "aoeRuleReminder": {
+        "name": "AOE Rule Reminder",
+        "hint": "Show rule reminders before casting area of effect spells (sphere and cone spells)"
+      },
+      "customWeaponFeatures": {
+        "name": "Custom Weapon Features",
+        "hint": "Add custom weapon features (comma-separated). Optionally add a tooltip after a '|'. Example: 'Articulated, Wounding|Inflicts an extra wound on a critical hit'. These appear in weapon feature checkboxes for any weapon; the tooltip shows on hover."
+      }
+    },
+    "actions": {
+      "parry": "Parry",
+      "topple": "Topple",
+      "disarm": "Disarm",
+      "weakspot": "Find Weak Spot"
+    },
+    "speakers": {
+      "generic": "{action} Rules",
+      "shove": "Shove Available",
+      "evade": "Evade Movement"
+    },
+    "durability": "Durability",
+    "unknownWeapon": "Unknown Weapon",
+    "weaponTypes": {
+      "melee": "melee weapon",
+      "longMelee": "long melee weapon"
+    },
+    "range": {
+      "upToTwoMeters": "within 2m of",
+      "upToFourMeters": "within 4m of"
+    },
+    "validation": {
+      "selectToken": "Please select your token before attacking with {weapon}.",
+      "noWeapon": "You do not have the weapon {weapon}!",
+      "noTarget": "Please target a token before attacking with {weapon}.",
+      "tooManyTargets": "Please target only one token for {weapon}.",
+      "meleeOutOfRange": "Target is too far away! {weapon} is a {weaponType} and must be {maxRange} the target, but target is {distance}m away.",
+      "rangedOutOfRange": "Target is too far away! {weapon} has a maximum range of {maxRange}m, but target is {distance}m away.",
+      "spellSelectToken": "You must select a token to cast {spell}",
+      "spellNotFound": "Spell {spell} not found",
+      "spellNoActor": "No actor found to cast {spell}",
+      "spellNoToken": "No token found for {actor} to cast {spell}",
+      "spellNoTarget": "You must select a target to cast {spell}",
+      "spellTooManyTargets": "You must select exactly one target to cast {spell}",
+      "spellCannotTargetSelf": "{spell} cannot target the caster! Select a different target.",
+      "spellTouchRange": "{spell} requires touch! You must be adjacent (within 2m). Distance: {distance}m",
+      "spellOutOfRange": "{spell} is out of range! Max: {maxRange}m, Distance: {distance}m"
+    },
+    "parry": {
+      "reaction": "Parowanie zastępuje twoją normalną turę (reakcja)",
+      "success": "Sukces = nie otrzymujesz obrażeń. Ale jeśli: obrażenia > trwałość oręża, to uszkodzony aż do naprawy",
+      "piercing": "Kłute obrażenia nie mogą uszkodzić oręża",
+      "monster": "Ataków potworów nie można parować, chyba że opis jakiegoś stanowi inaczej",
+      "movement": "Sukces = możesz przesunąć siebie i wroga o 2 metry (bez ataków darmowych)",
+      "dragon": "Smok = kontratak (nie można unikać lub parować). Jeśli wróg wyturlał smoka w teście ataku, to twój smok jest niezbędny, by parować (bez kontrataku)",
+      "dodgeMovement": "<strong>Jeśli unikasz:</strong> możesz przemieścić się o 2 metry (bez ataków darmowych)",
+      "ifParrying": "Jeśli parujesz:"
+    },
+    "topple": {
+      "noDamage": "No damage dealt",
+      "evadeRoll": "Opponent makes opposed <strong>EVADE</strong> roll",
+      "cannotDefend": "Cannot be dodged or parried",
+      "success": "Success = opponent becomes prone",
+      "weaponFeature": "Topple Feature",
+      "boonBonus": "+1 Boon",
+      "monsterRule": "<strong>Monster:</strong> 4 legs or more = bane on roll"
+    },
+    "disarm": {
+      "noDamage": "No damage dealt",
+      "skillRoll": "Opponent makes opposed weapon skill roll",
+      "cannotDefend": "Cannot be dodged or parried",
+      "twoHanded": "Two-handed weapon = you get bane",
+      "success": "Success = weapon lands D6 meters away (your choice of direction)",
+      "limitations": "Cannot disarm shields or natural weapons"
+    },
+    "weakspot": {
+      "piercing": "Piercing weapons only: Target gaps in armor",
+      "bane": "You get bane on attack",
+      "success": "Success = enemy counts as armorless"
+    },
+    "shove": {
+      "available": "<strong>Bonus:</strong> STR advantage allows shoving {targetName} 2m in any direction.",
+      "defaultTarget": "target"
+    },
+    "evade": {
+      "movementAvailable": "<strong>Jeśli unikasz:</strong> możesz przemieścić się o 2 metry (bez ataków darmowych)"
+    },
+    "weaponBroken": {
+      "buttonText": "Mark Weapon Broken",
+      "buttonTextCompleted": "Weapon Marked Broken",
+      "dialogTitle": "Mark Weapon Broken",
+      "dialogContent": "Mark <strong>{weaponName}</strong> as broken?",
+      "dialogExplanation": "This will prevent its use until repaired.",
+      "confirmButton": "Mark Broken",
+      "cancelButton": "Cancel",
+      "errors": {
+        "actorNotFound": "Nie znaleziono postaci",
+        "weaponNotFound": "Nie znaleziono broni",
+        "noPermission": "You don't have permission to modify this weapon",
+        "alreadyBroken": "{weaponName} jest już uszkodzona",
+        "updateFailed": "Nie udało się oznaczy broni jako uszkodzona"
+      },
+      "success": "{weaponName} została oznaczona jako uszkodzona"
+    },
+    "encumbrance": {
+      "statusEffectName": "Over-Encumbered",
+      "nowOverEncumbered": "{actorName} jest od teraz przeciążony/a, dźwiga: ({currentEnc}/{maxEnc})",
+      "noLongerOverEncumbered": "{actorName} nie jest już przeciążony/a, dźwiga: ({currentEnc}/{maxEnc})",
+      "chatOverEncumbered": "<strong>{actorName}</strong> dźwiga zbyt dużo i jest od teraz <strong>przeciążony/a!</strong>",
+      "chatNoLongerOverEncumbered": "<strong>{actorName}</strong> nie jest już przeciążony/a.",
+      "carryingItems": "Obecny udźwig: {currentEnc}/{maxEnc}",
+      "strRollReminder": "Musisz przetestować SIŁ, ilekroć chcesz wykonać ruch w czasie walki albo maszerować przez jedną kwartę podróży.",
+      "systemMessage": "Kontrola przeciążenia"
+    },
+    "overrides": {
+      "targetEnforcementDisabled": "Target selection enforcement disabled",
+      "targetEnforcementEnabled": "Target selection enforcement enabled",
+      "rangeCheckingDisabled": "Range checking disabled",
+      "rangeCheckingEnabled": "Range checking enabled",
+      "yzeActionTrackingDisabled": "YZE action tracking disabled",
+      "yzeActionTrackingEnabled": "YZE action tracking enabled",
+      "allValidationDisabled": "All validation rules and action tracking disabled",
+      "allValidationEnabled": "All validation rules and action tracking enabled",
+      "allOverridesCleared": "All validation and tracking overrides cleared",
+      "status": {
+        "targetSelection": "Target Selection",
+        "rangeChecking": "Range Checking",
+        "yzeActionTracking": "YZE Action Tracking",
+        "allValidations": "All Validations",
+        "allActive": "All validation rules active (no overrides)",
+        "activeOverrides": "Active overrides: {overrides}"
+      }
+    },
+    "yze": {
+      "actionAlreadyPerformedOrPushing": "An action has already been performed by {actorName} or they are pushing a roll.",
+      "actionAlreadyPerformedNPC": "{actorName} has used all of their available actions."
+    },
+    "monsterPrevention": {
+      "disarm": {
+        "title": "Rozbrój potwora",
+        "content": "Byle awanturnik nie jest w stanie rozbroić potwora. Czy chcesz spróbować rozbroić {targetName}?"
+      },
+      "parry": {
+        "title": "Parowanie ataku potwora",
+        "content": "Ogólna zasada stanowi, że ataku potwora nie można sparować (wyjątki oznaczono w opisie ataków). Czy chcesz spróbować sparować atak wykonany przez {targetName}?"
+      },
+      "proceed": "Kontynuuj",
+      "cancel": "Anuluj"
+    },
+    "effects": {
+      "protector": "Protector",
+      "birdsong": "Birdsong",
+      "powerFist": "Power Fist",
+      "enchantWeapon": "Enchant Weapon",
+      "engulfingForest": "Ensnared",
+      "ensnaringRoots": "Ensnared",
+      "flight": "Flying",
+      "longstrider": "Longstrider",
+      "sleep": "Sleeping",
+      "stoneSkin": "Stone Skin",
+      "chill": "Chill",
+      "cold": "Cold",
+      "frost": "Frozen",
+      "heat": "Heat"
+    },
+    "dialogs": {
+      "enableAA": {
+        "title": "Enable Automated Animations Support",
+        "content": "This will add 'n/a' to the damage field of all non-damage spells, making them compatible with Automated Animations.",
+        "warning": "This affects all actors and their spells in your world. Easily reversible with the disable button.",
+        "warningLabel": "Warning:",
+        "enableButton": "Enable AA Support",
+        "cancelButton": "Cancel"
+      },
+      "disableAA": {
+        "title": "Disable Automated Animations Support",
+        "content": "This will remove 'n/a' from the damage field of enhanced spells, disabling Automated Animations compatibility.",
+        "warning": "This affects all actors and their spells in your world. You can re-enable anytime.",
+        "warningLabel": "Warning:",
+        "disableButton": "Disable AA Support",
+        "cancelButton": "Cancel"
+      },
+      "setupGrudgeFolders": {
+        "title": "Setup Grudge Folders",
+        "content": "This will create grudge folders and journals for all player characters with the Unforgiving ability. Any existing journals will be preserved.",
+        "info": "Only characters with the Unforgiving kin ability will have journals created.",
+        "setupButton": "Create Folders & Journals"
+      },
+      "aoeReminder": {
+        "title": "Area of Effect Spell Reminders",
+        "dodgeRule": "Area of effect spells can be dodged but not parried, unless stated otherwise.",
+        "exemptRule": "You can exempt one or more targets within the area from the spell's effects, but you then get a bane on the roll.",
+        "cast": "Cast Spell",
+        "cancel": "Cancel",
+        "cancelled": "Spell casting cancelled."
+      }
+    },
+    "grudgeTracker": {
+      "allGrudgeJournalsExist": "All grudge journals already exist or no Unforgiving characters found",
+      "speakerName": "Unforgiving Tracker",
+      "damageReceived": "{actorName} has taken {damage} damage from {attackerName}.",
+      "addToGrudgeList": "Add to Grudge List",
+      "buttonTextCompleted": "Added to Grudge List",
+      "journalName": "{actorName}'s Grudges",
+      "folderName": "Unforgiving Tracker",
+      "pageTitle": "Unforgiving Tracker",
+      "dateColumn": "Date",
+      "enemyColumn": "Enemy",
+      "damageColumn": "Damage",
+      "locationColumn": "Location",
+      "unknownLocation": "Unknown Location",
+      "addedToGrudgeList": "{attackerName} added to {actorName}'s grudge list",
+      "setupComplete": "Created {count} grudge journals for characters with Unforgiving ability.",
+      "errors": {
+        "actorNotFound": "Actor not found",
+        "noPermission": "You don't have permission to modify this character's grudge list",
+        "addFailed": "Failed to add entry to grudge list",
+        "journalCreateFailed": "Failed to create grudge list journal",
+        "journalNotFound": "Grudge journal not found",
+        "journalNotSetup": "No grudge journal found for {actorName}. Please ask the GM to run 'Setup Grudge Folders' from the module settings."
+      }
+    }
+  }
+}
